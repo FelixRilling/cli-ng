@@ -8,8 +8,8 @@ const cli = new Clingy({
         args: [],
         alias: ["why", "?"],
         help: {
-            desc: "Shows Info about this bot",
-            args: "Shows Info about this bot foooooooooooo"
+            short: "Shows Info about this bot",
+            long: "Shows Info about this bot foooooooooooo"
         }
     },
     commit: {
@@ -29,18 +29,23 @@ const cli = new Clingy({
             long: "Shows a commit message foooooooooooo"
         }
     },
-    c: {
+    foo: {
         fn: () => {
             return "bar";
         },
         args: [],
         alias: ["fizz"],
         help: {
-            desc: "Fizz",
-            args: "Fizzzzzzzzzzzzzzzzzz"
+            short: "Fizz",
+            long: "Fizzzzzzzzzzzzzzzzzz"
         }
     }
 });
 
 
-console.log(cli.parse("about foo"));
+console.log("why 123", cli.parse("why 123"));
+//console.log("commit", cli.parse("commit"));
+//console.log("commfit", cli.parse("commfit"));
+
+//console.log("help", cli.help());
+//console.log("help commit", cli.help("commidt"));

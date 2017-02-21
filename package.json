@@ -11,9 +11,9 @@
         "test": "./node_modules/.bin/jasmine"
     },
     "keywords": [
-        "stack",
-        "node",
-        "npm"
+        "cli",
+        "commandline",
+        "text"
     ],
     "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
     "repository": {

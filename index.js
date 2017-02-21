@@ -3,37 +3,33 @@
 const similar = require("similar-strings");
 const parseInput = require("./lib/parseInput");
 const parseType = require("./lib/parseType");
+const getAliasedMap = require("./lib/getAliasedMap");
+const addCommandToMap = require("./lib/addCommandToMap");
 
 module.exports = class {
     constructor(commands) {
         const _this = this;
 
-        _this.$map = new Map();
-        _this.$mapAliased = new Map();
+        _this.map = new Map();
 
         Object.keys(commands).forEach(key => {
-            const value = commands[key];
-
-            _this.$map.set(key, value);
-            _this.$mapAliased.set(key, value);
-
-            value.alias.forEach(alias => {
-                _this.$mapAliased.set(alias, value);
-            });
+            _this.map = addCommandToMap(_this.map, key, commands[key]);
         });
 
-        _this.$mapKeys = Array.from(_this.$map.keys());
-        _this.$mapAliasedKeys = Array.from(_this.$mapAliased.keys());
+        _this.mapAliased = getAliasedMap(_this.map);
+
+        _this.keys = Array.from(_this.map.keys());
+        _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
     parse(str) {
-        const _this = this;
+        /*const _this = this;
         const parsedInput = parseInput(str);
         const parsedInputName = parsedInput.name;
         const parsedInputArgs = parsedInput.args;
         let result;
 
-        if (_this.$mapAliased.has(parsedInputName)) { //If the command exists
-            const command = _this.$mapAliased.get(parsedInputName);
+        if (_this.mapAliased.has(parsedInputName)) { //If the command exists
+            const command = _this.mapAliased.get(parsedInputName);
             const args = {};
 
             command.args.forEach((requestedArg, index) => { //Loop over expected args
@@ -67,63 +63,90 @@ module.exports = class {
                     type: "success",
                     data: {
                         command: command,
-                        args: args
+                        args: args,
+                        caller: parsedInputName
                     }
                 };
             }
 
-
             return result;
         } else {
-            const similarCommands = similar(parsedInputName, _this.$mapAliasedKeys);
+            const similarKeys = similar(parsedInputName, _this.keysAliased);
+            const similarCommands = similarKeys.map(key => _this.mapAliased.get(key));
 
             return {
                 type: "error",
                 data: {
                     err: "missingCommand",
                     missing: parsedInputName,
-                    similar: similarCommands
+                    similar: {
+                        keys: similarKeys,
+                        commands: similarCommands
+                    }
                 }
             };
-        }
+        }*/
     }
     help(commandName) {
-        const _this = this;
+        /*const _this = this;
         let result;
 
         if (!commandName) { //Return full list
-            const list = Array.from(_this.$mapKeys).map(key => [key, _this.$map.get(key).help.short]);
+            const list = Array.from(_this.keys).map(key => [key, _this.map.get(key).help.short]);
 
             result = {
                 type: "success",
                 data: {
-                    list: list
+                    mode: "full",
+                    list: list,
+                    commands: _this.map
                 }
             };
         } else { //Return detailed command help
-            if (_this.$mapAliased.has(commandName)) { //If the command exists
-                const command = _this.$mapAliased.get(commandName);
+            if (_this.mapAliased.has(commandName)) { //If the command exists
+                const command = _this.mapAliased.get(commandName);
 
                 result = {
                     type: "success",
                     data: {
-                        command: command
+                        mode: "detail",
+                        command: {
+                            command: command,
+                            key: commandName
+                        }
                     }
                 };
             } else {
-                const similarCommands = similar(commandName, _this.$mapAliasedKeys);
+                const similarKeys = similar(commandName, _this.keysAliased);
+                const similarCommands = similarKeys.map(key => _this.mapAliased.get(key));
 
                 result = {
                     type: "error",
                     data: {
                         err: "missingCommand",
                         missing: commandName,
-                        similar: similarCommands
+                        similar: {
+                            keys: similarKeys,
+                            commands: similarCommands
+                        }
                     }
                 };
             }
         }
 
-        return result;
+        return result;*/
+    }
+    get(key) {
+        return this.mapAliased.get(key);
+    }
+    set(key, command) {
+        const _this = this;
+
+        _this.map = addCommandToMap(_this.map, key, command);
+
+        _this.mapAliased = getAliasedMap(_this.map);
+
+        _this.keys = Array.from(_this.map.keys());
+        _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
 };

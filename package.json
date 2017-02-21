@@ -1,0 +1,37 @@
+{
+    "name": "cli-ngy",
+    "version": "2.0.0",
+    "description": "A module to provide cli-like functionality",
+    "main": "index.js",
+    "author": "Felix Rilling",
+    "license": "MIT",
+    "scripts": {
+        "start": "npm run lint && npm run test",
+        "lint": "./node_modules/.bin/eslint ./src/",
+        "test": "./node_modules/.bin/jasmine"
+    },
+    "keywords": [
+        "stack",
+        "node",
+        "npm"
+    ],
+    "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/FelixRilling/cli-ngy.git"
+    },
+    "bugs": {
+        "url": "https://github.com/FelixRilling/cli-ngy/issues"
+    },
+    "dependencies": {
+        "similar-strings": "^1.2.0"
+    },
+    "devDependencies": {
+        "eslint": "^3.15.0",
+        "jasmine": "^2.5.3"
+    },
+    "optionalDependencies": {},
+    "engines": {
+        "node": ">=0.10.0"
+    }
+}

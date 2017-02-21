@@ -43,9 +43,7 @@ const cli = new Clingy({
 });
 
 
-console.log("why 123", cli.parse("why 123"));
-//console.log("commit", cli.parse("commit"));
-//console.log("commfit", cli.parse("commfit"));
+console.log("why 123", cli.parse("commit 123"));
 
 //console.log("help", cli.help());
-//console.log("help commit", cli.help("commidt"));
+//console.log("help commit", cli.help("commit"));

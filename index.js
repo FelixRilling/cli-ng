@@ -5,7 +5,7 @@ const similar = require("similar-strings");
 const getAliasedMap = require("./lib/getAliasedMap");
 const parseCommand = require("./lib/parseCommand");
 const parseInput = require("./lib/parseInput");
-const parseType = require("./lib/parseType");
+const matchArgs = require("./lib/matchArgs");
 
 module.exports = class {
     constructor(commands) {
@@ -78,39 +78,20 @@ module.exports = class {
         const command = result.data.command;
 
         if (result.type === "success") {
-            const args = {};
-            const missingArgs = [];
+            const argResult = matchArgs(command.args, parsedInput.args);
 
-            command.args.forEach((requestedArg, index) => { //Loop over expected args
-                const suppliedArg = parsedInput.args[index];
-
-                if (suppliedArg) { //If arg exists
-                    const parsedArg = parseType(suppliedArg, requestedArg.type);
-
-                    args[requestedArg.name] = parsedArg;
-                } else { //If arg doesnt exists
-                    if (!requestedArg.required) {
-                        args[requestedArg.name] = requestedArg.default;
-                    } else {
-                        missingArgs.push(requestedArg);
-                    }
-                }
-            });
-
-            if (missingArgs.length > 0) { //returns error when not all args are present
+            if (argResult.missing.length > 0) { //returns error when not all args are present
                 return {
                     type: "error",
                     data: {
                         err: "missingArg",
-                        missing: missingArgs
+                        missing: argResult.missing
                     }
                 };
             } else {
-                result.data.args = args;
+                result.data.args = argResult.args;
             }
         }
-
-        console.log(result);
 
         return result;
     }

@@ -1,17 +1,13 @@
-# levenshtein-string-distance
+# cli-ngy
 
-An implementation of [Levenshtein string distance](https://en.wikipedia.org/wiki/Levenshtein_distance) in JS
+A module to provide cli-like functionality
 
 ## Install
 
 ```shell
-npm install levenshtein-string-distance --save
+npm install cli-ngy --save
 ```
 
 ## Usage
 
-```javascript
-const lev = require("levenshtein-string-distance");
-
-lev("Kitten","Sitting") //=> 3
-```
+__TODO__

@@ -1,34 +1,94 @@
 "use strict";
 
-const lev = require("../index.js");
+const Clingy = require("../index.js");
+
+const cli = new Clingy({
+    about: {
+        fn: () => "About",
+        args: [],
+        alias: ["why", "?"],
+        help: {
+            short: "Shows Info",
+            long: "Shows Info about this app"
+        }
+    },
+    double: {
+        fn: (args) => {
+            return args.number * 2;
+        },
+        args: [{
+            name: "number",
+            type: "number",
+            default: "",
+            required: true,
+            help: "a number"
+        }],
+        alias: [],
+        help: {
+            short: "Doubles number",
+            long: "Doubles number and returns result"
+        }
+    },
+    add: {
+        fn: (args) => {
+            return args.a + args.b;
+        },
+        args: [{
+            name: "a",
+            type: "number",
+            default: "",
+            required: true,
+            help: "number 1"
+        }, {
+            name: "b",
+            type: "number",
+            default: "",
+            required: true,
+            help: "number 2"
+        }],
+        alias: ["addNumbers"],
+        help: {
+            short: "Adds numbers",
+            long: "Adds numbers and returns result"
+        }
+    }
+});
 
 describe("Main test", function () {
 
-    it("Normal case", function () {
-        expect(lev("Kitten", "Sitting")).toBe(3);
+    it("Basic get", function () {
+        const result = cli.get("about");
+
+        expect(result.type).toBe("success");
     });
 
-    it("Simple case", function () {
-        expect(lev("String", "Stribng")).toBe(1);
+    it("Basic command", function () {
+        const result = cli.parse("about");
+
+        expect(result.type).toBe("success");
     });
 
-    it("Position case", function () {
-        expect(lev("Foo", "oof")).toBe(2);
+    it("Basic command with redundant args", function () {
+        const result = cli.parse("about foo");
+
+        expect(result.type).toBe("success");
     });
 
-    it("Complex case", function () {
-        expect(lev("!Lorem", "23Xd")).toBe(6);
+    it("Advanced command with args", function () {
+        const result = cli.parse("double 2");
+
+        expect(result.type).toBe("success");
     });
 
-    it("Long case", function () {
-        expect(lev("fooooooooooooooooooooooooooooooooooooooooooo", "fooooooooooooodooooooooooooooooooosa4oooooooo")).toBe(4);
+    it("Advanced command without args", function () {
+        const result = cli.parse("double");
+
+        expect(result.type).toBe("error");
     });
 
-    it("Emtpy case", function () {
-        expect(lev("", "")).toBe(0);
-    });
+    it("Advanced command with multiple args", function () {
+        const result = cli.parse("add 12 42");
 
-    it("Half emtpy case", function () {
-        expect(lev("Lorem", "")).toBe(5);
+        expect(result.type).toBe("success");
     });
 });

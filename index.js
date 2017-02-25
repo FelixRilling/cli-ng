@@ -3,7 +3,7 @@
 const similar = require("similar-strings");
 
 const getAliasedMap = require("./lib/getAliasedMap");
-const addCommandToMap = require("./lib/addCommandToMap");
+const parseCommand = require("./lib/parseCommand");
 const parseInput = require("./lib/parseInput");
 const parseType = require("./lib/parseType");
 
@@ -14,7 +14,9 @@ module.exports = class {
         _this.map = new Map();
 
         Object.keys(commands).forEach(key => {
-            _this.map = addCommandToMap(_this.map, key, commands[key]);
+            const command = parseCommand(key, commands[key]);
+
+            _this.map.set(key, command);
         });
         _this.updateAliased();
     }
@@ -24,13 +26,14 @@ module.exports = class {
         _this.mapAliased = getAliasedMap(_this.map);
         _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
-    set(commandName, command) {
+    setCommand(commandName, commandContent) {
         const _this = this;
+        const command = parseCommand(commandName, commandContent);
 
-        _this.map = addCommandToMap(_this.map, commandName, command);
+        _this.map.set(commandName, command);
         _this.updateAliased();
     }
-    get(commandName) {
+    getCommand(commandName) {
         const _this = this;
 
         if (_this.mapAliased.has(commandName)) {
@@ -64,14 +67,14 @@ module.exports = class {
             data: {
                 map: _this.map,
                 mapAliased: _this.mapAliased,
-                keys: _this.keys
+                keys: _this.keysAliased
             }
         };
     }
     parse(str) {
         const _this = this;
         const parsedInput = parseInput(str);
-        const result = _this.get(parsedInput.name);
+        const result = _this.getCommand(parsedInput.name);
         const command = result.data.command;
 
         if (result.type === "success") {

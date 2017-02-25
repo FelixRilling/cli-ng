@@ -57,7 +57,7 @@ const cli = new Clingy({
 describe("Main test", function () {
 
     it("Basic get", function () {
-        const result = cli.get("about");
+        const result = cli.getCommand("about");
 
         expect(result.type).toBe("success");
     });

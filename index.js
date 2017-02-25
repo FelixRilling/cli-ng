@@ -2,9 +2,9 @@
 
 const getAliasedMap = require("./lib/getAliasedMap");
 const addCommandToMap = require("./lib/addCommandToMap");
-const getCommand = require("./lib/getCommand");
+const getParsedCommand = require("./lib/getParsedCommand");
 const getHelp = require("./lib/getHelp");
-const getByKey = require("./lib/getByKey");
+const getCommand = require("./lib/getCommand");
 
 module.exports = class {
     constructor(commands) {
@@ -22,7 +22,7 @@ module.exports = class {
     parse(str) {
         const _this = this;
 
-        return getCommand(str, _this.mapAliased, _this.keysAliased);
+        return getParsedCommand(str, _this.mapAliased, _this.keysAliased);
     }
     help(commandName) {
         const _this = this;
@@ -32,7 +32,7 @@ module.exports = class {
     get(commandName) {
         const _this = this;
 
-        return getByKey(commandName, _this.mapAliased, _this.keysAliased);
+        return getCommand(commandName, _this.mapAliased, _this.keysAliased);
     }
     set(commandName, command) {
         const _this = this;

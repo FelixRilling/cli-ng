@@ -3,7 +3,7 @@
 const similar = require("similar-strings");
 
 const getAliasedMap = require("./lib/getAliasedMap");
-const parseCommand = require("./lib/parseCommand");
+const mapCommand = require("./lib/mapCommand");
 const parseInput = require("./lib/parseInput");
 const matchArgs = require("./lib/matchArgs");
 
@@ -14,13 +14,13 @@ module.exports = class {
         _this.map = new Map();
 
         Object.keys(commands).forEach(key => {
-            const command = parseCommand(key, commands[key]);
+            const commandMapped = mapCommand(key, commands[key]);
 
-            _this.map.set(key, command);
+            _this.map.set(key, commandMapped);
         });
-        _this.updateAliased();
+        _this.updateAliasedMap();
     }
-    updateAliased() {
+    updateAliasedMap() {
         const _this = this;
 
         _this.mapAliased = getAliasedMap(_this.map);
@@ -28,10 +28,16 @@ module.exports = class {
     }
     setCommand(commandName, commandContent) {
         const _this = this;
-        const command = parseCommand(commandName, commandContent);
+        const commandMapped = mapCommand(commandName, commandContent);
 
-        _this.map.set(commandName, command);
-        _this.updateAliased();
+        _this.map.set(commandName, commandMapped);
+        _this.updateAliasedMap();
+    }
+    deleteCommand(commandName) {
+        const _this = this;
+
+        _this.map.delete(commandName);
+        _this.updateAliasedMap();
     }
     getCommand(commandName) {
         const _this = this;

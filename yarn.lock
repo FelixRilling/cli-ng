@@ -241,8 +241,8 @@ escope@^3.6.0:
     estraverse "^4.1.1"
 
 eslint@^3.15.0:
-  version "3.16.1"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.16.1.tgz#9bc31fc7341692cf772e80607508f67d711c5609"
+  version "3.17.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.17.0.tgz#e2704b09c5bae9fb49ee8bafeea3832c7257d498"
   dependencies:
     babel-code-frame "^6.16.0"
     chalk "^1.1.3"
@@ -453,8 +453,8 @@ is-fullwidth-code-point@^2.0.0:
   resolved "https://registry.yarnpkg.com/is-fullwidth-code-point/-/is-fullwidth-code-point-2.0.0.tgz#a3b30a5c4f199183167aaab93beefae3ddfb654f"
 
 is-my-json-valid@^2.10.0:
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/is-my-json-valid/-/is-my-json-valid-2.15.0.tgz#936edda3ca3c211fd98f3b2d3e08da43f7b2915b"
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/is-my-json-valid/-/is-my-json-valid-2.16.0.tgz#f079dd9bfdae65ee2038aae8acbc86ab109e3693"
   dependencies:
     generate-function "^2.0.0"
     generate-object-property "^1.1.0"
@@ -508,8 +508,8 @@ js-tokens@^3.0.0:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-3.0.1.tgz#08e9f132484a2c45a30907e9dc4d5567b7f114d7"
 
 js-yaml@^3.5.1:
-  version "3.8.1"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.8.1.tgz#782ba50200be7b9e5a8537001b7804db3ad02628"
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.8.2.tgz#02d3e2c0f6beab20248d412c352203827d786721"
   dependencies:
     argparse "^1.0.7"
     esprima "^3.1.1"
@@ -529,8 +529,8 @@ jsonpointer@^4.0.0:
   resolved "https://registry.yarnpkg.com/jsonpointer/-/jsonpointer-4.0.1.tgz#4fd92cb34e0e9db3c89c8622ecf51f9b978c6cb9"
 
 levenshtein-string-distance@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/levenshtein-string-distance/-/levenshtein-string-distance-1.4.0.tgz#7cf93582cae068e90e84c6b4982a7fcff35820c9"
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/levenshtein-string-distance/-/levenshtein-string-distance-1.4.1.tgz#51ac3e026492bfb8222cd71b7dd9c0760d66c2ce"
 
 levn@^0.3.0, levn@~0.3.0:
   version "0.3.0"
@@ -684,8 +684,8 @@ resolve-from@^1.0.0:
   resolved "https://registry.yarnpkg.com/resolve-from/-/resolve-from-1.0.1.tgz#26cbfe935d1aeeeabb29bc3fe5aeb01e93d44226"
 
 resolve@^1.1.6:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.3.1.tgz#5d0a1632609b6b00a22284293db1d5d973676314"
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.3.2.tgz#1f0442c9e0cbb8136e87b9305f932f46c7f28235"
   dependencies:
     path-parse "^1.0.5"
 
@@ -720,9 +720,9 @@ shelljs@^0.7.5:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
-similar-strings@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/similar-strings/-/similar-strings-1.2.0.tgz#6383aa51c7ff5ace120ab3c6cf14a5668a1a84e9"
+similar-strings@^1.4.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/similar-strings/-/similar-strings-1.3.0.tgz#97ac66c9207eca17b1c897922eea5fe443e6a038"
   dependencies:
     levenshtein-string-distance "^1.4.0"
 

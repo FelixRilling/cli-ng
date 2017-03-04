@@ -5,4 +5,6 @@ spec/
 node_modules/
 .DS_Store
 .editorconfig
+.eslintrc.json
 npm-debug.*
+yarn.lock

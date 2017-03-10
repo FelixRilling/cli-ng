@@ -8,3 +8,4 @@ node_modules/
 .eslintrc.json
 npm-debug.*
 yarn.lock
+test.js

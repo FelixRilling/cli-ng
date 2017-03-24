@@ -1,7 +1,6 @@
 "use strict";
 
 const similar = require("similar-strings");
-
 const getAliasedMap = require("./lib/getAliasedMap");
 const mapCommand = require("./lib/mapCommand");
 const parseInput = require("./lib/parseInput");
@@ -20,11 +19,11 @@ module.exports = class {
         });
         _this.updateAliasedMap();
     }
-    updateAliasedMap() {
+    deleteCommand(commandName) {
         const _this = this;
 
-        _this.mapAliased = getAliasedMap(_this.map);
-        _this.keysAliased = Array.from(_this.mapAliased.keys());
+        _this.map.delete(commandName);
+        _this.updateAliasedMap();
     }
     setCommand(commandName, commandContent) {
         const _this = this;
@@ -33,11 +32,11 @@ module.exports = class {
         _this.map.set(commandName, commandMapped);
         _this.updateAliasedMap();
     }
-    deleteCommand(commandName) {
+    updateAliasedMap() {
         const _this = this;
 
-        _this.map.delete(commandName);
-        _this.updateAliasedMap();
+        _this.mapAliased = getAliasedMap(_this.map);
+        _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
     getCommand(commandName) {
         const _this = this;

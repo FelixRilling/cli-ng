@@ -1,6 +1,6 @@
 "use strict";
 
-const Clingy = require("../index.js");
+const Clingy = require("./index.js");
 
 const cli = new Clingy({
     about: {
@@ -19,6 +19,7 @@ const cli = new Clingy({
         args: [{
             name: "number",
             type: "number",
+            default: "",
             required: true,
             help: "a number"
         }],
@@ -35,11 +36,13 @@ const cli = new Clingy({
         args: [{
             name: "a",
             type: "number",
+            default: "",
             required: true,
             help: "number 1"
         }, {
             name: "b",
             type: "number",
+            default: "",
             required: true,
             help: "number 2"
         }],
@@ -48,44 +51,25 @@ const cli = new Clingy({
             short: "Adds numbers",
             long: "Adds numbers and returns result"
         }
-    }
+    },
+    clap: {
+        fn: ()=>{},
+        alias: [],
+        args: [{
+            name: "text",
+            type: "string",
+            required: true,
+            help: "Text to clap"
+        }],
+        admin: false,
+        outputType: "text",
+        help: {
+            short: "Output a text clapped",
+            long: "Output a text clapped"
+        }
+    },
 });
 
-describe("Main test", function () {
+const result = cli.parse("clap   foo");
 
-    it("Basic get", function () {
-        const result = cli.getCommand("about");
-
-        expect(result.type).toBe("success");
-    });
-
-    it("Basic command", function () {
-        const result = cli.parse("about");
-
-        expect(result.type).toBe("success");
-    });
-
-    it("Basic command with redundant args", function () {
-        const result = cli.parse("about foo");
-
-        expect(result.type).toBe("success");
-    });
-
-    it("Advanced command with args", function () {
-        const result = cli.parse("double 2");
-
-        expect(result.type).toBe("success");
-    });
-
-    it("Advanced command without args", function () {
-        const result = cli.parse("double");
-
-        expect(result.type).toBe("error");
-    });
-
-    it("Advanced command with multiple args", function () {
-        const result = cli.parse("add 12 42");
-
-        expect(result.type).toBe("success");
-    });
-});
+console.log(result);

@@ -1,7 +1,7 @@
 {
     "name": "cli-ngy",
-    "version": "2.1.3",
-    "description": "A module to provide cli-like functionality",
+    "version": "3.0.0",
+    "description": "A module to parse cli-input",
     "main": "index.js",
     "author": "Felix Rilling",
     "license": "MIT",

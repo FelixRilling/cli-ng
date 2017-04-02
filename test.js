@@ -3,19 +3,11 @@
 const Clingy = require("./index.js");
 
 const cli = new Clingy({
-    about: {
-        fn: () => "About",
-        args: [],
-        alias: ["why", "?"],
-        help: {
-            short: "Shows Info",
-            long: "Shows Info about this app"
-        }
-    },
     double: {
         fn: (args) => {
             return args.number * 2;
         },
+        alias: ["getDouble"],
         args: [{
             name: "number",
             type: "number",
@@ -23,53 +15,39 @@ const cli = new Clingy({
             required: true,
             help: "a number"
         }],
-        alias: [],
         help: {
             short: "Doubles number",
             long: "Doubles number and returns result"
         }
-    },
+    }
+});
+
+cli.setCommand({
     add: {
         fn: (args) => {
-            return args.a + args.b;
+            return args.number1 + args.number2;
         },
+        alias: ["addNumbers", "sum"],
         args: [{
-            name: "a",
+            name: "number1",
             type: "number",
             default: "",
             required: true,
             help: "number 1"
         }, {
-            name: "b",
+            name: "number2",
             type: "number",
-            default: "",
-            required: true,
+            default: 0,
+            required: false,
             help: "number 2"
         }],
-        alias: ["addNumbers"],
         help: {
             short: "Adds numbers",
             long: "Adds numbers and returns result"
-        }
-    },
-    clap: {
-        fn: ()=>{},
-        alias: [],
-        args: [{
-            name: "text",
-            type: "string",
-            required: true,
-            help: "Text to clap"
-        }],
-        admin: false,
-        outputType: "text",
-        help: {
-            short: "Output a text clapped",
-            long: "Output a text clapped"
-        }
-    },
+        },
+    }
 });
 
-const result = cli.parse("clap   foo");
+const result = cli.parse("add");
 
 console.log(result);

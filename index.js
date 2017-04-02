@@ -2,34 +2,16 @@
 
 const similar = require("similar-strings");
 const getAliasedMap = require("./lib/getAliasedMap");
-const mapCommand = require("./lib/mapCommand");
+const mapCommandsToArray = require("./lib/mapCommandsToArray");
 const parseInput = require("./lib/parseInput");
 const matchArgs = require("./lib/matchArgs");
 
 module.exports = class {
-    constructor(commands) {
+    constructor(commandObj) {
         const _this = this;
+        const commandsArr = mapCommandsToArray(commandObj);
 
-        _this.map = new Map();
-
-        Object.keys(commands).forEach(key => {
-            const commandMapped = mapCommand(key, commands[key]);
-
-            _this.map.set(key, commandMapped);
-        });
-        _this.updateAliasedMap();
-    }
-    deleteCommand(commandName) {
-        const _this = this;
-
-        _this.map.delete(commandName);
-        _this.updateAliasedMap();
-    }
-    setCommand(commandName, commandContent) {
-        const _this = this;
-        const commandMapped = mapCommand(commandName, commandContent);
-
-        _this.map.set(commandName, commandMapped);
+        _this.map = new Map(commandsArr);
         _this.updateAliasedMap();
     }
     updateAliasedMap() {
@@ -38,6 +20,22 @@ module.exports = class {
         _this.mapAliased = getAliasedMap(_this.map);
         _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
+    deleteCommand(commandName) {
+        const _this = this;
+
+        _this.map.delete(commandName);
+        _this.updateAliasedMap();
+    }
+    setCommand(commandObj) {
+        const _this = this;
+        const commandsArr = mapCommandsToArray(commandObj);
+
+        commandsArr.forEach(command => {
+            _this.map.set(...command);
+        });
+
+        _this.updateAliasedMap();
+    }
     getCommand(commandName) {
         const _this = this;
 
@@ -45,19 +43,17 @@ module.exports = class {
             const command = _this.mapAliased.get(commandName);
 
             return {
-                type: "success",
-                data: {
-                    command: command,
-                    caller: commandName
-                }
+                success: true,
+                command: command,
+                caller: commandName
             };
         } else {
             const similarKeys = similar(commandName, _this.keysAliased);
 
             return {
-                type: "error",
-                data: {
-                    err: "missingCommand",
+                success: false,
+                errorr: {
+                    type: "missingCommand",
                     missing: commandName,
                     similar: similarKeys
                 }
@@ -68,33 +64,30 @@ module.exports = class {
         const _this = this;
 
         return {
-            type: "success",
-            data: {
-                map: _this.map,
-                mapAliased: _this.mapAliased,
-                keys: _this.keysAliased
-            }
+            map: _this.map,
+            mapAliased: _this.mapAliased,
+            keys: _this.keysAliased
         };
     }
     parse(str) {
         const _this = this;
         const parsedInput = parseInput(str);
         const result = _this.getCommand(parsedInput.name);
-        const command = result.data.command;
+        const command = result.command;
 
-        if (result.type === "success") {
+        if (result.success) {
             const argResult = matchArgs(command.args, parsedInput.args);
 
             if (argResult.missing.length > 0) { //returns error when not all args are present
                 return {
-                    type: "error",
-                    data: {
-                        err: "missingArg",
+                    success: false,
+                    error: {
+                        type: "missingArg",
                         missing: argResult.missing
                     }
                 };
             } else {
-                result.data.args = argResult.args;
+                result.args = argResult.args;
             }
         }
 

@@ -1,6 +1,6 @@
 # cli-ngy
 
-A module to provide cli-like functionality
+A module to parse cli-input
 
 ## Install
 

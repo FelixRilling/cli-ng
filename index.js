@@ -52,7 +52,7 @@ module.exports = class {
 
             return {
                 success: false,
-                errorr: {
+                error: {
                     type: "missingCommand",
                     missing: commandName,
                     similar: similarKeys

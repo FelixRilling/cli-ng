@@ -48,8 +48,9 @@ cli.setCommand({
     }
 });
 
-const result = cli.parse(`add 1
+const result = cli.parse(`add
+1
 
- "23"`);
+23`);
 
 console.log(result);

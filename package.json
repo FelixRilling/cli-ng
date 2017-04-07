@@ -1,6 +1,6 @@
 {
     "name": "cli-ngy",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "description": "A module to parse cli-input",
     "main": "index.js",
     "author": "Felix Rilling",
@@ -27,7 +27,7 @@
         "similar-strings": "^1.5.0"
     },
     "devDependencies": {
-        "eslint": "^3.15.0",
+        "eslint": "^3.19.0",
         "jasmine": "^2.5.3"
     },
     "optionalDependencies": {},

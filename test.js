@@ -3,22 +3,10 @@
 const Clingy = require("./index.js");
 
 const cli = new Clingy({
-    double: {
-        fn: (args) => {
-            return args.number * 2;
-        },
-        alias: ["getDouble"],
-        args: [{
-            name: "number",
-            type: "number",
-            default: "",
-            required: true,
-            help: "a number"
-        }],
-        help: {
-            short: "Doubles number",
-            long: "Doubles number and returns result"
-        }
+    hello:{
+        fn:()=>"Hello World!",
+        alias: ["helloworld", "hi"],
+        args: []
     }
 });
 
@@ -48,9 +36,6 @@ cli.setCommand({
     }
 });
 
-const result = cli.parse(`add
-1
-
-23`);
+const result = cli.parse("hello");
 
 console.log(result);

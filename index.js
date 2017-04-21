@@ -3,7 +3,7 @@
 const similar = require("similar-strings");
 const mapCommandsToArray = require("./lib/mapCommandsToArray.js");
 
-module.exports = class {
+module.exports =  class Clingy{
     constructor(commands) {
         const _this = this;
 
@@ -16,7 +16,6 @@ module.exports = class {
     updateAliases() {
         const _this = this;
         const result = new Map(_this.map);
-        console.log([result]);
 
         result.forEach(val => {
             val.alias.forEach(alias => {
@@ -45,7 +44,7 @@ module.exports = class {
     getCommand(commandName) {
         const _this = this;
 
-        if (_this.mapAliased.has(commandName)) {
+        /*if (_this.mapAliased.has(commandName)) {
             const command = _this.mapAliased.get(commandName);
 
             return {
@@ -64,7 +63,7 @@ module.exports = class {
                     similar: similarKeys
                 }
             };
-        }
+        }*/
     }
     getAll() {
         const _this = this;

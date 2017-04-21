@@ -1,40 +1,46 @@
 "use strict";
 
 const similar = require("similar-strings");
-const getAliasedMap = require("./lib/getAliasedMap");
-const mapCommandsToArray = require("./lib/mapCommandsToArray");
-const parseInput = require("./lib/parseInput");
-const matchArgs = require("./lib/matchArgs");
+const mapCommandsToArray = require("./lib/mapCommandsToArray.js");
 
 module.exports = class {
-    constructor(commandObj) {
+    constructor(commands) {
         const _this = this;
-        const commandsArr = mapCommandsToArray(commandObj);
 
-        _this.map = new Map(commandsArr);
-        _this.updateAliasedMap();
+        _this.map = new Map(mapCommandsToArray(commands));
+        _this.mapAliased = null;
+        _this.keysAliased = null;
+
+        _this.updateAliases();
     }
-    updateAliasedMap() {
+    updateAliases() {
         const _this = this;
+        const result = new Map(_this.map);
+        console.log([result]);
 
-        _this.mapAliased = getAliasedMap(_this.map);
-        _this.keysAliased = Array.from(_this.mapAliased.keys());
+        result.forEach(val => {
+            val.alias.forEach(alias => {
+                result.set(alias, val);
+            });
+        });
+
+        _this.mapAliased = result;
+        _this.keysAliased = Array.from(result.keys());
     }
     deleteCommand(commandName) {
         const _this = this;
 
         _this.map.delete(commandName);
-        _this.updateAliasedMap();
+        _this.updateAliases();
     }
-    setCommand(commandObj) {
+    setCommand(commands) {
         const _this = this;
-        const commandsArr = mapCommandsToArray(commandObj);
 
-        commandsArr.forEach(command => {
-            _this.map.set(...command);
+        mapCommandsToArray(commands).forEach(command => {
+            _this.map.set(command[0], command[1]);
         });
 
-        _this.updateAliasedMap();
+        _this.updateAliases();
     }
     getCommand(commandName) {
         const _this = this;
@@ -66,10 +72,10 @@ module.exports = class {
         return {
             map: _this.map,
             mapAliased: _this.mapAliased,
-            keys: _this.keysAliased
+            keysAliased: _this.keysAliased
         };
     }
-    parse(str) {
+    /*parse(str) {
         const _this = this;
         const parsedInput = parseInput(str);
         const result = _this.getCommand(parsedInput.name);
@@ -92,5 +98,5 @@ module.exports = class {
         }
 
         return result;
-    }
+    }*/
 };

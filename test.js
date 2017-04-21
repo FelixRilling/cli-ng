@@ -36,6 +36,6 @@ cli.setCommand({
     }
 });
 
-const result = cli.parse("hello");
+const result = cli;
 
 console.log(result);

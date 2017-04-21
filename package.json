@@ -1,6 +1,6 @@
 {
     "name": "cli-ngy",
-    "version": "4.0.0",
+    "version": "4.1.0",
     "description": "A module to parse cli-input",
     "main": "index.js",
     "scripts": {

@@ -5,7 +5,15 @@ const getAliasedMap = require("./lib/getAliasedMap");
 const parseInput = require("./lib/parseInput");
 const matchArgs = require("./lib/matchArgs");
 
+/**
+ * @class
+ * Cli-ngy class
+ */
 module.exports = class Clingy {
+    /**
+     * Creates Cli-ngy instance
+     * @param {Object} commands
+     */
     constructor(commands) {
         const _this = this;
         const entries = Object.entries(commands).map(command => {
@@ -26,6 +34,10 @@ module.exports = class Clingy {
         _this.mapAliased = getAliasedMap(_this.map);
         _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
+    /**
+     * Returns all internal maps
+     * @returns {Object}
+     */
     getAll() {
         const _this = this;
 
@@ -35,6 +47,12 @@ module.exports = class Clingy {
             keysAliased: _this.keysAliased
         };
     }
+    /**
+     * Recursiveley searches a command
+     * @param {Array} commandPath
+     * @param {Array} caller
+     * @returns {Object}
+     */
     getCommand(commandPath, caller = []) {
         const _this = this;
         const commandNameCurrent = commandPath[0]; //Current name to check
@@ -74,6 +92,11 @@ module.exports = class Clingy {
             };
         }
     }
+    /**
+     * Parses a cli-input string to command/args
+     * @param {String} str
+     * @returns {Object}
+     */
     parse(str) {
         const _this = this;
         const arrParsed = parseInput(str);
@@ -93,10 +116,10 @@ module.exports = class Clingy {
                     }
                 };
             } else {
-                commandLookup.args = argResult.args;
+                commandLookup.args = argResult.args; //Add args to result-object
             }
         }
 
-        return commandLookup; //If lookup error
+        return commandLookup; //This is either the error OR the success result-object
     }
 };

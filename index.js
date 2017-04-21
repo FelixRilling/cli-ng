@@ -16,7 +16,7 @@ module.exports = class Clingy {
             result.name = commandKey;
 
             if (result.sub) {
-                result.sub = new Clingy(result.sub);//Create a sub-instance for subgroups
+                result.sub = new Clingy(result.sub); //Create a sub-instance for subgroups
             }
 
             return [commandKey, result];
@@ -44,18 +44,20 @@ module.exports = class Clingy {
             const command = _this.mapAliased.get(commandNameCurrent);
             const commandPathNew = Array.from(commandPath).splice(1);
 
-            if (commandPath.length > 1 && command.sub instanceof Clingy) { //If more paths need to be checked, recurse
+            if (commandPath.length > 1 && command.sub) { //If more paths need to be checked, recurse
                 const commandSubResult = command.sub.getCommand(commandPathNew, callerNew);
 
-                return commandSubResult;
-            } else {
-                return {
-                    success: true,
-                    command: command,
-                    commandPath: callerNew,
-                    commandPathRemains: commandPathNew
-                };
+                if (commandSubResult.success) {
+                    return commandSubResult;
+                }
             }
+
+            return {
+                success: true,
+                command: command,
+                commandPath: callerNew,
+                commandPathRemains: commandPathNew
+            };
         } else {
             const similarKeys = similar(commandNameCurrent, _this.keysAliased);
 
@@ -92,11 +94,9 @@ module.exports = class Clingy {
                 };
             } else {
                 commandLookup.args = argResult.args;
-
-                return commandLookup;
             }
-        } else {
-            return commandLookup; //If lookup error
         }
+
+        return commandLookup; //If lookup error
     }
 };

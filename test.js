@@ -26,6 +26,6 @@ const cli = new Clingy({
     }
 });
 
-const result = cli.getCommand(["foo","bar"]);
+const result = cli.parse("foo");
 
 console.log(result);

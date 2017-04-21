@@ -3,6 +3,7 @@
 const similar = require("similar-strings");
 const getCommandMap = require("./lib/getCommandMap");
 const getAliasedMap = require("./lib/getAliasedMap");
+const parseInput = require("./lib/parseInput");
 
 module.exports = class Clingy {
     constructor(commands) {
@@ -28,9 +29,9 @@ module.exports = class Clingy {
 
         if (_this.keysAliased.includes(commandNameCurrent)) {
             const command = _this.mapAliased.get(commandNameCurrent);
+            const commandPathNew = Array.from(commandPath).splice(1);
 
-            if (commandPath.length > 1) { //If more paths need to be checked, recurse
-                const commandPathNew = Array.from(commandPath).splice(1);
+            if (commandPath.length > 1 && command.fn instanceof Clingy) { //If more paths need to be checked, recurse
                 const commandSubResult = command.fn.getCommand(commandPathNew, callerNew);
 
                 return commandSubResult;
@@ -38,7 +39,8 @@ module.exports = class Clingy {
                 return {
                     success: true,
                     command: command,
-                    caller: callerNew
+                    commandPath: callerNew,
+                    commandPathRemains: commandPathNew
                 };
             }
         } else {
@@ -49,16 +51,20 @@ module.exports = class Clingy {
                 error: {
                     type: "missingCommand",
                     missing: commandNameCurrent,
-                    similar: similarKeys
+                    similar: similarKeys,
+                },
+                command: {
+                    commandPath: callerNew
                 }
             };
         }
     }
-    /*parse(str) {
+    parse(str) {
         const _this = this;
-        const parsedInput = parseInput(str);
-        const result = _this.getCommand(parsedInput.name);
-        const command = result.command;
+        const arrParsed = parseInput(str);
+        const commandLookup = _this.getCommand(arrParsed);
+        //console.log(commandLookup);
+        /*const command = result.command;
 
         if (result.success) {
             const argResult = matchArgs(command.args, parsedInput.args);
@@ -74,8 +80,8 @@ module.exports = class Clingy {
             } else {
                 result.args = argResult.args;
             }
-        }
+        }*/
 
-        return result;
-    }*/
+        return commandLookup;
+    }
 };

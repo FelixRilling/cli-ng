@@ -1,25 +1,16 @@
 "use strict";
 
 const similar = require("similar-strings");
-const mapCommandsToArray = require("./lib/mapCommandsToArray.js");
-const aliasMap = require("./lib/aliasMap.js");
+const getCommandMap = require("./lib/getCommandMap");
+const getAliasedMap = require("./lib/getAliasedMap");
 
 module.exports = class Clingy {
     constructor(commands) {
         const _this = this;
 
-        _this.map = new Map(mapCommandsToArray(commands));
-        _this.mapAliased = null;
-        _this.keysAliased = null;
-
-        _this.updateAliases();
-    }
-    updateAliases() {
-        const _this = this;
-        const aliasedMap = aliasMap(_this.map);
-
-        _this.mapAliased = aliasedMap;
-        _this.keysAliased = Array.from(aliasedMap.keys());
+        _this.map = getCommandMap(commands);
+        _this.mapAliased = getAliasedMap(_this.map);
+        _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
     getAll() {
         const _this = this;

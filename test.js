@@ -5,27 +5,27 @@ const Clingy = require("./index.js");
 const cli = new Clingy({
     "hello": {
         fn: () => "Hello World!",
-        alias: ["helloworld", "hi"],
+        alias: ["hi"],
         args: []
     },
     "foo": {
         fn: new Clingy({
             "bar": {
                 fn: () => "Foo bar",
-                alias: ["helloworld", "hi"],
+                alias: [],
                 args: []
             },
             "buzz": {
                 fn: () => "Foo buzz",
-                alias: ["fob", "hi"],
+                alias: [],
                 args: []
             }
         }),
-        alias: ["fob", "fizz"],
+        alias: ["fizz"],
         args: []
     }
 });
 
-const result = cli;
+const result = cli.getCommand(["foo","bar"]);
 
 console.log(result);

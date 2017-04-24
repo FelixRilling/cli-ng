@@ -4,9 +4,9 @@
     "description": "A module to parse cli-input",
     "main": "index.js",
     "scripts": {
-        "start": "npm run lint && npm run test",
-        "lint": "./node_modules/.bin/eslint ./index.js",
-        "test": "./node_modules/.bin/jasmine"
+        "start": "npm-run-all lint test",
+        "lint": "eslint index.js lib/",
+        "test": "jasmine"
     },
     "repository": {
         "type": "git",
@@ -28,6 +28,7 @@
     },
     "devDependencies": {
         "eslint": "^3.19.0",
-        "jasmine": "^2.5.3"
+        "jasmine": "^2.5.3",
+        "npm-run-all": "^4.0.2"
     }
 }

@@ -6,8 +6,8 @@ const parseInput = require("./lib/parseInput");
 const matchArgs = require("./lib/matchArgs");
 
 /**
- * @class
  * Cli-ngy class
+ * @class
  */
 module.exports = class Clingy {
     /**

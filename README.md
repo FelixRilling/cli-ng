@@ -112,4 +112,59 @@ cli.parse("double 10");
 */
 ```
 
-### Nested instances
+### Nested commands
+
+Cli-ngy supports subcommands and command groups:
+
+```js
+const cli = new Clingy({
+    about: {
+        fn: () => "About",
+        args: [],
+        alias: ["why", "?"],
+    },
+    myGroup: {
+        fn: () => "Group fn",
+        args: [],
+        alias: ["group"],
+        sub: {
+            foo: {
+                fn: () => "Group subcommand 1",
+                args: [],
+                alias: ["fizz"]
+            },
+            bar: {
+                fn: () => "Group subcommand 2",
+                args: [],
+                alias: ["baaa"]
+            }
+        }
+    }
+});
+```
+
+Which can be accessed:
+
+And then
+
+```js
+cli.parse("myGroup foo"); //or with aliases: cli.parse("group foo"); or cli.parse("group fizz");
+
+/*
+ * Returns:
+ 
+{
+    success: true,
+    command: {
+        fn: [Function: fn],
+        args: [],
+        alias:
+        [ 'fizz' ],
+        name: 'foo'
+    },
+    commandPath: [ 'myGroup', 'foo' ],
+    commandPathRemains: [],
+    args: {}
+}
+*/
+```

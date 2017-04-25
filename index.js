@@ -7,12 +7,12 @@ const parseInput = require("./lib/parseInput");
 const matchArgs = require("./lib/matchArgs");
 
 /**
- * Cli-ngy class
+ * Clingy class
  * @class
  */
 module.exports = class Clingy {
     /**
-     * Creates Cli-ngy instance
+     * Creates Clingy instance
      * @param {Object} commands
      */
     constructor(commands) {
@@ -23,7 +23,7 @@ module.exports = class Clingy {
         _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
     /**
-     * Returns all internal maps
+     * Returns all internal maps and keys
      * @returns {Object}
      */
     getAll() {
@@ -81,7 +81,7 @@ module.exports = class Clingy {
         }
     }
     /**
-     * Parses a cli-input string to command/args
+     * Parses a cli-input-string to command and args
      * @param {String} str
      * @returns {Object}
      */

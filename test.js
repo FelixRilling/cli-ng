@@ -3,28 +3,31 @@
 const Clingy = require("./index.js");
 
 const cli = new Clingy({
-    //Tag
-    foo: {
-        fn: () => {},
-        alias: ["baa"],
-        args: [],
+    double:{
+        fn: args => args.numberToDouble * 2,
+        alias: ["doublenumber"],
+        args: [{
+            name: "numberToDouble", //Name/id of the variable prop
+            type: "number", //Type, can be "string", "number", or "boolean"
+            required: true //If this is true, the cli will return an error if no argument is present
+        }]
     },
-    bar: {
-        fn: () => {},
+    add:{
+        fn: args => args.number1 +  args.number2,
         alias: [],
         args: [{
-            name: "key",
-            type: "string",
-            required: true,
-        }, {
-            name: "args",
-            type: "string",
+            name: "number1", //Name/id of the variable prop
+            type: "number", //Type, can be "string", "number", or "boolean"
+            required: true //If this is true, the cli will return an error if no argument is present
+        },{
+            name: "number2",
+            type: "number",
             required: false,
-            default: "",
-        }],
-    },
-});
+            default: 1
+        }]
+    }
+})
 
-const result = cli.getAll();
+const result = cli.parse("double 10");
 
 console.log(result);

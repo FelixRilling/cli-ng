@@ -1,6 +1,6 @@
 # cli-ngy
 
-A module to parse cli-input
+A module to manage cli-input-text and commands
 
 ## Install
 
@@ -57,15 +57,10 @@ The same result would be achieved by `cli.parse("hi");` as well, as we registere
 
 ### Command with arguments
 
-If we expand the first example with a command that uses arguments, it could look like this:
+You can define which arguments whould be parsed with the command
 
 ```js
 const cli = new Clingy({
-    hello:{
-        fn:()=>"Hello World!",
-        alias: ["helloworld", "hi"],
-        args: []
-    },
     double:{
         fn: args => args.numberToDouble * 2,
         alias: ["doublenumber"],
@@ -74,6 +69,47 @@ const cli = new Clingy({
             type: "number", //Type, can be "string", "number", or "boolean"
             required: true //If this is true, the cli will return an error if no argument is present
         }]
+    },
+    add:{
+        fn: args => args.number1 +  args.number2,
+        alias: [],
+        args: [{
+            name: "number1", //Name/id of the variable prop
+            type: "number", //Type, can be "string", "number", or "boolean"
+            required: true //If this is true, the cli will return an error if no argument is present
+        },{
+            name: "number2",
+            type: "number", 
+            required: false,
+            default: 1
+        }]
     }
 })
 ```
+And then
+
+```js
+cli.parse("double 10");
+
+/*
+ * Returns:
+ 
+{
+    success: true,
+    command:
+    {
+        fn: [Function: fn],
+        alias: [ 'doublenumber' ],
+        args: [ [Object] ],
+        name: 'double'
+    },
+  commandPath: [ 'double' ],
+  commandPathRemains: [ '10' ],
+  args: {
+      numberToDouble: 10
+      }
+}
+*/
+```
+
+### Nested instances

@@ -23,8 +23,8 @@ Init a new instance with a "hello" command:
 
 ```js
 const cli = new Clingy({
-    hello:{
-        fn:()=>"Hello World!", //Command function
+    hello: {
+        fn: () => "Hello World!", //Command function
         alias: ["helloworld", "hi"], //Array of aliases
         args: [] //Array of argument objects
     }

@@ -1,6 +1,7 @@
 "use strict";
 
 const similar = require("similar-strings");
+const mapCommands = require("./lib/mapCommands");
 const getAliasedMap = require("./lib/getAliasedMap");
 const parseInput = require("./lib/parseInput");
 const matchArgs = require("./lib/matchArgs");
@@ -16,21 +17,8 @@ module.exports = class Clingy {
      */
     constructor(commands) {
         const _this = this;
-        const entries = Object.entries(commands).map(command => {
-            const commandKey = command[0];
-            const commandValue = command[1];
-            const result = Object.assign({}, commandValue);
 
-            result.name = commandKey;
-
-            if (result.sub) {
-                result.sub = new Clingy(result.sub); //Create a sub-instance for subgroups
-            }
-
-            return [commandKey, result];
-        });
-
-        _this.map = new Map(entries);
+        _this.map = mapCommands(commands, Clingy);
         _this.mapAliased = getAliasedMap(_this.map);
         _this.keysAliased = Array.from(_this.mapAliased.keys());
     }

@@ -25,6 +25,9 @@ const cli = new Clingy({
             }
         }
     }
+},{
+    caseSensitive: true,
+    suggestSimilar: true
 });
 
 const result = cli.parse("myGroup foo");

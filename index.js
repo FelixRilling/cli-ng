@@ -1,10 +1,16 @@
 "use strict";
 
 const similar = require("similar-strings");
+const _merge = require("lodash/merge");
 const mapCommands = require("./lib/mapCommands");
 const getAliasedMap = require("./lib/getAliasedMap");
 const parseInput = require("./lib/parseInput");
 const matchArgs = require("./lib/matchArgs");
+
+const optionsDefault = {
+    caseSensitive: true,
+    suggestSimilar: true
+};
 
 /**
  * Clingy class
@@ -15,10 +21,11 @@ module.exports = class Clingy {
      * Creates Clingy instance
      * @param {Object} commands
      */
-    constructor(commands) {
+    constructor(commands, options) {
         const _this = this;
 
-        _this.map = mapCommands(commands, Clingy);
+        _this.options = _merge(optionsDefault, options);
+        _this.map = mapCommands(commands, Clingy, _this.options);
         _this.mapAliased = getAliasedMap(_this.map);
         _this.keysAliased = Array.from(_this.mapAliased.keys());
     }
@@ -43,10 +50,10 @@ module.exports = class Clingy {
      */
     getCommand(commandPath, caller = []) {
         const _this = this;
-        const commandNameCurrent = commandPath[0]; //Current name to check
+        const commandNameCurrent = _this.options.caseSensitive ? commandPath[0] : commandPath[0].toLowerCase();
         const callerNew = [...caller, commandNameCurrent]; //Add current name to caller chain
 
-        if (_this.keysAliased.includes(commandNameCurrent)) {
+        if (_this.mapAliased.has(commandNameCurrent)) {
             const command = _this.mapAliased.get(commandNameCurrent);
             const commandPathNew = Array.from(commandPath).splice(1);
 
@@ -65,19 +72,25 @@ module.exports = class Clingy {
                 commandPathRemains: commandPathNew
             };
         } else {
-            const similarKeys = similar(commandNameCurrent, _this.keysAliased);
-
-            return {
+            /**
+             * Throw if the command cant be found
+             */
+            const result = {
                 success: false,
                 error: {
                     type: "missingCommand",
                     missing: commandNameCurrent,
-                    similar: similarKeys,
                 },
                 command: {
                     commandPath: callerNew
                 }
             };
+
+            if (_this.options.suggestSimilar) {
+                result.error.similar = similar(commandNameCurrent, _this.keysAliased);
+            }
+
+            return result;
         }
     }
     /**

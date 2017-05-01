@@ -683,7 +683,7 @@ lodash.merge@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.0.tgz#69884ba144ac33fe699737a6086deffadd0f89c5"
 
-lodash@^4.0.0, lodash@^4.3.0:
+lodash@^4.0.0, lodash@^4.17.4, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -959,7 +959,7 @@ shelljs@^0.7.5:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
-similar-strings@^1.6.0:
+similar-strings@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/similar-strings/-/similar-strings-1.6.1.tgz#c040ba123ce20ed1c0a07c969e5b5178d65a5ee5"
   dependencies:

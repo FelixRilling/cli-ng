@@ -22,6 +22,7 @@ yarn add cli-ngy --save
 Init a new instance with a "hello" command:
 
 ```js
+//Clingy(commands,options)
 const cli = new Clingy({
     hello: {
         fn: () => "Hello World!", //Command function
@@ -29,6 +30,13 @@ const cli = new Clingy({
         args: [] //Array of argument objects
     }
 })
+
+/*
+ * Commands must be an object with command props
+ * Options is optional, must be an object with valid options:
+        caseSensitive: true,
+        suggestSimilar: true
+*/
 ```
 
 then parse input

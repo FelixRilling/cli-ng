@@ -1,7 +1,8 @@
 "use strict";
 
-const similar = require("similar-strings");
 const _merge = require("lodash/merge");
+const similar = require("similar-strings");
+
 const mapCommands = require("./lib/mapCommands");
 const getAliasedMap = require("./lib/getAliasedMap");
 const parseInput = require("./lib/parseInput");

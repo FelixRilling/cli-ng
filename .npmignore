@@ -11,4 +11,3 @@ bower_components/
 npm-debug.*
 test/
 spec/
-test.js

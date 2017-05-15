@@ -1,6 +1,6 @@
 {
   "name": "cli-ngy",
-  "version": "4.5.1",
+  "version": "4.5.2",
   "description": "A module to manage cli-input-text and commands",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,7 @@
   "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
   "dependencies": {
     "lodash": "^4.17.4",
-    "similar-strings": "^1.6.1"
+    "similar-strings": "^1.6.2"
   },
   "devDependencies": {
     "eslint": "^3.19.0",

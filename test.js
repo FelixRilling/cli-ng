@@ -30,4 +30,4 @@ const cli = new Clingy({
 
 //const result = cli.parse("myGroup foo");
 
-console.log(cli.getCommand(["fooArgs"]));
+console.log(cli.getCommand(["group","foso"]));

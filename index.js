@@ -20,7 +20,8 @@ const optionsDefault = {
 module.exports = class Clingy {
     /**
      * Creates Clingy instance
-     * @param {Object} commands
+     * @param {Object} commands Command object
+     * @param {Object} options Option object
      */
     constructor(commands, options) {
         const _this = this;
@@ -45,21 +46,35 @@ module.exports = class Clingy {
     }
     /**
      * Recursiveley searches a command
-     * @param {Array} commandPath
-     * @param {Array} caller
+     * @param {Array} commandPath Array of strings indicating the path to get
+     * @param {Array=} commandPathUsed Array of strings indicating the path that was taken so far
      * @returns {Object}
      */
-    getCommand(commandPath, caller = []) {
+    getCommand(commandPath, commandPathUsed = []) {
         const _this = this;
+        const commandPathUsedNew = commandPathUsed;
         const commandNameCurrent = _this.options.caseSensitive ? commandPath[0] : commandPath[0].toLowerCase();
-        const callerNew = [...caller, commandNameCurrent]; //Add current name to caller chain
 
+        /**
+         * Flow:
+         *   Exists in current layer?
+         *      true-> Has more path entries and contains sub-groups?
+         *          true-> Is sub-group getCommand successful?
+         *              true-> Return sub-group result
+         *              false-> Return current result
+         *          false-> Return current result
+         *      false-> Return Error
+         */
         if (_this.mapAliased.has(commandNameCurrent)) {
             const command = _this.mapAliased.get(commandNameCurrent);
-            const commandPathNew = Array.from(commandPath).splice(1);
+            const commandPathNew = commandPath.slice(1);
 
-            if (commandPath.length > 1 && command.sub) { //If more paths need to be checked, recurse
-                const commandSubResult = command.sub.getCommand(commandPathNew, callerNew);
+            //Add to used path
+            commandPathUsedNew.push(commandNameCurrent);
+
+            //Recurse into sub if requested
+            if (commandPath.length > 1 && command.sub !== null) { //If more paths need to be checked, recurse
+                const commandSubResult = command.sub.getCommand(commandPathNew, commandPathUsedNew);
 
                 if (commandSubResult.success) {
                     return commandSubResult;
@@ -69,29 +84,21 @@ module.exports = class Clingy {
             return {
                 success: true,
                 command: command,
-                commandPath: callerNew,
+                commandPath: commandPathUsedNew,
                 commandPathRemains: commandPathNew
             };
         } else {
-            /**
-             * Throw if the command cant be found
-             */
-            const result = {
+            return {
                 success: false,
                 error: {
                     type: "missingCommand",
                     missing: commandNameCurrent,
+                    similar: _this.options.suggestSimilar ? similar(commandNameCurrent, _this.keysAliased) : []
                 },
                 command: {
-                    commandPath: callerNew
+                    commandPath: commandPathUsedNew
                 }
             };
-
-            if (_this.options.suggestSimilar) {
-                result.error.similar = similar(commandNameCurrent, _this.keysAliased);
-            }
-
-            return result;
         }
     }
     /**

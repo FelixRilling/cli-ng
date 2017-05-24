@@ -10,7 +10,7 @@ const cli = new Clingy({
     fooArgs: {
         fn: args => "bar" + args.foo,
         args: [{
-            id: "foo",
+            name: "foo",
             required: true
         }],
     },
@@ -30,4 +30,4 @@ const cli = new Clingy({
 
 //const result = cli.parse("myGroup foo");
 
-console.log(cli.getCommand(["group"]));
+console.log(cli.getCommand(["fooArgs"]));

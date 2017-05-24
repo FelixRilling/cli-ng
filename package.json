@@ -1,7 +1,7 @@
 {
   "name": "cli-ngy",
   "version": "5.0.0",
-  "description": "A module to manage cli-input-text and commands",
+  "description": "A module to parse cli-input text and commands",
   "main": "index.js",
   "scripts": {
     "start": "npm-run-all lint test",

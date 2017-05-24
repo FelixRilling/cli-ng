@@ -90,9 +90,7 @@ module.exports = class Clingy {
                     missing: commandNameCurrent,
                     similar: _this.options.suggestSimilar ? similar(commandNameCurrent, _this.keysAliased) : []
                 },
-                command: {
-                    commandPath: commandPathUsedNew
-                }
+                commandPath: commandPathUsedNew
             };
         }
     }

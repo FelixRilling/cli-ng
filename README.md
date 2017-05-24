@@ -1,19 +1,6 @@
 # cli-ngy
 
-A module to manage cli-input-text and commands
-
-## Install
-
-npm:
-
-```shell
-npm install cli-ngy --save
-```
-yarn:
-
-```shell
-yarn add cli-ngy --save
-```
+A module to parse cli-input text and commands.
 
 ## Usage
 
@@ -51,13 +38,31 @@ cli.parse("hello");
     success: true,
     command: {
         fn: [Function: fn],
-        alias: [ 'helloworld', 'hi'],
+        alias: ["helloworld", "hi"],
         args: [],
-        name: 'hello'
+        name: "hello"
     },
-    caller: 'hello',
-    args: {}
+    commandPath: ["hello",
+    commandPathRemains: []
+    args: {
+        _all:[]
+    }
   } 
+*/
+
+cli.parse("foo");
+
+/*
+ * Returns:
+ 
+{
+    success: false,
+    error: {
+        type: "missingCommand",
+        missing: "foo",
+        similar: []
+    },
+  commandPath: []
 */
 ```
 
@@ -74,7 +79,6 @@ const cli = new Clingy({
         alias: ["doublenumber"],
         args: [{
             name: "numberToDouble", //Name/id of the variable prop
-            type: "number", //Type, can be "string", "number", or "boolean"
             required: true //If this is true, the cli will return an error if no argument is present
         }]
     },
@@ -83,13 +87,11 @@ const cli = new Clingy({
         alias: [],
         args: [{
             name: "number1", //Name/id of the variable prop
-            type: "number", //Type, can be "string", "number", or "boolean"
             required: true //If this is true, the cli will return an error if no argument is present
         },{
             name: "number2",
-            type: "number", 
             required: false,
-            default: 1
+            default: "1"
         }]
     }
 })
@@ -107,14 +109,39 @@ cli.parse("double 10");
     command:
     {
         fn: [Function: fn],
-        alias: [ 'doublenumber' ],
+        alias: ["doublenumber"],
         args: [ [Object] ],
-        name: 'double'
+        name: "double"
     },
-  commandPath: [ 'double' ],
-  commandPathRemains: [ '10' ],
+  commandPath: ["double"],
+  commandPathRemains: ["10"],
   args: {
-      numberToDouble: 10
+      _all:["10"]
+      numberToDouble: "10"
+      }
+}
+*/
+
+cli.parse("add 4");
+
+/*
+ * Returns:
+ 
+{
+    success: true,
+    command:
+    {
+        fn: [Function: fn],
+        alias: [],
+        args: [ [Object] ],
+        name: "add"
+    },
+  commandPath: ["add"],
+  commandPathRemains: ["4"],
+  args: {
+      _all:["4"]
+      number1: "4",
+      number2: "1"
       }
 }
 */
@@ -151,9 +178,7 @@ const cli = new Clingy({
 });
 ```
 
-Which can be accessed:
-
-And then
+Which can be accessed with
 
 ```js
 cli.parse("myGroup foo"); //or with aliases: cli.parse("group foo"); or cli.parse("group fizz");
@@ -167,12 +192,14 @@ cli.parse("myGroup foo"); //or with aliases: cli.parse("group foo"); or cli.pars
         fn: [Function: fn],
         args: [],
         alias:
-        [ 'fizz' ],
-        name: 'foo'
+        ["fizz"],
+        name: "foo"
     },
-    commandPath: [ 'myGroup', 'foo' ],
+    commandPath: ["myGroup", "foo"],
     commandPathRemains: [],
-    args: {}
+    args: {
+        _all:[]
+    }
 }
 */
 ```

@@ -25,6 +25,6 @@ const cli = new Clingy({
     }
 });
 
-const result = cli.parse("fooArgs a a");
+const result = cli.parse("aaa")
 
-console.log(result.args);
+console.log(result);

@@ -23,11 +23,8 @@ const cli = new Clingy({
             }
         }
     }
-}, {
-    caseSensitive: true,
-    suggestSimilar: true
 });
 
-//const result = cli.parse("myGroup foo");
+const result = cli.parse("fooArgs a a");
 
-console.log(cli.getCommand(["group","foso"]));
+console.log(result.args);

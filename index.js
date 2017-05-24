@@ -1,17 +1,12 @@
 "use strict";
 
-const _merge = require("lodash/merge");
 const similar = require("similar-strings");
 
+const mapOptions = require("./lib/mapOptions");
 const mapCommands = require("./lib/mapCommands");
+const mapArgs = require("./lib/mapArgs");
 const getAliasedMap = require("./lib/getAliasedMap");
 const parseInput = require("./lib/parseInput");
-const matchArgs = require("./lib/matchArgs");
-
-const optionsDefault = {
-    caseSensitive: true,
-    suggestSimilar: true
-};
 
 /**
  * Clingy class
@@ -26,7 +21,7 @@ module.exports = class Clingy {
     constructor(commands, options) {
         const _this = this;
 
-        _this.options = _merge(optionsDefault, options);
+        _this.options = mapOptions(options);
         _this.map = mapCommands(commands, Clingy, _this.options);
         _this.mapAliased = getAliasedMap(_this.map);
         _this.keysAliased = Array.from(_this.mapAliased.keys());
@@ -103,32 +98,38 @@ module.exports = class Clingy {
     }
     /**
      * Parses a cli-input-string to command and args
-     * @param {String} str
+     * @param {String} input
      * @returns {Object}
      */
-    parse(str) {
+    parse(input) {
         const _this = this;
-        const arrParsed = parseInput(str);
-        const commandLookup = _this.getCommand(arrParsed);
+        const inputParsed = parseInput(input);
+        const commandLookup = _this.getCommand(inputParsed);
         const command = commandLookup.command;
         const args = commandLookup.commandPathRemains;
 
         if (commandLookup.success) {
-            const argResult = matchArgs(command.args, args);
+            const argsMapped = mapArgs(command.args, args);
 
-            if (argResult.missing.length > 0) { //returns error when not all args are present
+            if (argsMapped.missing.length !== 0) {
+                //Error:Missing arguments
                 return {
                     success: false,
                     error: {
                         type: "missingArg",
-                        missing: argResult.missing
+                        missing: argsMapped.missing
                     }
                 };
             } else {
-                commandLookup.args = argResult.args; //Add args to result-object
-            }
-        }
+                //Add args to result-object
+                commandLookup.args = argsMapped.args;
 
-        return commandLookup; //This is either the error OR the success result-object
+                //Success
+                return commandLookup;
+            }
+        } else {
+            //Error:Command not found
+            return commandLookup;
+        }
     }
 };

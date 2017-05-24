@@ -3,33 +3,31 @@
 const Clingy = require("./index.js");
 
 const cli = new Clingy({
-    about: {
-        fn: () => "About",
-        args: [],
-        alias: ["why", "?"],
+    foo: {
+        fn: () => "bar",
+        alias: ["fizz"],
     },
-    myGroup: {
+    fooArgs: {
+        fn: args => "bar" + args.foo,
+        args: [{
+            id: "foo",
+            required: true
+        }],
+    },
+    group: {
         fn: () => "Group fn",
-        args: [],
-        alias: ["group"],
         sub: {
             foo: {
-                fn: () => "Group subcommand 1",
-                args: [],
-                alias: ["fizz"]
-            },
-            bar: {
-                fn: () => "Group subcommand 2",
-                args: [],
-                alias: ["baaa"]
+                fn: () => "bar",
+                alias: ["fizz"],
             }
         }
     }
-},{
+}, {
     caseSensitive: true,
     suggestSimilar: true
 });
 
-const result = cli.parse("myGroup foo");
+//const result = cli.parse("myGroup foo");
 
-console.log(result);
+console.log(cli.getCommand(["group"]));

@@ -37,6 +37,7 @@ npm-debug.*
 # Dev Files
 .git/
 docs/
+tasks/
 spec/
 test/
 test*.js

@@ -37,13 +37,13 @@ module.exports = class Clingy {
     }
     /**
      * Recursiveley searches a command
-     * @param {Array} commandPath Array of strings indicating the path to get
-     * @param {Array=} commandPathUsed Array of strings indicating the path that was taken so far
+     * @param {Array} path Array of strings indicating the path to get
+     * @param {Array=} pathUsed Array of strings indicating the path that was taken so far
      * @returns {Object}
      */
-    getCommand(commandPath, commandPathUsed = []) {
-        const commandPathUsedNew = commandPathUsed;
-        const commandNameCurrent = this.options.lookup.namesAreCaseSensitive ? commandPath[0] : commandPath[0].toLowerCase();
+    getCommand(path, pathUsed = []) {
+        const pathUsedNew = pathUsed;
+        const commandNameCurrent = this.options.lookup.namesAreCaseSensitive ? path[0] : path[0].toLowerCase();
 
         /**
          * Flow:
@@ -57,14 +57,14 @@ module.exports = class Clingy {
          */
         if (this.mapAliased.has(commandNameCurrent)) {
             const command = this.mapAliased.get(commandNameCurrent);
-            const commandPathNew = commandPath.slice(1);
+            const commandPathNew = path.slice(1);
 
             //Add to used path
-            commandPathUsedNew.push(commandNameCurrent);
+            pathUsedNew.push(commandNameCurrent);
 
             //Recurse into sub if requested
-            if (commandPath.length > 1 && command.sub !== null) { //If more paths need to be checked, recurse
-                const commandSubResult = command.sub.getCommand(commandPathNew, commandPathUsedNew);
+            if (path.length > 1 && command.sub !== null) { //If more paths need to be checked, recurse
+                const commandSubResult = command.sub.getCommand(commandPathNew, pathUsedNew);
 
                 if (commandSubResult.success) {
                     return commandSubResult;
@@ -74,7 +74,7 @@ module.exports = class Clingy {
             return {
                 success: true,
                 command: command,
-                path: commandPathUsedNew,
+                path: pathUsedNew,
                 pathDangling: commandPathNew
             };
         } else {
@@ -85,7 +85,7 @@ module.exports = class Clingy {
                     missing: commandNameCurrent,
                     similar: similar(commandNameCurrent, this.keysAliased)
                 },
-                path: commandPathUsedNew
+                path: pathUsedNew
             };
         }
     }
@@ -95,7 +95,7 @@ module.exports = class Clingy {
      * @returns {Object}
      */
     parse(input) {
-        const inputParsed = parseInput(input);
+        const inputParsed = parseInput(input, this.options.parser);
         const commandLookup = this.getCommand(inputParsed);
         const command = commandLookup.command;
         const args = commandLookup.pathDangling;

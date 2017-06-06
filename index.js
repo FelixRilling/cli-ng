@@ -19,24 +19,20 @@ module.exports = class Clingy {
      * @param {Object} options Option object
      */
     constructor(commands, options) {
-        const _this = this;
-
-        _this.options = mapOptions(options);
-        _this.map = mapCommands(commands, Clingy, _this.options);
-        _this.mapAliased = getAliasedMap(_this.map);
-        _this.keysAliased = Array.from(_this.mapAliased.keys());
+        this.options = mapOptions(options);
+        this.map = mapCommands(commands, Clingy, this.options);
+        this.mapAliased = getAliasedMap(this.map);
+        this.keysAliased = Array.from(this.mapAliased.keys());
     }
     /**
      * Returns all internal maps and keys
      * @returns {Object}
      */
     getAll() {
-        const _this = this;
-
         return {
-            map: _this.map,
-            mapAliased: _this.mapAliased,
-            keysAliased: _this.keysAliased
+            map: this.map,
+            mapAliased: this.mapAliased,
+            keysAliased: this.keysAliased
         };
     }
     /**
@@ -46,9 +42,8 @@ module.exports = class Clingy {
      * @returns {Object}
      */
     getCommand(commandPath, commandPathUsed = []) {
-        const _this = this;
         const commandPathUsedNew = commandPathUsed;
-        const commandNameCurrent = _this.options.caseSensitive ? commandPath[0] : commandPath[0].toLowerCase();
+        const commandNameCurrent = this.options.caseSensitive ? commandPath[0] : commandPath[0].toLowerCase();
 
         /**
          * Flow:
@@ -60,8 +55,8 @@ module.exports = class Clingy {
          *          false-> Return current result
          *      false-> Return Error
          */
-        if (_this.mapAliased.has(commandNameCurrent)) {
-            const command = _this.mapAliased.get(commandNameCurrent);
+        if (this.mapAliased.has(commandNameCurrent)) {
+            const command = this.mapAliased.get(commandNameCurrent);
             const commandPathNew = commandPath.slice(1);
 
             //Add to used path
@@ -88,7 +83,7 @@ module.exports = class Clingy {
                 error: {
                     type: "missingCommand",
                     missing: commandNameCurrent,
-                    similar: _this.options.suggestSimilar ? similar(commandNameCurrent, _this.keysAliased) : []
+                    similar: similar(commandNameCurrent, this.keysAliased)
                 },
                 commandPath: commandPathUsedNew
             };
@@ -100,9 +95,8 @@ module.exports = class Clingy {
      * @returns {Object}
      */
     parse(input) {
-        const _this = this;
         const inputParsed = parseInput(input);
-        const commandLookup = _this.getCommand(inputParsed);
+        const commandLookup = this.getCommand(inputParsed);
         const command = commandLookup.command;
         const args = commandLookup.commandPathRemains;
 

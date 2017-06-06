@@ -9,7 +9,7 @@ A module to parse cli-input text and commands.
 Init a new instance with a "hello" command:
 
 ```js
-//Clingy(commands,options)
+//new Clingy(commands, options)
 const cli = new Clingy({
     hello: {
         fn: () => "Hello World!", //Command function
@@ -17,13 +17,39 @@ const cli = new Clingy({
         args: [] //Array of argument objects
     }
 })
-
+```
+```js
 /*
- * Commands must be an object with command props
- * Options is optional, must be an object with valid options:
-        caseSensitive: true,
-        suggestSimilar: true
-*/
+ * Commands: Must be an object with command props
+ * Options:
+ */
+    {
+        /**
+         * Options for Lookup (Resolving a command from a string)
+         */
+        lookup: {
+            /**
+             * If names should be treated case-sensitive for lookup
+             */
+            namesAreCaseSensitive: true
+        },
+        /**
+         * Options for Parser (Getting an Array of name/arg strings from a String)
+         */
+        parser: {
+            /**
+             * If strings containing spaces should be kept together when enclosed in quotes.
+             * true:    'hello world "foo bar"' => ["hello", "world", "foo bar"]
+             * false:   'hello world "foo bar"' => ["hello", "world", "\"foo", "bar\""]
+             */
+            allowQuotedStrings: true,
+            /**
+             * [Only works with allowQuotedStrings=true]
+             * List of characters to support enclosing quotedStrings for
+             */
+            validQuotes: ["\""],
+        }
+    }
 ```
 
 then parse input
@@ -33,7 +59,7 @@ cli.parse("hello");
 
 /*
  * Returns:
- 
+ */
  {
     success: true,
     command: {
@@ -42,19 +68,20 @@ cli.parse("hello");
         args: [],
         name: "hello"
     },
-    commandPath: ["hello",
-    commandPathRemains: []
+    path: ["hello",
+    pathDangling: []
     args: {
         _all:[]
     }
   } 
-*/
+```
 
+```js
 cli.parse("foo");
 
 /*
  * Returns:
- 
+ */
 {
     success: false,
     error: {
@@ -62,11 +89,11 @@ cli.parse("foo");
         missing: "foo",
         similar: []
     },
-  commandPath: []
-*/
+    path: []
+}
 ```
 
-The same result would be achieved by `cli.parse("hi");` as well, as we registered that as alias.
+The same result would be achieved by `cli.parse("hi");` as well, as we registered it as alias.
 
 ### Command with arguments
 
@@ -78,7 +105,7 @@ const cli = new Clingy({
         fn: args => args.numberToDouble * 2,
         alias: ["doublenumber"],
         args: [{
-            name: "numberToDouble", //Name/id of the variable prop
+            name: "numberToDouble", //name of the property in the args object
             required: true //If this is true, the cli will return an error if no argument is present
         }]
     },
@@ -86,11 +113,11 @@ const cli = new Clingy({
         fn: args => args.number1 +  args.number2,
         alias: [],
         args: [{
-            name: "number1", //Name/id of the variable prop
-            required: true //If this is true, the cli will return an error if no argument is present
+            name: "number1",
+            required: true 
         },{
             name: "number2",
-            required: false,
+            required: false, //If this is false, the value for `default` will be supplemented
             default: "1"
         }]
     }
@@ -103,7 +130,7 @@ cli.parse("double 10");
 
 /*
  * Returns:
- 
+ */
 {
     success: true,
     command:
@@ -113,20 +140,21 @@ cli.parse("double 10");
         args: [ [Object] ],
         name: "double"
     },
-  commandPath: ["double"],
-  commandPathRemains: ["10"],
-  args: {
-      _all:["10"]
-      numberToDouble: "10"
-      }
+    path: ["double"],
+    pathDangling: ["10"],
+    args: {
+        _all:["10"]
+        numberToDouble: "10"
+    }
 }
-*/
+```
 
+```js
 cli.parse("add 4");
 
 /*
  * Returns:
- 
+ */
 {
     success: true,
     command:
@@ -136,15 +164,14 @@ cli.parse("add 4");
         args: [ [Object] ],
         name: "add"
     },
-  commandPath: ["add"],
-  commandPathRemains: ["4"],
-  args: {
+    path: ["add"],
+    pathDangling: ["4"],
+    args: {
       _all:["4"]
       number1: "4",
       number2: "1"
-      }
+    }
 }
-*/
 ```
 
 ### Nested commands
@@ -185,21 +212,19 @@ cli.parse("myGroup foo"); //or with aliases: cli.parse("group foo"); or cli.pars
 
 /*
  * Returns:
- 
+ */
 {
     success: true,
     command: {
         fn: [Function: fn],
         args: [],
-        alias:
-        ["fizz"],
+        alias: ["fizz"],
         name: "foo"
     },
-    commandPath: ["myGroup", "foo"],
-    commandPathRemains: [],
+    path: ["myGroup", "foo"],
+    pathDangling: [],
     args: {
         _all:[]
     }
 }
-*/
 ```

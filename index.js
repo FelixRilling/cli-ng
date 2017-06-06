@@ -1,11 +1,10 @@
 "use strict";
 
 const similar = require("similar-strings");
-
 const mapOptions = require("./lib/mapOptions");
 const mapCommands = require("./lib/mapCommands");
-const mapArgs = require("./lib/mapArgs");
 const getAliasedMap = require("./lib/getAliasedMap");
+const mapArgs = require("./lib/mapArgs");
 const parseInput = require("./lib/parseInput");
 
 /**
@@ -25,7 +24,7 @@ module.exports = class Clingy {
         this.keysAliased = Array.from(this.mapAliased.keys());
     }
     /**
-     * Returns all internal maps and keys
+     * Returns internal maps and keys
      * @returns {Object}
      */
     getAll() {
@@ -59,11 +58,10 @@ module.exports = class Clingy {
             const command = this.mapAliased.get(commandNameCurrent);
             const commandPathNew = path.slice(1);
 
-            //Add to used path
             pathUsedNew.push(commandNameCurrent);
 
-            //Recurse into sub if requested
-            if (path.length > 1 && command.sub !== null) { //If more paths need to be checked, recurse
+            //Recurse into sub if more items in path and sub exists
+            if (path.length > 1 && command.sub !== null) {
                 const commandSubResult = command.sub.getCommand(commandPathNew, pathUsedNew);
 
                 if (commandSubResult.success) {

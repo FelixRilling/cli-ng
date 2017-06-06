@@ -16,6 +16,7 @@ const cli = new Clingy({
     },
     group: {
         fn: () => "Group fn",
+        alias: ["grooop"],
         sub: {
             foo: {
                 fn: () => "bar",
@@ -25,6 +26,6 @@ const cli = new Clingy({
     }
 });
 
-const result = cli.parse("aaa")
+const result = cli.parse("fooArgs a b c");
 
 console.log(result);

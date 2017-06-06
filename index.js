@@ -43,7 +43,7 @@ module.exports = class Clingy {
      */
     getCommand(commandPath, commandPathUsed = []) {
         const commandPathUsedNew = commandPathUsed;
-        const commandNameCurrent = this.options.caseSensitive ? commandPath[0] : commandPath[0].toLowerCase();
+        const commandNameCurrent = this.options.lookup.namesAreCaseSensitive ? commandPath[0] : commandPath[0].toLowerCase();
 
         /**
          * Flow:
@@ -74,8 +74,8 @@ module.exports = class Clingy {
             return {
                 success: true,
                 command: command,
-                commandPath: commandPathUsedNew,
-                commandPathRemains: commandPathNew
+                path: commandPathUsedNew,
+                pathDangling: commandPathNew
             };
         } else {
             return {
@@ -85,7 +85,7 @@ module.exports = class Clingy {
                     missing: commandNameCurrent,
                     similar: similar(commandNameCurrent, this.keysAliased)
                 },
-                commandPath: commandPathUsedNew
+                path: commandPathUsedNew
             };
         }
     }
@@ -98,7 +98,7 @@ module.exports = class Clingy {
         const inputParsed = parseInput(input);
         const commandLookup = this.getCommand(inputParsed);
         const command = commandLookup.command;
-        const args = commandLookup.commandPathRemains;
+        const args = commandLookup.pathDangling;
 
         if (commandLookup.success) {
             const argsMapped = mapArgs(command.args, args);

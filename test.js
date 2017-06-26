@@ -52,6 +52,6 @@ const cli = new Clingy({
     }
 });
 
-const result = cli.parse("fooArgs a b c 'a b d'");
+const result = cli.getAll();
 
-console.log(result);
+console.log(result.keysAliased);

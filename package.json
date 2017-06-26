@@ -28,7 +28,7 @@
     "similar-strings": "^1.6.5"
   },
   "devDependencies": {
-    "eslint": "^3.19.0",
+    "eslint": "^4.1.1",
     "jasmine": "^2.6.0",
     "npm-run-all": "^4.0.2"
   }

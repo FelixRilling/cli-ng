@@ -16,7 +16,7 @@ const cli = new Clingy({
     },
     group: {
         fn: () => "Group fn",
-        alias: ["grooop"],
+        alias: ["grooop","foo"],
         sub: {
             foo: {
                 fn: () => "bar",

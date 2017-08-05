@@ -1,35 +1,36 @@
 {
-  "name": "cli-ngy",
-  "version": "6.1.0",
-  "description": "A module to parse cli-input text and commands",
-  "main": "index.js",
-  "scripts": {
-    "start": "npm-run-all lint test",
-    "lint": "eslint index.js lib/",
-    "test": "jasmine"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/FelixRilling/cli-ngy.git"
-  },
-  "keywords": [
-    "cli",
-    "input",
-    "text"
-  ],
-  "author": "Felix Rilling",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/FelixRilling/cli-ngy/issues"
-  },
-  "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
-  "dependencies": {
-    "lodash": "^4.17.4",
-    "similar-strings": "^1.6.5"
-  },
-  "devDependencies": {
-    "eslint": "^4.1.1",
-    "jasmine": "^2.6.0",
-    "npm-run-all": "^4.0.2"
-  }
+    "name": "cli-ngy",
+    "version": "6.1.0",
+    "description": "A module to parse cli-input text and commands",
+    "main": "index.js",
+    "scripts": {
+        "start": "npm-run-all lint test",
+        "lint": "eslint index.js lib/",
+        "test": "jasmine"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/FelixRilling/cli-ngy.git"
+    },
+    "keywords": [
+        "cli",
+        "input",
+        "text"
+    ],
+    "author": "Felix Rilling",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/FelixRilling/cli-ngy/issues"
+    },
+    "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
+    "dependencies": {
+        "lodash": "^4.17.4",
+        "similar-strings": "^1.6.5"
+    },
+    "devDependencies": {
+        "eslint": "^4.3.0",
+        "eslint-plugin-unicorn": "^2.1.2",
+        "jasmine": "^2.7.0",
+        "npm-run-all": "^4.0.2"
+    }
 }

@@ -14,6 +14,7 @@ const parseInput = require("./lib/parseInput");
 module.exports = class Clingy {
     /**
      * Creates Clingy instance
+     *
      * @param {Object} commands Command object
      * @param {Object} options Option object
      */
@@ -25,6 +26,7 @@ module.exports = class Clingy {
     }
     /**
      * Returns internal maps and keys
+     *
      * @returns {Object}
      */
     getAll() {
@@ -36,8 +38,9 @@ module.exports = class Clingy {
     }
     /**
      * Recursiveley searches a command
-     * @param {Array} path Array of strings indicating the path to get
-     * @param {Array=} pathUsed Array of strings indicating the path that was taken so far
+     *
+     * @param {Array<string>} path Array of strings indicating the path to get
+     * @param {Array<string>} [pathUsed=[]] Array of strings indicating the path that was taken so far
      * @returns {Object}
      */
     getCommand(path, pathUsed = []) {
@@ -89,7 +92,8 @@ module.exports = class Clingy {
     }
     /**
      * Parses a cli-input-string to command and args
-     * @param {String} input
+     *
+     * @param {string} input
      * @returns {Object}
      */
     parse(input) {

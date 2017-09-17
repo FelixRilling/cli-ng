@@ -1,6 +1,7 @@
 "use strict";
 
 const Clingy = require("./index.js");
+const symbolKey = Symbol();
 
 const cli = new Clingy({
     foo: {
@@ -16,13 +17,17 @@ const cli = new Clingy({
     },
     group: {
         fn: () => "Group fn",
-        alias: ["grooop","foo"],
+        alias: [],
         sub: {
             foo: {
                 fn: () => "bar",
                 alias: ["fizz"],
             }
         }
+    },
+    [symbolKey]: {
+        fn: () => "Symbol fn",
+        alias: []
     }
 }, {
     /**
@@ -32,7 +37,7 @@ const cli = new Clingy({
         /**
          * If names should be treated case-sensitive for lookup
          */
-        namesAreCaseSensitive: true
+        namesAreCaseSensitive: false
     },
     /**
      * Options for Parser (Getting an Array of name/arg strings from a String)
@@ -48,10 +53,10 @@ const cli = new Clingy({
          * [Only works with allowQuotedStrings=true]
          * List of characters to support enclosing quotedStrings for
          */
-        validQuotes: ["\"","'"],
+        validQuotes: ["\"", "'"],
     }
 });
 
 const result = cli.getAll();
 
-console.log(result.keysAliased);
+console.log(result);

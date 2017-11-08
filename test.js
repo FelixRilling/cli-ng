@@ -12,7 +12,7 @@ const cli = new Clingy({
         args: [{
             name: "foo",
             required: true
-        }],
+        }, {}],
     },
     group: {
         fn: () => "Group fn",
@@ -38,6 +38,6 @@ const cli = new Clingy({
     validQuotes: ["\"", "'"],
 });
 
-const result = cli.parse("foos");
+const result = cli.getAll();
 
-console.log(result);
+console.log(result.map.get("fooargs"));

@@ -9,6 +9,7 @@ const parseInput = require("./lib/parseInput");
 
 /**
  * Clingy class
+ *
  * @class
  */
 module.exports = class Clingy {
@@ -115,7 +116,6 @@ module.exports = class Clingy {
                     }
                 };
             } else {
-                //Add args to result-object
                 commandLookup.args = argsMapped.args;
 
                 //Success

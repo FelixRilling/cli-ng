@@ -1,18 +1,123 @@
 "use strict";
 
 const similar = require("similar-strings");
-const mapOptions = require("./lib/mapOptions");
-const mapCommands = require("./lib/mapCommands");
 const getAliasedMap = require("./lib/getAliasedMap");
 const mapArgs = require("./lib/mapArgs");
 const parseInput = require("./lib/parseInput");
+const {
+    defaults,
+    defaultsDeep
+} = require("lodash");
+const {
+    objEntries,
+    isString,
+    arrClone
+} = require("lightdash");
+
+/**
+ * Default option structure
+ */
+const optionsDefault = {
+    /**
+     * Options for Lookup (Resolving a command from a string)
+     */
+    lookup: {
+        /**
+         * If names should be treated case-sensitive for lookup
+         */
+        namesAreCaseSensitive: true
+    },
+    /**
+     * Options for Parser (Getting an Array of name/arg strings from a String)
+     */
+    parser: {
+        /**
+         * If strings containing spaces should be kept together when enclosed in quotes.
+         * true:    'hello world "foo bar"' => ["hello", "world", "foo bar"]
+         * false:   'hello world "foo bar"' => ["hello", "world", "\"foo", "bar\""]
+         */
+        allowQuotedStrings: true,
+        /**
+         * [Only works with allowQuotedStrings=true]
+         * List of characters to support enclosing quotedStrings for
+         */
+        validQuotes: ["\""],
+    }
+};
+
+/**
+ * Default argument structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const argDefaultFactory = (arg, index) => {
+    return {
+        name: `arg${index}`,
+        required: true,
+        default: null,
+    };
+};
+
+/**
+ * Default command structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const commandDefaultFactory = (command, index) => {
+    return {
+        name: `command${index}`,
+        fn: null,
+        alias: [],
+        args: [],
+        sub: null
+    };
+};
+
+
+/**
+ * Creates a map and submaps out of a command object
+ *
+ * @private
+ * @param {Array<Entry>} commandEntries
+ * @returns {Map}
+ */
+const mapCommands = (commandEntries, namesAreCaseSensitive) => new Map(commandEntries.map((command, index) => {
+    if (isString(command[0])) {
+        /**
+         * Key: make lowercase unless caseSensitive is enabled
+         * Value: merge with default command structure and add key as name property
+         */
+        const commandKey = namesAreCaseSensitive ? command[0] : command[0].toLowerCase();
+        const commandValue = defaultsDeep(command[1], commandDefaultFactory(command, index));
+
+        //Save key as name property to keep track in aliases
+        commandValue.name = commandKey;
+        //Merge each arg with default arg structure
+        commandValue.args = commandValue.args.map((arg, index) => defaults(arg, argDefaultFactory(arg, index)));
+
+        //If sub-groups exist, recurse by creating a new Clingy instance
+        if (commandValue.sub !== null) {
+            commandValue.sub = new Clingy(commandValue.sub);
+        }
+
+        return [commandKey, commandValue];
+    } else {
+        throw new TypeError(`command key '${command[0]}' is not a string`, command);
+    }
+}));
 
 /**
  * Clingy class
  *
  * @class
  */
-module.exports = class Clingy {
+const Clingy = class {
     /**
      * Creates Clingy instance
      *
@@ -20,10 +125,14 @@ module.exports = class Clingy {
      * @param {Object} options Option object
      */
     constructor(commands, options) {
-        this.options = mapOptions(options);
-        this.map = mapCommands(commands, Clingy, this.options);
+        this.options = defaultsDeep(options, optionsDefault);
+
+        this.map = mapCommands(
+            objEntries(commands),
+            this.options.lookup.namesAreCaseSensitive
+        );
         this.mapAliased = getAliasedMap(this.map);
-        this.keysAliased = Array.from(this.mapAliased.keys());
+        this.keysAliased = arrClone(this.mapAliased.keys());
     }
     /**
      * Returns internal maps and keys
@@ -127,3 +236,5 @@ module.exports = class Clingy {
         }
     }
 };
+
+module.exports = Clingy;

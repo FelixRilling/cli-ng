@@ -37,7 +37,7 @@ const optionsDefault = {
  * @param {number} index
  * @returns {Object}
  */
-const argDefaultFactory = (arg, index) => {
+const argDefaultFactory = (index) => {
     return {
         name: `arg${index}`,
         required: true,
@@ -53,7 +53,7 @@ const argDefaultFactory = (arg, index) => {
  * @param {number} index
  * @returns {Object}
  */
-const commandDefaultFactory = (command, index) => {
+const commandDefaultFactory = (index) => {
     return {
         name: `command${index}`,
         fn: null,
@@ -78,12 +78,12 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
          * Value: merge with default command structure and add key as name property
          */
         const commandKey = caseSensitive ? command[0] : command[0].toLowerCase();
-        const commandValue = defaultsDeep(command[1], commandDefaultFactory(command, index));
+        const commandValue = defaultsDeep(command[1], commandDefaultFactory(index));
 
         //Save key as name property to keep track in aliases
         commandValue.name = commandKey;
         //Merge each arg with default arg structure
-        commandValue.args = commandValue.args.map((arg, index) => defaults(arg, argDefaultFactory(arg, index)));
+        commandValue.args = commandValue.args.map((arg, index) => defaults(arg, argDefaultFactory(index)));
 
         //If sub-groups exist, recurse by creating a new Clingy instance
         if (commandValue.sub !== null) {
@@ -110,24 +110,18 @@ const Clingy = class {
      */
     constructor(commands, options) {
         this.options = defaultsDeep(options, optionsDefault);
-
-        this.map = mapCommands(
-            objEntries(commands),
-            this.options.caseSensitive
-        );
+        this.map = mapCommands(objEntries(commands), this.options.caseSensitive);
         this.mapAliased = getAliasedMap(this.map);
-        this.keysAliased = arrClone(this.mapAliased.keys());
     }
     /**
-     * Returns internal maps and keys
+     * Returns internal maps
      *
      * @returns {Object}
      */
     getAll() {
         return {
             map: this.map,
-            mapAliased: this.mapAliased,
-            keysAliased: this.keysAliased
+            mapAliased: this.mapAliased
         };
     }
     /**
@@ -143,7 +137,7 @@ const Clingy = class {
 
         /**
          * Flow:
-         *   Exists in current layer?
+         *   Exists in current instance?
          *      true-> Has more path entries and contains sub-groups?
          *          true-> Is sub-group getCommand successful?
          *              true-> Return sub-group result
@@ -178,7 +172,7 @@ const Clingy = class {
                 error: {
                     type: "missingCommand",
                     missing: commandNameCurrent,
-                    similar: similar(commandNameCurrent, this.keysAliased)
+                    similar: similar(commandNameCurrent, arrClone(this.mapAliased.keys()))
                 },
                 path: pathUsedNew
             };

@@ -1,7 +1,6 @@
 "use strict";
 
 const Clingy = require("./index.js");
-const symbolKey = Symbol();
 
 const cli = new Clingy({
     foo: {
@@ -24,10 +23,6 @@ const cli = new Clingy({
                 alias: ["fizz"],
             }
         }
-    },
-    [symbolKey]: {
-        fn: () => "Symbol fn",
-        alias: []
     }
 }, {
 
@@ -43,6 +38,6 @@ const cli = new Clingy({
     validQuotes: ["\"", "'"],
 });
 
-const result = cli.getAll();
+const result = cli.parse("foos");
 
 console.log(result);

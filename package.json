@@ -24,7 +24,7 @@
     },
     "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
     "dependencies": {
-        "lightdash": "^2.8.0",
+        "lightdash": "^2.8.1",
         "lodash": "^4.17.4",
         "similar-strings": "^1.6.7"
     },

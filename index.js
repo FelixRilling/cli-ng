@@ -5,12 +5,12 @@ const getAliasedMap = require("./lib/getAliasedMap");
 const mapArgs = require("./lib/mapArgs");
 const parseString = require("./lib/parseString");
 const {
+    defaults,
     defaultsDeep
 } = require("lodash");
 const {
-    objDefaults,
-    objEntries,
     isString,
+    objEntries,
     arrClone
 } = require("lightdash");
 
@@ -63,7 +63,6 @@ const commandDefaultFactory = (index) => {
     };
 };
 
-
 /**
  * Creates a map and submaps out of a command object
  *
@@ -83,7 +82,7 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
         //Save key as name property to keep track in aliases
         commandValue.name = commandKey;
         //Merge each arg with default arg structure
-        commandValue.args = commandValue.args.map((arg, index) => objDefaults(arg, argDefaultFactory(index)));
+        commandValue.args = commandValue.args.map((arg, index) => defaults(arg, argDefaultFactory(index)));
 
         //If sub-groups exist, recurse by creating a new Clingy instance
         if (commandValue.sub !== null) {

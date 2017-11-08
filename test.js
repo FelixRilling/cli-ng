@@ -34,7 +34,7 @@ const cli = new Clingy({
     /**
      * If names should be treated case-sensitive for lookup
      */
-    namesAreCaseSensitive: false,
+    caseSensitive: false,
 
     /**
      * [Only works with allowQuotedStrings=true]

@@ -3,7 +3,7 @@
 const similar = require("similar-strings");
 const getAliasedMap = require("./lib/getAliasedMap");
 const mapArgs = require("./lib/mapArgs");
-const parseInput = require("./lib/parseInput");
+const parseString = require("./lib/parseString");
 const {
     defaults,
     defaultsDeep
@@ -21,7 +21,7 @@ const optionsDefault = {
     /**
      * If names should be treated case-sensitive for lookup
      */
-    namesAreCaseSensitive: true,
+    caseSensitive: true,
     /**
      * List of characters to allow as quote-enclosing string
      * If set to null, quotes-enclosed strings will be disabled
@@ -71,13 +71,13 @@ const commandDefaultFactory = (command, index) => {
  * @param {Array<Entry>} commandEntries
  * @returns {Map}
  */
-const mapCommands = (commandEntries, namesAreCaseSensitive) => new Map(commandEntries.map((command, index) => {
+const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.map((command, index) => {
     if (isString(command[0])) {
         /**
          * Key: make lowercase unless caseSensitive is enabled
          * Value: merge with default command structure and add key as name property
          */
-        const commandKey = namesAreCaseSensitive ? command[0] : command[0].toLowerCase();
+        const commandKey = caseSensitive ? command[0] : command[0].toLowerCase();
         const commandValue = defaultsDeep(command[1], commandDefaultFactory(command, index));
 
         //Save key as name property to keep track in aliases
@@ -113,7 +113,7 @@ const Clingy = class {
 
         this.map = mapCommands(
             objEntries(commands),
-            this.options.namesAreCaseSensitive
+            this.options.caseSensitive
         );
         this.mapAliased = getAliasedMap(this.map);
         this.keysAliased = arrClone(this.mapAliased.keys());
@@ -139,7 +139,7 @@ const Clingy = class {
      */
     getCommand(path, pathUsed = []) {
         const pathUsedNew = pathUsed;
-        const commandNameCurrent = this.options.namesAreCaseSensitive ? path[0] : path[0].toLowerCase();
+        const commandNameCurrent = this.options.caseSensitive ? path[0] : path[0].toLowerCase();
 
         /**
          * Flow:
@@ -191,7 +191,7 @@ const Clingy = class {
      * @returns {Object}
      */
     parse(input) {
-        const inputParsed = parseInput(input, this.options.validQuotes);
+        const inputParsed = parseString(input, this.options.validQuotes);
         const commandLookup = this.getCommand(inputParsed);
         const command = commandLookup.command;
         const args = commandLookup.pathDangling;

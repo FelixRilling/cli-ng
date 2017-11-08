@@ -30,31 +30,17 @@ const cli = new Clingy({
         alias: []
     }
 }, {
+
     /**
-     * Options for Lookup (Resolving a command from a string)
+     * If names should be treated case-sensitive for lookup
      */
-    lookup: {
-        /**
-         * If names should be treated case-sensitive for lookup
-         */
-        namesAreCaseSensitive: false
-    },
+    namesAreCaseSensitive: false,
+
     /**
-     * Options for Parser (Getting an Array of name/arg strings from a String)
+     * [Only works with allowQuotedStrings=true]
+     * List of characters to support enclosing quotedStrings for
      */
-    parser: {
-        /**
-         * If strings containing spaces should be kept together when enclosed in quotes.
-         * true:    'hello world "foo bar"' => ["hello", "world", "foo bar"]
-         * false:   'hello world "foo bar"' => ["hello", "world", "\"foo", "bar\""]
-         */
-        allowQuotedStrings: true,
-        /**
-         * [Only works with allowQuotedStrings=true]
-         * List of characters to support enclosing quotedStrings for
-         */
-        validQuotes: ["\"", "'"],
-    }
+    validQuotes: ["\"", "'"],
 });
 
 const result = cli.getAll();

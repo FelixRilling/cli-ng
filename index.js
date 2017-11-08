@@ -19,30 +19,14 @@ const {
  */
 const optionsDefault = {
     /**
-     * Options for Lookup (Resolving a command from a string)
+     * If names should be treated case-sensitive for lookup
      */
-    lookup: {
-        /**
-         * If names should be treated case-sensitive for lookup
-         */
-        namesAreCaseSensitive: true
-    },
+    namesAreCaseSensitive: true,
     /**
-     * Options for Parser (Getting an Array of name/arg strings from a String)
+     * List of characters to allow as quote-enclosing string
+     * If set to null, quotes-enclosed strings will be disabled
      */
-    parser: {
-        /**
-         * If strings containing spaces should be kept together when enclosed in quotes.
-         * true:    'hello world "foo bar"' => ["hello", "world", "foo bar"]
-         * false:   'hello world "foo bar"' => ["hello", "world", "\"foo", "bar\""]
-         */
-        allowQuotedStrings: true,
-        /**
-         * [Only works with allowQuotedStrings=true]
-         * List of characters to support enclosing quotedStrings for
-         */
-        validQuotes: ["\""],
-    }
+    validQuotes: ["\""],
 };
 
 /**
@@ -129,7 +113,7 @@ const Clingy = class {
 
         this.map = mapCommands(
             objEntries(commands),
-            this.options.lookup.namesAreCaseSensitive
+            this.options.namesAreCaseSensitive
         );
         this.mapAliased = getAliasedMap(this.map);
         this.keysAliased = arrClone(this.mapAliased.keys());
@@ -155,7 +139,7 @@ const Clingy = class {
      */
     getCommand(path, pathUsed = []) {
         const pathUsedNew = pathUsed;
-        const commandNameCurrent = this.options.lookup.namesAreCaseSensitive ? path[0] : path[0].toLowerCase();
+        const commandNameCurrent = this.options.namesAreCaseSensitive ? path[0] : path[0].toLowerCase();
 
         /**
          * Flow:
@@ -207,7 +191,7 @@ const Clingy = class {
      * @returns {Object}
      */
     parse(input) {
-        const inputParsed = parseInput(input, this.options.parser);
+        const inputParsed = parseInput(input, this.options.validQuotes);
         const commandLookup = this.getCommand(inputParsed);
         const command = commandLookup.command;
         const args = commandLookup.pathDangling;

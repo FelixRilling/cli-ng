@@ -5,10 +5,8 @@ const getAliasedMap = require("./lib/getAliasedMap");
 const mapArgs = require("./lib/mapArgs");
 const parseString = require("./lib/parseString");
 const {
-    defaults,
-    defaultsDeep
-} = require("lodash");
-const {
+    objDefaults,
+    objDefaultsDeep,
     isString,
     objEntries,
     arrClone
@@ -77,12 +75,12 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
          * Value: merge with default command structure and add key as name property
          */
         const commandKey = caseSensitive ? command[0] : command[0].toLowerCase();
-        const commandValue = defaultsDeep(command[1], commandDefaultFactory(index));
+        const commandValue = objDefaultsDeep(command[1], commandDefaultFactory(index));
 
         //Save key as name property to keep track in aliases
         commandValue.name = commandKey;
         //Merge each arg with default arg structure
-        commandValue.args = commandValue.args.map((arg, index) => defaults(arg, argDefaultFactory(index)));
+        commandValue.args = commandValue.args.map((arg, index) => objDefaults(arg, argDefaultFactory(index)));
 
         //If sub-groups exist, recurse by creating a new Clingy instance
         if (commandValue.sub !== null) {
@@ -107,8 +105,8 @@ const Clingy = class {
      * @param {Object} commands Command object
      * @param {Object} options Option object
      */
-    constructor(commands, options) {
-        this.options = defaultsDeep(options, optionsDefault);
+    constructor(commands, options = {}) {
+        this.options = objDefaultsDeep(options, optionsDefault);
         this.map = mapCommands(objEntries(commands), this.options.caseSensitive);
         this.mapAliased = getAliasedMap(this.map);
     }

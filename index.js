@@ -9,7 +9,7 @@ const {
     objDefaultsDeep,
     isString,
     objEntries,
-    arrClone
+    arrFrom
 } = require("lightdash");
 
 /**
@@ -169,7 +169,7 @@ const Clingy = class {
                 error: {
                     type: "missingCommand",
                     missing: commandNameCurrent,
-                    similar: similar(commandNameCurrent, arrClone(this.mapAliased.keys()))
+                    similar: similar(commandNameCurrent, arrFrom(this.mapAliased.keys()))
                 },
                 path: pathUsedNew
             };

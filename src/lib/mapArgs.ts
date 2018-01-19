@@ -1,4 +1,4 @@
-import { IClingyArgs, IClingyArgLookup } from "../interfaces";
+import { IClingyArg, IClingyArgLookup } from "../interfaces";
 
 /**
  * Matches command-map arguments with input args
@@ -8,15 +8,18 @@ import { IClingyArgs, IClingyArgLookup } from "../interfaces";
  * @param {Array<Object>} givenArgs
  * @returns {Object}
  */
-const mapArgs = (expectedArgs: IClingyArgs[], givenArgs: IClingyArgs[]) => {
+const mapArgs = (
+    expectedArgs: IClingyArg[],
+    givenArgs: string[]
+): IClingyArgLookup => {
     const result: IClingyArgLookup = {
         args: {
             _all: givenArgs // Special arg that contains all other args
         },
-        missing: []
+        missing: IClingyArg[]
     };
 
-    expectedArgs.forEach((expectedArg: IClingyArgs, index) => {
+    expectedArgs.forEach((expectedArg: IClingyArg, index) => {
         const givenArg = givenArgs[index];
 
         if (givenArg) {

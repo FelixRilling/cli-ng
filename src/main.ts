@@ -11,10 +11,13 @@ import {
 import getAliasedMap from "./lib/getAliasedMap";
 import mapArgs from "./lib/mapArgs";
 import parseString from "./lib/parseString";
+import argDefaultFactory from "./lib/argDefaultFactory";
+import commandDefaultFactory from "./lib/commandDefaultFactory";
 import {
     IClingy,
     IClingyArg,
     IClingyCommand,
+    IClingyCommandProcessed,
     IClingyCommands,
     IClingyOptions,
     IClingyOptionsDefaulted,
@@ -43,40 +46,6 @@ const optionsDefault: IClingyOptionsDefaulted = {
 };
 
 /**
- * Default argument structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const argDefaultFactory = (index: number): IClingyArg => {
-    return {
-        name: `arg${index}`,
-        required: true,
-        default: null
-    };
-};
-
-/**
- * Default command structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const commandDefaultFactory = (index: number): IClingyCommand => {
-    return {
-        name: `command${index}`,
-        fn: null,
-        alias: [],
-        args: [],
-        sub: null
-    };
-};
-
-/**
  * Creates a map and submaps out of a command object
  *
  * @private
@@ -88,7 +57,7 @@ const mapCommands = (
     caseSensitive: boolean
 ): clingyCommandMap =>
     new Map(
-        commandEntries.map((command: clingyCommandEntry, index) => {
+        commandEntries.map((command, index): [string, IClingyCommand] => {
             if (!isString(command[0])) {
                 throw new TypeError(
                     `command key '${command[0]}' is not a string`
@@ -99,29 +68,30 @@ const mapCommands = (
              * Key: make lowercase unless caseSensitive is enabled
              * Value: merge with default command structure and add key as name property
              */
-            /* const commandKey = caseSensitive
+            const commandKey = caseSensitive
                 ? command[0]
                 : command[0].toLowerCase();
-            const commandValue: IClingyCommand = objDefaultsDeep(
+            const commandValue = <IClingyCommand>objDefaultsDeep(
                 command[1],
                 commandDefaultFactory(index)
-            ); */
+            );
 
             //Save key as name property to keep track in aliases
-            /* commandValue.name = commandKey;
+            commandValue.name = commandKey;
             //Merge each arg with default arg structure
-            commandValue.args: IClingyArg[] = commandValue.args.map((arg, index) =>
-                objDefaults(arg, argDefaultFactory(index))
-            ); */
+            commandValue.args = commandValue.args.map(
+                (arg, index) =>
+                    <IClingyArg>objDefaults(arg, argDefaultFactory(index))
+            );
 
             //If sub-groups exist, recurse by creating a new Clingy instance
-            /* if (commandValue.sub !== null) {
-                commandValue.sub = new Clingy(commandValue.sub);
+            if (commandValue.sub !== null) {
+                (<IClingyCommandProcessed>commandValue).sub = new Clingy(
+                    commandValue.sub
+                );
             }
- */
-            /* return [commandKey, commandValue]; */
 
-            return command;
+            return [commandKey, commandValue];
         })
     );
 
@@ -141,7 +111,10 @@ const Clingy = class implements IClingy {
      * @param {Object} options Option object
      */
     constructor(commands: IClingyCommands, options: IClingyOptions = {}) {
-        this.options = objDefaultsDeep(options, optionsDefault);
+        this.options = <IClingyOptionsDefaulted>objDefaultsDeep(
+            options,
+            optionsDefault
+        );
         this.map = mapCommands(
             objEntries(commands),
             this.options.caseSensitive
@@ -176,7 +149,7 @@ const Clingy = class implements IClingy {
             : path[0].toLowerCase();
 
         if (!this.mapAliased.has(commandNameCurrent)) {
-            return {
+            return <IClingyLookupUnsuccessful>{
                 success: false,
                 error: {
                     type: "missingCommand",
@@ -189,9 +162,9 @@ const Clingy = class implements IClingy {
                 path: pathUsedNew
             };
         }
-
-        // @ts-ignore
-        const command: IClingyCommand = this.mapAliased.get(commandNameCurrent);
+        const command = <IClingyCommandProcessed>this.mapAliased.get(
+            commandNameCurrent
+        );
         const commandPathNew = path.slice(1);
 
         pathUsedNew.push(commandNameCurrent);
@@ -221,7 +194,7 @@ const Clingy = class implements IClingy {
      * @param {string} input
      * @returns {Object}
      */
-    public parse(
+    /* public parse(
         input: string
     ): IClingyLookupSuccessful | IClingyLookupUnsuccessful {
         const inputParsed = parseString(input, this.options.validQuotes);
@@ -232,9 +205,8 @@ const Clingy = class implements IClingy {
             return commandLookup;
         }
 
-        const commandLookupSuccess = <IClingyLookupSuccessful>commandLookup;
-        const command = commandLookupSuccess.command;
-        const args = commandLookupSuccess.pathDangling;
+        const command = commandLookup.command;
+        const args = commandLookup.pathDangling;
 
         const argsMapped = mapArgs(command.args, args);
 
@@ -249,11 +221,11 @@ const Clingy = class implements IClingy {
             };
         }
 
-        commandLookupSuccess.args = argsMapped.args;
+        commandLookup.args = argsMapped.args;
 
         // Success
         return commandLookup;
-    }
+    } */
 };
 
 export default Clingy;

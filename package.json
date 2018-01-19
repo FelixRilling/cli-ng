@@ -8,10 +8,10 @@
     "settings": {
         "input": "main.ts",
         "namespace": {
-            "module": "cli-ngy",
+            "module": "clingy",
             "file": "clingy"
         },
-        "externals": []
+        "external": ["lightdash", "similar-strings"]
     },
     "scripts": {
         "start": "npm-run-all lint build test docs",
@@ -28,11 +28,7 @@
         "type": "git",
         "url": "git+https://github.com/FelixRilling/cli-ngy.git"
     },
-    "keywords": [
-        "cli",
-        "input",
-        "text"
-    ],
+    "keywords": ["cli", "input", "text"],
     "author": "Felix Rilling",
     "license": "MIT",
     "bugs": {

@@ -10,7 +10,7 @@ interface IClingy {
 
 interface IClingyLookupSuccessful {
     success: true;
-    command: IClingyCommand;
+    command: IClingyCommandProcessed;
     path: string[];
     pathDangling: string[];
     args?: { [key: string]: any; _all: string[] };
@@ -20,7 +20,7 @@ interface IClingyLookupUnsuccessful {
     success: false;
     error: {
         type: "missingCommand" | "missingArg";
-        missing: string[];
+        missing: string;
         similar?: string[];
     };
     path?: string[];
@@ -43,8 +43,8 @@ interface IClingyArg {
 }
 
 interface IClingyArgLookup {
-    args: { [key: string]: any; _all: string[] };
-    missing: string[];
+    args: { [key: string]: string | string[]; _all: string[] };
+    missing: IClingyArg[];
 }
 
 interface IClingyCommand {
@@ -52,6 +52,10 @@ interface IClingyCommand {
     fn: null;
     alias: string[];
     args: IClingyArg[];
+    sub: IClingyCommands | null;
+}
+
+interface IClingyCommandProcessed extends IClingyCommand {
     sub: IClingy | null;
 }
 
@@ -66,6 +70,7 @@ export {
     IClingyArg,
     IClingyArgLookup,
     IClingyCommand,
+    IClingyCommandProcessed,
     IClingyCommands,
     IClingyLookupSuccessful,
     IClingyLookupUnsuccessful

@@ -2,10 +2,15 @@ interface IClingy {
     options: IClingyOptionsDefaulted;
     map: any;
     mapAliased: any;
-    getCommand: (
+    getAll(): {
+        map: Map<string, IClingyCommand>;
+        mapAliased: Map<string, IClingyCommand>;
+    };
+    getCommand(
         path: string[],
         pathUsed?: string[]
-    ) => IClingyLookupSuccessful | IClingyLookupUnsuccessful;
+    ): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
+    parse(input: string): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
 }
 
 interface IClingyLookupSuccessful {

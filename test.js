@@ -14,8 +14,7 @@ const cli = new Clingy(
                 {
                     name: "foo",
                     required: true
-                },
-                {}
+                }
             ]
         },
         group: {
@@ -43,4 +42,4 @@ const cli = new Clingy(
     }
 );
 
-console.log(cli);
+console.log(cli.parse("fooArgs bar"));

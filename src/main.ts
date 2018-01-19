@@ -64,10 +64,6 @@ const mapCommands = (
                 );
             }
 
-            /**
-             * Key: make lowercase unless caseSensitive is enabled
-             * Value: merge with default command structure and add key as name property
-             */
             const commandKey = caseSensitive
                 ? command[0]
                 : command[0].toLowerCase();
@@ -76,9 +72,9 @@ const mapCommands = (
                 commandDefaultFactory(index)
             );
 
-            //Save key as name property to keep track in aliases
+            // Save key as name property to keep track in aliases
             commandValue.name = commandKey;
-            //Merge each arg with default arg structure
+            // Merge each arg with default arg structure
             commandValue.args = commandValue.args.map(
                 (arg, index) =>
                     <IClingyArg>objDefaults(arg, argDefaultFactory(index))
@@ -153,7 +149,7 @@ const Clingy = class implements IClingy {
                 success: false,
                 error: {
                     type: "missingCommand",
-                    missing: commandNameCurrent,
+                    missing: [commandNameCurrent],
                     similar: similar(
                         commandNameCurrent,
                         arrFrom(this.mapAliased.keys())
@@ -169,7 +165,7 @@ const Clingy = class implements IClingy {
 
         pathUsedNew.push(commandNameCurrent);
 
-        //Recurse into sub if more items in path and sub exists
+        // Recurse into sub if more items in path and sub exists
         if (path.length > 1 && command.sub !== null) {
             const commandSubResult = command.sub.getCommand(
                 commandPathNew,
@@ -194,7 +190,7 @@ const Clingy = class implements IClingy {
      * @param {string} input
      * @returns {Object}
      */
-    /* public parse(
+    public parse(
         input: string
     ): IClingyLookupSuccessful | IClingyLookupUnsuccessful {
         const inputParsed = parseString(input, this.options.validQuotes);
@@ -207,7 +203,6 @@ const Clingy = class implements IClingy {
 
         const command = commandLookup.command;
         const args = commandLookup.pathDangling;
-
         const argsMapped = mapArgs(command.args, args);
 
         if (argsMapped.missing.length !== 0) {
@@ -225,7 +220,7 @@ const Clingy = class implements IClingy {
 
         // Success
         return commandLookup;
-    } */
+    }
 };
 
 export default Clingy;

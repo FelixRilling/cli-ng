@@ -14,6 +14,7 @@ declare const Clingy: {
             mapAliased: Map<string, IClingyCommand>;
         };
         getCommand(path: string[], pathUsed?: string[]): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
+        parse(input: string): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
     };
 };
 export default Clingy;

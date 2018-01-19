@@ -16,7 +16,7 @@ const mapArgs = (
         args: {
             _all: givenArgs // Special arg that contains all other args
         },
-        missing: IClingyArg[]
+        missing: []
     };
 
     expectedArgs.forEach((expectedArg: IClingyArg, index) => {

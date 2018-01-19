@@ -24,6 +24,90 @@ const getAliasedMap = (map) => {
 };
 
 /**
+ * Matches command-map arguments with input args
+ *
+ * @private
+ * @param {Array<Object>} expectedArgs
+ * @param {Array<Object>} givenArgs
+ * @returns {Object}
+ */
+const mapArgs = (expectedArgs, givenArgs) => {
+    const result = {
+        args: {
+            _all: givenArgs // Special arg that contains all other args
+        },
+        missing: []
+    };
+    expectedArgs.forEach((expectedArg, index) => {
+        const givenArg = givenArgs[index];
+        if (givenArg) {
+            // Arg exists
+            result.args[expectedArg.name] = givenArg;
+        }
+        else {
+            // Arg doesn't exist
+            if (!expectedArg.required) {
+                // Use default value
+                result.args[expectedArg.name] = expectedArg.default;
+            }
+            else {
+                // Mark as missing
+                result.missing.push(expectedArg);
+            }
+        }
+    });
+    return result;
+};
+
+const SPACE = /\s/;
+/**
+ * Parses a string into an Array while supporting quoted strings
+ *
+ * @private
+ * @param {string} str
+ * @param {Array<string>} validQuotes
+ * @returns {Array<string>}
+ */
+const splitWithQuotedStrings = (str, validQuotes) => {
+    const result = [];
+    let partStr = [];
+    let inString = false;
+    str.split("").forEach((letter, index) => {
+        const isSpace = SPACE.test(letter);
+        if (validQuotes.includes(letter)) {
+            //Toggle inString once a quote is encountered
+            inString = !inString;
+        }
+        else if (inString || !isSpace) {
+            //push everything thats not a quote or a space(if outside quotes)
+            partStr.push(letter);
+        }
+        if ((partStr.length > 0 && isSpace && !inString) ||
+            index === str.length - 1) {
+            //push current arg to container
+            result.push(partStr.join(""));
+            partStr = [];
+        }
+    });
+    return result;
+};
+/**
+ * Parses a string into an Array
+ *
+ * @private
+ * @param {string} strInput
+ * @param {Array<string>|null} validQuotes
+ * @returns {Array<string>}
+ */
+const parseString = (strInput, validQuotes) => {
+    const str = strInput.trim();
+    // Only use the 'complex' algorithm if allowQuotedStrings is true
+    return validQuotes !== null
+        ? splitWithQuotedStrings(str, validQuotes)
+        : str.split(SPACE);
+};
+
+/**
  * Default argument structure
  *
  * @private
@@ -82,17 +166,13 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
     if (!isString(command[0])) {
         throw new TypeError(`command key '${command[0]}' is not a string`);
     }
-    /**
-     * Key: make lowercase unless caseSensitive is enabled
-     * Value: merge with default command structure and add key as name property
-     */
     const commandKey = caseSensitive
         ? command[0]
         : command[0].toLowerCase();
     const commandValue = objDefaultsDeep(command[1], commandDefaultFactory(index));
-    //Save key as name property to keep track in aliases
+    // Save key as name property to keep track in aliases
     commandValue.name = commandKey;
-    //Merge each arg with default arg structure
+    // Merge each arg with default arg structure
     commandValue.args = commandValue.args.map((arg, index) => objDefaults(arg, argDefaultFactory(index)));
     //If sub-groups exist, recurse by creating a new Clingy instance
     if (commandValue.sub !== null) {
@@ -145,7 +225,7 @@ const Clingy = class {
                 success: false,
                 error: {
                     type: "missingCommand",
-                    missing: commandNameCurrent,
+                    missing: [commandNameCurrent],
                     similar: similar(commandNameCurrent, arrFrom(this.mapAliased.keys()))
                 },
                 path: pathUsedNew
@@ -154,7 +234,7 @@ const Clingy = class {
         const command = this.mapAliased.get(commandNameCurrent);
         const commandPathNew = path.slice(1);
         pathUsedNew.push(commandNameCurrent);
-        //Recurse into sub if more items in path and sub exists
+        // Recurse into sub if more items in path and sub exists
         if (path.length > 1 && command.sub !== null) {
             const commandSubResult = command.sub.getCommand(commandPathNew, pathUsedNew);
             if (commandSubResult.success) {
@@ -167,6 +247,36 @@ const Clingy = class {
             path: pathUsedNew,
             pathDangling: commandPathNew
         };
+    }
+    /**
+     * Parses a cli-input-string to command and args
+     *
+     * @param {string} input
+     * @returns {Object}
+     */
+    parse(input) {
+        const inputParsed = parseString(input, this.options.validQuotes);
+        const commandLookup = this.getCommand(inputParsed);
+        if (!commandLookup.success) {
+            // Error: Command not found
+            return commandLookup;
+        }
+        const command = commandLookup.command;
+        const args = commandLookup.pathDangling;
+        const argsMapped = mapArgs(command.args, args);
+        if (argsMapped.missing.length !== 0) {
+            // Error: Missing arguments
+            return {
+                success: false,
+                error: {
+                    type: "missingArg",
+                    missing: argsMapped.missing
+                }
+            };
+        }
+        commandLookup.args = argsMapped.args;
+        // Success
+        return commandLookup;
     }
 };
 

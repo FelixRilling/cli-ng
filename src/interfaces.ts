@@ -20,7 +20,7 @@ interface IClingyLookupUnsuccessful {
     success: false;
     error: {
         type: "missingCommand" | "missingArg";
-        missing: string;
+        missing: string[] | IClingyArg[];
         similar?: string[];
     };
     path?: string[];
@@ -43,7 +43,7 @@ interface IClingyArg {
 }
 
 interface IClingyArgLookup {
-    args: { [key: string]: string | string[]; _all: string[] };
+    args: { [key: string]: any; _all: string[] };
     missing: IClingyArg[];
 }
 

@@ -1,4 +1,4 @@
-"use strict";
+import { IClingyArgs, IClingyArgLookup } from "../interfaces";
 
 /**
  * Matches command-map arguments with input args
@@ -8,27 +8,27 @@
  * @param {Array<Object>} givenArgs
  * @returns {Object}
  */
-module.exports = (expectedArgs, givenArgs) => {
-    const result = {
+const mapArgs = (expectedArgs: IClingyArgs[], givenArgs: IClingyArgs[]) => {
+    const result: IClingyArgLookup = {
         args: {
-            _all: givenArgs //special arg that contains all other args
+            _all: givenArgs // Special arg that contains all other args
         },
         missing: []
     };
 
-    expectedArgs.forEach((expectedArg, index) => {
+    expectedArgs.forEach((expectedArg: IClingyArgs, index) => {
         const givenArg = givenArgs[index];
 
         if (givenArg) {
-            //Arg exists
+            // Arg exists
             result.args[expectedArg.name] = givenArg;
         } else {
-            //Arg doesnt exist
+            // Arg doesn't exist
             if (!expectedArg.required) {
-                //Use default value
+                // Use default value
                 result.args[expectedArg.name] = expectedArg.default;
             } else {
-                //Mark as missing
+                // Mark as missing
                 result.missing.push(expectedArg);
             }
         }
@@ -36,3 +36,5 @@ module.exports = (expectedArgs, givenArgs) => {
 
     return result;
 };
+
+export default mapArgs;

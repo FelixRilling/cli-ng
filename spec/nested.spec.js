@@ -1,12 +1,12 @@
 "use strict";
 
-const Clingy = require("../index.js");
+const Clingy = require("../dist/clingy.common");
 
 const cli = new Clingy({
     about: {
         fn: () => "About",
         args: [],
-        alias: ["why", "?"],
+        alias: ["why", "?"]
     },
     group: {
         fn: () => "Group fn",
@@ -22,21 +22,20 @@ const cli = new Clingy({
     }
 });
 
-describe("Nesting test", function () {
-    it("Basic nesting", function () {
+describe("Nesting test", function() {
+    it("Basic nesting", function() {
         const result = cli.getCommand(["group", "subcommand"]);
 
         expect(result.success).toBe(true);
     });
 
-    it("Error nesting", function () {
+    it("Error nesting", function() {
         const result = cli.getCommand(["errrror", "error"]);
 
         expect(result.success).toBe(false);
     });
 
-
-    it("Deep nesting", function () {
+    it("Deep nesting", function() {
         const result = cli.getCommand(["group", "subcommand", "foo"]);
 
         expect(result.success).toBe(true);

@@ -1,5 +1,5 @@
 import similar from 'similar-strings';
-import { arrFrom, isString, objDefaults, objDefaultsDeep, objEntries } from 'lightdash';
+import { objDefaults, objDefaultsDeep, isString, objEntries, arrFrom } from 'lightdash';
 
 /**
  * Creates an aliased map from a normal map

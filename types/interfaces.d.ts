@@ -42,6 +42,7 @@ interface IClingyOptions {
     validQuotes: string[];
 }
 interface IClingyArg {
+    [key: string]: any;
     name: string;
     required: true;
     default?: null;

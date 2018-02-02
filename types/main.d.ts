@@ -5,7 +5,7 @@ import { IClingyCommand, IClingyOptions, IClingyLookupSuccessful, IClingyLookupM
  * @class
  */
 declare const Clingy: {
-    new (commands: any, options?: any): {
+    new (commands?: any, options?: any): {
         options: IClingyOptions;
         map: Map<string, IClingyCommand>;
         mapAliased: Map<string, IClingyCommand>;

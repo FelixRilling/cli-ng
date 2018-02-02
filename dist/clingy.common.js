@@ -157,7 +157,7 @@ const optionsDefault = {
      * List of characters to allow as quote-enclosing string
      * If set to null, quotes-enclosed strings will be disabled
      */
-    validQuotes: ['"']
+    validQuotes: ["\""]
 };
 /**
  * Creates a map and submaps out of a command object

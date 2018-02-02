@@ -42,7 +42,7 @@ const optionsDefault: IClingyOptionsDefaulted = {
      * List of characters to allow as quote-enclosing string
      * If set to null, quotes-enclosed strings will be disabled
      */
-    validQuotes: ['"']
+    validQuotes: ["\""]
 };
 
 /**
@@ -57,7 +57,7 @@ const mapCommands = (
     caseSensitive: boolean
 ): clingyCommandMap =>
     new Map(
-        commandEntries.map((command, index): [string, IClingyCommand] => {
+        commandEntries.map((command, index): clingyCommandEntry => {
             if (!isString(command[0])) {
                 throw new TypeError(
                     `command key '${command[0]}' is not a string`

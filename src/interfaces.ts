@@ -23,14 +23,22 @@ interface IClingyLookupSuccessful {
     args?: IClingyLookupArgs;
 }
 
-interface IClingyLookupUnsuccessful {
+interface IClingyLookupMissingCommand {
     success: false;
     error: {
-        type: "missingCommand" | "missingArg";
-        missing: string[] | IClingyArg[];
-        similar?: string[];
+        type: "missingCommand";
+        missing: string[];
+        similar: string[];
     };
-    path?: string[];
+    path: string[];
+}
+
+interface IClingyLookupMissingArg {
+    success: false;
+    error: {
+        type: "missingArg";
+        missing: IClingyArg[];
+    };
 }
 
 interface IClingyLookupArgs {
@@ -76,5 +84,6 @@ export {
     IClingyCommandProcessed,
     IClingyCommands,
     IClingyLookupSuccessful,
-    IClingyLookupUnsuccessful
+    IClingyLookupMissingCommand,
+    IClingyLookupMissingArg
 };

@@ -1,4 +1,4 @@
-import { IClingyCommand, IClingyOptions, IClingyLookupSuccessful, IClingyLookupUnsuccessful } from "./interfaces";
+import { IClingyCommand, IClingyOptions, IClingyLookupSuccessful, IClingyLookupMissingCommand, IClingyLookupMissingArg } from "./interfaces";
 /**
  * Clingy class
  *
@@ -13,8 +13,8 @@ declare const Clingy: {
             map: Map<string, IClingyCommand>;
             mapAliased: Map<string, IClingyCommand>;
         };
-        getCommand(path: string[], pathUsed?: string[]): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
-        parse(input: string): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
+        getCommand(path: string[], pathUsed?: string[]): IClingyLookupSuccessful | IClingyLookupMissingCommand;
+        parse(input: string): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg;
     };
 };
 export default Clingy;

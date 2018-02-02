@@ -21,7 +21,8 @@ import {
     IClingyCommands,
     IClingyOptions,
     IClingyLookupSuccessful,
-    IClingyLookupUnsuccessful
+    IClingyLookupMissingCommand,
+    IClingyLookupMissingArg
 } from "./interfaces";
 import {
     clingyCommandEntry,
@@ -137,14 +138,14 @@ const Clingy = class implements IClingy {
     public getCommand(
         path: string[],
         pathUsed: string[] = []
-    ): IClingyLookupSuccessful | IClingyLookupUnsuccessful {
+    ): IClingyLookupSuccessful | IClingyLookupMissingCommand {
         const pathUsedNew = pathUsed;
         const commandNameCurrent = this.options.caseSensitive
             ? path[0]
             : path[0].toLowerCase();
 
         if (!this.mapAliased.has(commandNameCurrent)) {
-            return <IClingyLookupUnsuccessful>{
+            return <IClingyLookupMissingCommand>{
                 success: false,
                 error: {
                     type: "missingCommand",
@@ -191,7 +192,7 @@ const Clingy = class implements IClingy {
      */
     public parse(
         input: string
-    ): IClingyLookupSuccessful | IClingyLookupUnsuccessful {
+    ): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg {
         const inputParsed = parseString(input, this.options.validQuotes);
         const commandLookup = this.getCommand(inputParsed);
 
@@ -206,7 +207,7 @@ const Clingy = class implements IClingy {
 
         if (argsMapped.missing.length !== 0) {
             // Error: Missing arguments
-            return {
+            return <IClingyLookupMissingArg>{
                 success: false,
                 error: {
                     type: "missingArg",

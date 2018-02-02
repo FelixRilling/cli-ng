@@ -20,7 +20,6 @@ import {
     IClingyCommandProcessed,
     IClingyCommands,
     IClingyOptions,
-    IClingyOptionsDefaulted,
     IClingyLookupSuccessful,
     IClingyLookupUnsuccessful
 } from "./interfaces";
@@ -33,7 +32,7 @@ import {
 /**
  * Default option structure
  */
-const optionsDefault: IClingyOptionsDefaulted = {
+const optionsDefault: IClingyOptions = {
     /**
      * If names should be treated case-sensitive for lookup
      */
@@ -97,7 +96,7 @@ const mapCommands = (
  * @class
  */
 const Clingy = class implements IClingy {
-    public options: IClingyOptionsDefaulted;
+    public options: IClingyOptions;
     public map: clingyCommandMap;
     public mapAliased: clingyCommandMap;
     /**
@@ -106,8 +105,8 @@ const Clingy = class implements IClingy {
      * @param {Object} commands Command object
      * @param {Object} options Option object
      */
-    constructor(commands: IClingyCommands, options: IClingyOptions = {}) {
-        this.options = <IClingyOptionsDefaulted>objDefaultsDeep(
+    constructor(commands: any, options: any = {}) {
+        this.options = <IClingyOptions>objDefaultsDeep(
             options,
             optionsDefault
         );

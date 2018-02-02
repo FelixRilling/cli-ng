@@ -1,12 +1,12 @@
-import { IClingyCommand, IClingyCommands, IClingyOptions, IClingyOptionsDefaulted, IClingyLookupSuccessful, IClingyLookupUnsuccessful } from "./interfaces";
+import { IClingyCommand, IClingyOptions, IClingyLookupSuccessful, IClingyLookupUnsuccessful } from "./interfaces";
 /**
  * Clingy class
  *
  * @class
  */
 declare const Clingy: {
-    new (commands: IClingyCommands, options?: IClingyOptions): {
-        options: IClingyOptionsDefaulted;
+    new (commands: any, options?: any): {
+        options: IClingyOptions;
         map: Map<string, IClingyCommand>;
         mapAliased: Map<string, IClingyCommand>;
         getAll(): {

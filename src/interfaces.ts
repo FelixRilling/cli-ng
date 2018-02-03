@@ -54,7 +54,7 @@ interface IClingyOptions {
 interface IClingyArg {
     [key: string]: any;
     name: string;
-    required: true;
+    required: boolean;
     default?: null;
 }
 

@@ -1,7 +1,7 @@
 import { clingyCommandMap } from "./types";
 
 interface IClingy {
-    options: IClingyOptionsDefaulted;
+    options: IClingyOptions;
     map: clingyCommandMap;
     mapAliased: clingyCommandMap;
     getAll(): {
@@ -11,8 +11,8 @@ interface IClingy {
     getCommand(
         path: string[],
         pathUsed?: string[]
-    ): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
-    parse(input: string): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
+    ): IClingyLookupSuccessful | IClingyLookupMissingCommand;
+    parse(input: string): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg;
 }
 
 interface IClingyLookupSuccessful {
@@ -78,7 +78,7 @@ interface IClingyCommands {
 export {
     IClingy,
     IClingyOptions,
-    IClingyOptionsDefaulted,
+    IClingyOptions,
     IClingyArg,
     IClingyCommand,
     IClingyLookupArgs,

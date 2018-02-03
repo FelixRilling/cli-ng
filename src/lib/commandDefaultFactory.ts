@@ -11,7 +11,7 @@ import { IClingyCommand } from "../interfaces";
 const commandDefaultFactory = (index: number): IClingyCommand => {
     return {
         name: `command${index}`,
-        fn: null,
+        fn: () => { },
         alias: [],
         args: [],
         sub: null

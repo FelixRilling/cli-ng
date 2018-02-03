@@ -1,14 +1,14 @@
 import { clingyCommandMap } from "./types";
 interface IClingy {
-    options: IClingyOptionsDefaulted;
+    options: IClingyOptions;
     map: clingyCommandMap;
     mapAliased: clingyCommandMap;
     getAll(): {
         map: clingyCommandMap;
         mapAliased: clingyCommandMap;
     };
-    getCommand(path: string[], pathUsed?: string[]): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
-    parse(input: string): IClingyLookupSuccessful | IClingyLookupUnsuccessful;
+    getCommand(path: string[], pathUsed?: string[]): IClingyLookupSuccessful | IClingyLookupMissingCommand;
+    parse(input: string): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg;
 }
 interface IClingyLookupSuccessful {
     success: true;
@@ -61,4 +61,4 @@ interface IClingyCommandProcessed extends IClingyCommand {
 interface IClingyCommands {
     [key: string]: IClingyCommand;
 }
-export { IClingy, IClingyOptions, IClingyOptionsDefaulted, IClingyArg, IClingyCommand, IClingyLookupArgs, IClingyCommandProcessed, IClingyCommands, IClingyLookupSuccessful, IClingyLookupMissingCommand, IClingyLookupMissingArg };
+export { IClingy, IClingyOptions, IClingyOptions, IClingyArg, IClingyCommand, IClingyLookupArgs, IClingyCommandProcessed, IClingyCommands, IClingyLookupSuccessful, IClingyLookupMissingCommand, IClingyLookupMissingArg };

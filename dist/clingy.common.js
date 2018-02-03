@@ -138,7 +138,7 @@ const argDefaultFactory = (index) => {
 const commandDefaultFactory = (index) => {
     return {
         name: `command${index}`,
-        fn: null,
+        fn: () => { },
         alias: [],
         args: [],
         sub: null

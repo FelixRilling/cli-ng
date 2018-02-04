@@ -17,10 +17,10 @@ const splitWithQuotedStrings = (str: string, validQuotes: string[]) => {
         const isSpace = SPACE.test(letter);
 
         if (validQuotes.includes(letter)) {
-            //Toggle inString once a quote is encountered
+            // Toggle inString once a quote is encountered
             inString = !inString;
         } else if (inString || !isSpace) {
-            //push everything thats not a quote or a space(if outside quotes)
+            // Push everything thats not a quote or a space(if outside quotes)
             partStr.push(letter);
         }
 
@@ -28,7 +28,7 @@ const splitWithQuotedStrings = (str: string, validQuotes: string[]) => {
             (partStr.length > 0 && isSpace && !inString) ||
             index === str.length - 1
         ) {
-            //push current arg to container
+            // Push current arg to container
             result.push(partStr.join(""));
             partStr = [];
         }

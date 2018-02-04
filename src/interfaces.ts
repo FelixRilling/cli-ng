@@ -12,7 +12,12 @@ interface IClingy {
         path: string[],
         pathUsed?: string[]
     ): IClingyLookupSuccessful | IClingyLookupMissingCommand;
-    parse(input: string): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg;
+    parse(
+        input: string
+    ):
+        | IClingyLookupSuccessful
+        | IClingyLookupMissingCommand
+        | IClingyLookupMissingArg;
 }
 
 interface IClingyLookupSuccessful {

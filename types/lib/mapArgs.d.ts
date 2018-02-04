@@ -1,4 +1,4 @@
-import { IClingyArg, IClingyArgLookup } from "../interfaces";
+import { IClingyArg } from "../interfaces";
 /**
  * Matches command-map arguments with input args
  *
@@ -7,5 +7,10 @@ import { IClingyArg, IClingyArgLookup } from "../interfaces";
  * @param {Array<Object>} givenArgs
  * @returns {Object}
  */
-declare const mapArgs: (expectedArgs: IClingyArg[], givenArgs: string[]) => IClingyArgLookup;
+declare const mapArgs: (expectedArgs: IClingyArg[], givenArgs: string[]) => {
+    args: {
+        _all: string[];
+    };
+    missing: IClingyArg[];
+};
 export default mapArgs;

@@ -2,8 +2,42 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var similar = _interopDefault(require('similar-strings'));
 var lightdash = require('lightdash');
+var similar = _interopDefault(require('similar-strings'));
+
+/**
+ * Default argument structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const argDefaultFactory = (index) => {
+    return {
+        name: `arg${index}`,
+        required: true,
+        default: null
+    };
+};
+
+/**
+ * Default command structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const commandDefaultFactory = (index) => {
+    return {
+        name: `command${index}`,
+        fn: () => { },
+        alias: [],
+        args: [],
+        sub: null
+    };
+};
 
 /**
  * Creates an aliased map from a normal map
@@ -79,16 +113,16 @@ const splitWithQuotedStrings = (str, validQuotes) => {
     str.split("").forEach((letter, index) => {
         const isSpace = SPACE.test(letter);
         if (validQuotes.includes(letter)) {
-            //Toggle inString once a quote is encountered
+            // Toggle inString once a quote is encountered
             inString = !inString;
         }
         else if (inString || !isSpace) {
-            //push everything thats not a quote or a space(if outside quotes)
+            // Push everything thats not a quote or a space(if outside quotes)
             partStr.push(letter);
         }
         if ((partStr.length > 0 && isSpace && !inString) ||
             index === str.length - 1) {
-            //push current arg to container
+            // Push current arg to container
             result.push(partStr.join(""));
             partStr = [];
         }
@@ -112,40 +146,6 @@ const parseString = (strInput, validQuotes) => {
 };
 
 /**
- * Default argument structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const argDefaultFactory = (index) => {
-    return {
-        name: `arg${index}`,
-        required: true,
-        default: null
-    };
-};
-
-/**
- * Default command structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const commandDefaultFactory = (index) => {
-    return {
-        name: `command${index}`,
-        fn: () => { },
-        alias: [],
-        args: [],
-        sub: null
-    };
-};
-
-/**
  * Default option structure
  */
 const optionsDefault = {
@@ -157,7 +157,7 @@ const optionsDefault = {
      * List of characters to allow as quote-enclosing string
      * If set to null, quotes-enclosed strings will be disabled
      */
-    validQuotes: ["\""]
+    validQuotes: ['"']
 };
 /**
  * Creates a map and submaps out of a command object
@@ -177,8 +177,8 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
     // Save key as name property to keep track in aliases
     commandValue.name = commandKey;
     // Merge each arg with default arg structure
-    commandValue.args = commandValue.args.map((arg, index) => lightdash.objDefaults(arg, argDefaultFactory(index)));
-    //If sub-groups exist, recurse by creating a new Clingy instance
+    commandValue.args = commandValue.args.map((arg, argIndex) => lightdash.objDefaults(arg, argDefaultFactory(argIndex)));
+    // If sub-groups exist, recurse by creating a new Clingy instance
     if (commandValue.sub !== null) {
         commandValue.sub = new Clingy(commandValue.sub);
     }
@@ -247,7 +247,7 @@ const Clingy = class {
         }
         return {
             success: true,
-            command: command,
+            command,
             path: pathUsedNew,
             pathDangling: commandPathNew
         };

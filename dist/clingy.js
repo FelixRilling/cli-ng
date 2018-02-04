@@ -2,60 +2,6 @@ var clingy = (function () {
 'use strict';
 
 /**
- * Calculate levenshtein string distance
- *
- * @param {string} str1 Input string 1
- * @param {string} str2 Input string 2
- * @returns {number} String distance
- */
-const levenshteinStringDistance = (str1, str2) => {
-    // Cache string length
-    const str1_l = str1.length;
-    const str2_l = str2.length;
-    if (str1_l === 0) {
-        // Exit early if str1 is empty
-        return str2_l;
-    }
-    else if (str2_l === 0) {
-        // Exit early if str2 is empty
-        return str1_l;
-    }
-    else {
-        // Create matrix that is (str2.length+1)x(str1.length+1) fields
-        const matrix = [];
-        // Increment along the first column of each row
-        for (let y = 0; y <= str2_l; y++) {
-            matrix[y] = [y];
-        }
-        // Increment each column in the first row
-        for (let x = 0; x <= str1_l; x++) {
-            matrix[0][x] = x;
-        }
-        // Fill matrix
-        for (let y = 1; y <= str2_l; y++) {
-            const matrix_column_current = matrix[y];
-            const matrix_column_last = matrix[y - 1];
-            for (let x = 1; x <= str1_l; x++) {
-                if (str2.charAt(y - 1) === str1.charAt(x - 1)) {
-                    // Check if letter at the position is the same
-                    matrix_column_current[x] = matrix_column_last[x - 1];
-                }
-                else {
-                    // Check for substitution/insertion/deletion
-                    const substitution = matrix_column_last[x - 1] + 1;
-                    const insertion = matrix_column_current[x - 1] + 1;
-                    const deletion = matrix_column_last[x] + 1;
-                    // Get smallest of the three
-                    matrix_column_current[x] = Math.min(substitution, insertion, deletion);
-                }
-            }
-        }
-        // Return max value
-        return matrix[str2_l][str1_l];
-    }
-};
-
-/**
  * Checks if the value has a certain type-string.
  *
  * @function isTypeOf
@@ -274,7 +220,7 @@ const forEach = (arr, fn) => arr.forEach(fn);
  * forEachEntry(a, (key, val, index) => a[key] = val * index)
  */
 const forEachEntry = (obj, fn) => {
-    forEach((objEntries(obj)), (entry, index) => {
+    forEach(objEntries(obj), (entry, index) => {
         fn(entry[0], entry[1], index, obj);
     });
 };
@@ -350,9 +296,9 @@ const objMap = (obj, fn) => {
  * // returns {a: {b: 4, c: [20, 40]}}
  * arrMapDeep({a: {b: 2, c: [10, 20]}}, (key, val) => val * 2)
  */
-const objMapDeep = (obj, fn) => objMap(obj, (key, val, index, objNew) => isObjectLike(val) ?
-    objMapDeep(val, fn) :
-    fn(key, val, index, objNew));
+const objMapDeep = (obj, fn) => objMap(obj, (key, val, index, objNew) => isObjectLike(val)
+    ? objMapDeep(val, fn)
+    : fn(key, val, index, objNew));
 
 /**
  * Merges contents of two objects.
@@ -403,9 +349,7 @@ const objFrom = (obj) => objMerge({}, obj);
  *
  * b.a.c.a = 123;
  */
-const objFromDeep = (obj) => objMapDeep(objFrom(obj), (key, val) => isObjectLike(val) ?
-    objFrom(val) :
-    val);
+const objFromDeep = (obj) => objMapDeep(objFrom(obj), (key, val) => (isObjectLike(val) ? objFrom(val) : val));
 
 /**
  * Sets every nil property of object to the value from the default object.
@@ -421,7 +365,9 @@ const objFromDeep = (obj) => objMapDeep(objFrom(obj), (key, val) => isObjectLike
  * objDefaults({a: 1, c: 5}, {a: 1, b: 2, c: 3})
  */
 const objDefaults = (obj, objDefault) => {
-    const result = isArray(obj) ? arrFrom(obj) : objFrom(obj);
+    const result = isArray(obj)
+        ? arrFrom(obj)
+        : objFrom(obj);
     forEachEntry(objDefault, (keyDefault, valDefault) => {
         if (!hasKey(obj, keyDefault)) {
             result[keyDefault] = valDefault;
@@ -444,20 +390,75 @@ const objDefaults = (obj, objDefault) => {
  * objDefaultsDeep({a: [1, 2], c: {f: "x"}}, {a: [1, 2, 3], b: 2, c: {f: "y"}})
  */
 const objDefaultsDeep = (obj, objDefault) => {
-    const result = isArray(obj) ? arrFrom(obj) : objFromDeep(obj);
+    const result = isArray(obj)
+        ? arrFrom(obj)
+        : objFromDeep(obj);
     forEachEntry(objDefault, (keyDefault, valDefault) => {
         const valGiven = obj[keyDefault];
         if (isObjectLike(valDefault)) {
-            result[keyDefault] =
-                isObjectLike(valGiven)
-                    ? objDefaultsDeep(valGiven, valDefault)
-                    : valDefault;
+            result[keyDefault] = isObjectLike(valGiven)
+                ? objDefaultsDeep(valGiven, valDefault)
+                : valDefault;
         }
         else {
             result[keyDefault] = isUndefined(valGiven) ? valDefault : valGiven;
         }
     });
     return result;
+};
+
+/**
+ * Calculate levenshtein string distance
+ *
+ * @param {string} str1 Input string 1
+ * @param {string} str2 Input string 2
+ * @returns {number} String distance
+ */
+const levenshteinStringDistance = (str1, str2) => {
+    // Cache string length
+    const str1_l = str1.length;
+    const str2_l = str2.length;
+    if (str1_l === 0) {
+        // Exit early if str1 is empty
+        return str2_l;
+    }
+    else if (str2_l === 0) {
+        // Exit early if str2 is empty
+        return str1_l;
+    }
+    else {
+        // Create matrix that is (str2.length+1)x(str1.length+1) fields
+        const matrix = [];
+        // Increment along the first column of each row
+        for (let y = 0; y <= str2_l; y++) {
+            matrix[y] = [y];
+        }
+        // Increment each column in the first row
+        for (let x = 0; x <= str1_l; x++) {
+            matrix[0][x] = x;
+        }
+        // Fill matrix
+        for (let y = 1; y <= str2_l; y++) {
+            const matrix_column_current = matrix[y];
+            const matrix_column_last = matrix[y - 1];
+            for (let x = 1; x <= str1_l; x++) {
+                if (str2.charAt(y - 1) === str1.charAt(x - 1)) {
+                    // Check if letter at the position is the same
+                    matrix_column_current[x] = matrix_column_last[x - 1];
+                }
+                else {
+                    // Check for substitution/insertion/deletion
+                    const substitution = matrix_column_last[x - 1] + 1;
+                    const insertion = matrix_column_current[x - 1] + 1;
+                    const deletion = matrix_column_last[x] + 1;
+                    // Get smallest of the three
+                    matrix_column_current[x] = Math.min(substitution, insertion, deletion);
+                }
+            }
+        }
+        // Return max value
+        return matrix[str2_l][str1_l];
+    }
 };
 
 /**
@@ -493,6 +494,40 @@ const similarStrings = (str, list, returnFull = false) => {
         }
     });
     return returnFull ? result : getLowestKeyValue(result);
+};
+
+/**
+ * Default argument structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const argDefaultFactory = (index) => {
+    return {
+        name: `arg${index}`,
+        required: true,
+        default: null
+    };
+};
+
+/**
+ * Default command structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const commandDefaultFactory = (index) => {
+    return {
+        name: `command${index}`,
+        fn: () => { },
+        alias: [],
+        args: [],
+        sub: null
+    };
 };
 
 /**
@@ -569,16 +604,16 @@ const splitWithQuotedStrings = (str, validQuotes) => {
     str.split("").forEach((letter, index) => {
         const isSpace = SPACE.test(letter);
         if (validQuotes.includes(letter)) {
-            //Toggle inString once a quote is encountered
+            // Toggle inString once a quote is encountered
             inString = !inString;
         }
         else if (inString || !isSpace) {
-            //push everything thats not a quote or a space(if outside quotes)
+            // Push everything thats not a quote or a space(if outside quotes)
             partStr.push(letter);
         }
         if ((partStr.length > 0 && isSpace && !inString) ||
             index === str.length - 1) {
-            //push current arg to container
+            // Push current arg to container
             result.push(partStr.join(""));
             partStr = [];
         }
@@ -602,40 +637,6 @@ const parseString = (strInput, validQuotes) => {
 };
 
 /**
- * Default argument structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const argDefaultFactory = (index) => {
-    return {
-        name: `arg${index}`,
-        required: true,
-        default: null
-    };
-};
-
-/**
- * Default command structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const commandDefaultFactory = (index) => {
-    return {
-        name: `command${index}`,
-        fn: () => { },
-        alias: [],
-        args: [],
-        sub: null
-    };
-};
-
-/**
  * Default option structure
  */
 const optionsDefault = {
@@ -647,7 +648,7 @@ const optionsDefault = {
      * List of characters to allow as quote-enclosing string
      * If set to null, quotes-enclosed strings will be disabled
      */
-    validQuotes: ["\""]
+    validQuotes: ['"']
 };
 /**
  * Creates a map and submaps out of a command object
@@ -667,8 +668,8 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
     // Save key as name property to keep track in aliases
     commandValue.name = commandKey;
     // Merge each arg with default arg structure
-    commandValue.args = commandValue.args.map((arg, index) => objDefaults(arg, argDefaultFactory(index)));
-    //If sub-groups exist, recurse by creating a new Clingy instance
+    commandValue.args = commandValue.args.map((arg, argIndex) => objDefaults(arg, argDefaultFactory(argIndex)));
+    // If sub-groups exist, recurse by creating a new Clingy instance
     if (commandValue.sub !== null) {
         commandValue.sub = new Clingy(commandValue.sub);
     }
@@ -737,7 +738,7 @@ const Clingy = class {
         }
         return {
             success: true,
-            command: command,
+            command,
             path: pathUsedNew,
             pathDangling: commandPathNew
         };

@@ -1,4 +1,4 @@
-import { IClingyCommand, IClingyOptions, IClingyLookupSuccessful, IClingyLookupMissingCommand, IClingyLookupMissingArg } from "./interfaces";
+import { IClingyCommand, IClingyLookupMissingArg, IClingyLookupMissingCommand, IClingyLookupSuccessful, IClingyOptions } from "./interfaces";
 /**
  * Clingy class
  *

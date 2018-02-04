@@ -1,32 +1,32 @@
 "use strict";
 
-import similar from "similar-strings";
 import {
+    arrFrom,
+    isString,
     objDefaults,
     objDefaultsDeep,
-    isString,
-    objEntries,
-    arrFrom
+    objEntries
 } from "lightdash";
-import getAliasedMap from "./lib/getAliasedMap";
-import mapArgs from "./lib/mapArgs";
-import parseString from "./lib/parseString";
-import argDefaultFactory from "./lib/argDefaultFactory";
-import commandDefaultFactory from "./lib/commandDefaultFactory";
+import similar from "similar-strings";
 import {
     IClingy,
     IClingyArg,
     IClingyCommand,
     IClingyCommandProcessed,
     IClingyCommands,
-    IClingyOptions,
-    IClingyLookupSuccessful,
+    IClingyLookupMissingArg,
     IClingyLookupMissingCommand,
-    IClingyLookupMissingArg
+    IClingyLookupSuccessful,
+    IClingyOptions
 } from "./interfaces";
+import argDefaultFactory from "./lib/argDefaultFactory";
+import commandDefaultFactory from "./lib/commandDefaultFactory";
+import getAliasedMap from "./lib/getAliasedMap";
+import mapArgs from "./lib/mapArgs";
+import parseString from "./lib/parseString";
 import {
-    clingyCommandEntry,
     clingyCommandEntries,
+    clingyCommandEntry,
     clingyCommandMap
 } from "./types";
 
@@ -42,7 +42,7 @@ const optionsDefault: IClingyOptions = {
      * List of characters to allow as quote-enclosing string
      * If set to null, quotes-enclosed strings will be disabled
      */
-    validQuotes: ["\""]
+    validQuotes: ['"']
 };
 
 /**
@@ -76,11 +76,11 @@ const mapCommands = (
             commandValue.name = commandKey;
             // Merge each arg with default arg structure
             commandValue.args = commandValue.args.map(
-                (arg, index) =>
-                    <IClingyArg>objDefaults(arg, argDefaultFactory(index))
+                (arg, argIndex) =>
+                    <IClingyArg>objDefaults(arg, argDefaultFactory(argIndex))
             );
 
-            //If sub-groups exist, recurse by creating a new Clingy instance
+            // If sub-groups exist, recurse by creating a new Clingy instance
             if (commandValue.sub !== null) {
                 (<IClingyCommandProcessed>commandValue).sub = new Clingy(
                     commandValue.sub
@@ -107,10 +107,7 @@ const Clingy = class implements IClingy {
      * @param {Object} options Option object
      */
     constructor(commands: any = {}, options: any = {}) {
-        this.options = <IClingyOptions>objDefaultsDeep(
-            options,
-            optionsDefault
-        );
+        this.options = <IClingyOptions>objDefaultsDeep(options, optionsDefault);
         this.map = mapCommands(
             objEntries(commands),
             this.options.caseSensitive
@@ -179,7 +176,7 @@ const Clingy = class implements IClingy {
 
         return {
             success: true,
-            command: command,
+            command,
             path: pathUsedNew,
             pathDangling: commandPathNew
         };
@@ -192,7 +189,10 @@ const Clingy = class implements IClingy {
      */
     public parse(
         input: string
-    ): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg {
+    ):
+        | IClingyLookupSuccessful
+        | IClingyLookupMissingCommand
+        | IClingyLookupMissingArg {
         const inputParsed = parseString(input, this.options.validQuotes);
         const commandLookup = this.getCommand(inputParsed);
 

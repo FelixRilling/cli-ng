@@ -263,6 +263,63 @@ const isString = (val) => isTypeOf(val, "string");
 const arrFrom = _Array.from;
 
 /**
+ * Merges contents of two objects.
+ *
+ * `Object.assign` shorthand.
+ *
+ * @function objMerge
+ * @memberof Object
+ * @since 2.7.0
+ * @param {Object} obj
+ * @param {Object} objSecondary
+ * @returns {Object}
+ * @example
+ * // returns {a: 1, b: 2}
+ * objMerge({a: 1}, {b: 2})
+ */
+const objMerge = _Object.assign;
+
+/**
+ * Creates a new object with the entries of the input object.
+ *
+ * @function objFrom
+ * @memberof Object
+ * @since 1.0.0
+ * @param {Object} obj
+ * @returns {Object}
+ * @example
+ * // returns a = {a: 4, b: 2}, b = {a: 10, b: 2}
+ * const a = {a: 4, b: 2};
+ * const b = objFrom(a);
+ *
+ * b.a = 10;
+ */
+const objFrom = (obj) => objMerge({}, obj);
+
+/**
+ * Sets every nil property of object to the value from the default object.
+ *
+ * @function objDefaults
+ * @memberof Object
+ * @since 2.6.0
+ * @param {Object} obj
+ * @param {Object} objDefault
+ * @returns {Object}
+ * @example
+ * // returns a = {a: 1, b: 2, c: 5}
+ * objDefaults({a: 1, c: 5}, {a: 1, b: 2, c: 3})
+ */
+const objDefaults = (obj, objDefault) => {
+    const result = isArray(obj) ? arrFrom(obj) : objFrom(obj);
+    forEachEntry(objDefault, (keyDefault, valDefault) => {
+        if (!hasKey(obj, keyDefault)) {
+            result[keyDefault] = valDefault;
+        }
+    });
+    return result;
+};
+
+/**
  * Maps each entry of an object and returns the result.
  *
  * @function objMap
@@ -301,40 +358,6 @@ const objMapDeep = (obj, fn) => objMap(obj, (key, val, index, objNew) => isObjec
     : fn(key, val, index, objNew));
 
 /**
- * Merges contents of two objects.
- *
- * `Object.assign` shorthand.
- *
- * @function objMerge
- * @memberof Object
- * @since 2.7.0
- * @param {Object} obj
- * @param {Object} objSecondary
- * @returns {Object}
- * @example
- * // returns {a: 1, b: 2}
- * objMerge({a: 1}, {b: 2})
- */
-const objMerge = _Object.assign;
-
-/**
- * Creates a new object with the entries of the input object.
- *
- * @function objFrom
- * @memberof Object
- * @since 1.0.0
- * @param {object} obj
- * @returns {object}
- * @example
- * // returns a = {a: 4, b: 2}, b = {a: 10, b: 2}
- * const a = {a: 4, b: 2};
- * const b = objFrom(a);
- *
- * b.a = 10;
- */
-const objFrom = (obj) => objMerge({}, obj);
-
-/**
  * Deeply creates a new object with the entries of the input object.
  *
  * @function objFromDeep
@@ -352,31 +375,6 @@ const objFrom = (obj) => objMerge({}, obj);
 const objFromDeep = (obj) => objMapDeep(objFrom(obj), (key, val) => (isObjectLike(val) ? objFrom(val) : val));
 
 /**
- * Sets every nil property of object to the value from the default object.
- *
- * @function objDefaults
- * @memberof Object
- * @since 2.6.0
- * @param {Object} obj
- * @param {Object} objDefault
- * @returns {Object}
- * @example
- * // returns a = {a: 1, b: 2, c: 5}
- * objDefaults({a: 1, c: 5}, {a: 1, b: 2, c: 3})
- */
-const objDefaults = (obj, objDefault) => {
-    const result = isArray(obj)
-        ? arrFrom(obj)
-        : objFrom(obj);
-    forEachEntry(objDefault, (keyDefault, valDefault) => {
-        if (!hasKey(obj, keyDefault)) {
-            result[keyDefault] = valDefault;
-        }
-    });
-    return result;
-};
-
-/**
  * Recursively sets every nil property of object to the value from the default object.
  *
  * @function objDefaultsDeep
@@ -390,9 +388,7 @@ const objDefaults = (obj, objDefault) => {
  * objDefaultsDeep({a: [1, 2], c: {f: "x"}}, {a: [1, 2, 3], b: 2, c: {f: "y"}})
  */
 const objDefaultsDeep = (obj, objDefault) => {
-    const result = isArray(obj)
-        ? arrFrom(obj)
-        : objFromDeep(obj);
+    const result = isArray(obj) ? arrFrom(obj) : objFromDeep(obj);
     forEachEntry(objDefault, (keyDefault, valDefault) => {
         const valGiven = obj[keyDefault];
         if (isObjectLike(valDefault)) {

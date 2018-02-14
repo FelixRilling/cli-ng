@@ -216,10 +216,13 @@ const Clingy = class {
      * @returns {Object}
      */
     getCommand(path, pathUsed = []) {
-        const pathUsedNew = pathUsed;
+        if (path.length < 1) {
+            throw new Error("Path does not contain at least one item");
+        }
         const commandNameCurrent = this.options.caseSensitive
             ? path[0]
             : path[0].toLowerCase();
+        const pathUsedNew = pathUsed;
         if (!this.mapAliased.has(commandNameCurrent)) {
             return {
                 success: false,

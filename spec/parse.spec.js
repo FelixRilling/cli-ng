@@ -6,12 +6,13 @@ const cli = new Clingy({
     about: {
         fn: () => "About",
         args: [],
-        alias: ["why", "?"]
+        alias: ["why", "?"],
+        sub: {
+            bar: () => "bar"
+        }
     },
     double: {
-        fn: args => {
-            return args.number * 2;
-        },
+        fn: args => args.number * 2,
         args: [
             {
                 name: "number",
@@ -22,9 +23,7 @@ const cli = new Clingy({
         alias: []
     },
     add: {
-        fn: args => {
-            return args.a + args.b;
-        },
+        fn: args => args.a + args.b,
         args: [
             {
                 name: "a",
@@ -41,38 +40,39 @@ const cli = new Clingy({
     }
 });
 
-describe("Main test", function() {
-    it("Basic get", function() {
-        const result = cli.getCommand(["about"]);
-
-        expect(result.success).toBe(true);
+describe("Parse", () => {
+    it("Empty command", () => {
+        expect(() => cli.parse("")).toThrowError(
+            Error,
+            "Path does not contain at least one item"
+        );
     });
 
-    it("Basic command", function() {
+    it("Basic command", () => {
         const result = cli.parse("about");
 
         expect(result.success).toBe(true);
     });
 
-    it("Basic command with redundant args", function() {
-        const result = cli.parse("about");
+    it("Basic command with redundant args", () => {
+        const result = cli.parse("about a b c d");
 
         expect(result.success).toBe(true);
     });
 
-    it("Advanced command with args", function() {
+    it("Advanced command with args", () => {
         const result = cli.parse("double 2");
 
         expect(result.success).toBe(true);
     });
 
-    it("Advanced command without args", function() {
+    it("Advanced command without args", () => {
         const result = cli.parse("double");
 
         expect(result.success).toBe(false);
     });
 
-    it("Advanced command with multiple args", function() {
+    it("Advanced command with multiple args", () => {
         const result = cli.parse("add 12 42");
 
         expect(result.success).toBe(true);

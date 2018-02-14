@@ -61,4 +61,4 @@ interface IClingyCommandProcessed extends IClingyCommand {
 interface IClingyCommands {
     [key: string]: IClingyCommand;
 }
-export { IClingy, IClingyOptions, IClingyOptions, IClingyArg, IClingyCommand, IClingyLookupArgs, IClingyCommandProcessed, IClingyCommands, IClingyLookupSuccessful, IClingyLookupMissingCommand, IClingyLookupMissingArg };
+export { IClingy, IClingyOptions, IClingyArg, IClingyCommand, IClingyLookupArgs, IClingyCommandProcessed, IClingyCommands, IClingyLookupSuccessful, IClingyLookupMissingCommand, IClingyLookupMissingArg };

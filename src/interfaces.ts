@@ -83,7 +83,6 @@ interface IClingyCommands {
 export {
     IClingy,
     IClingyOptions,
-    IClingyOptions,
     IClingyArg,
     IClingyCommand,
     IClingyLookupArgs,

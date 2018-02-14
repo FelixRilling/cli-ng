@@ -156,7 +156,7 @@ const optionsDefault = {
     validQuotes: ['"']
 };
 /**
- * Creates a map and submaps out of a command object
+ * Creates a map and sub-maps out of a command object
  *
  * @private
  * @param {Array<IClingyCommand>} commandEntries
@@ -209,7 +209,7 @@ const Clingy = class {
         };
     }
     /**
-     * Recursiveley searches a command
+     * Recursively searches a command
      *
      * @param {Array<string>} path Array of strings indicating the path to get
      * @param {Array<string>} [pathUsed=[]] Array of strings indicating the path that was taken so far

@@ -649,10 +649,6 @@ const parseString = (strInput, validQuotes) => {
   return validQuotes !== null ? splitWithQuotedStrings(str, validQuotes) : str.split(SPACE);
 };
 
-/**
- * Default option structure
- */
-
 const optionsDefault = {
   /**
    * If names should be treated case-sensitive for lookup
@@ -703,8 +699,8 @@ const Clingy = class {
    * Creates Clingy instance
    *
    * @constructor
-   * @param {Object} commands Command object
-   * @param {Object} options Option object
+   * @param {Object} commands
+   * @param {Object} options
    */
   constructor(commands = {}, options = {}) {
     this.options = objDefaultsDeep(options, optionsDefault);
@@ -712,7 +708,7 @@ const Clingy = class {
     this.mapAliased = getAliasedMap(this.map);
   }
   /**
-   * Returns internal maps
+   * Returns all instance maps
    *
    * @returns {Object}
    */
@@ -725,10 +721,10 @@ const Clingy = class {
     };
   }
   /**
-   * Recursively searches a command
+   * Looks up a command by path
    *
-   * @param {Array<string>} path Array of strings indicating the path to get
-   * @param {Array<string>} [pathUsed=[]] Array of strings indicating the path that was taken so far
+   * @param {Array<string>} path
+   * @param {Array<string>} [pathUsed=[]]
    * @returns {Object}
    */
 
@@ -773,7 +769,7 @@ const Clingy = class {
     };
   }
   /**
-   * Parses a cli-input-string to command and args
+   * Parses a CLI-like input string into command and args
    *
    * @param {string} input
    * @returns {Object}

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Clingy.html">Clingy</a><ul class='methods'><li data-type='method'><a href="Clingy.html#getAll">getAll</a></li><li data-type='method'><a href="Clingy.html#getCommand">getCommand</a></li><li data-type='method'><a href="Clingy.html#parse">parse</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>cli-ngy</h1>
+<p>A module to parse cli-input text and commands.</p>
+<h2>Usage</h2>
+<h3>Simple Command</h3>
+<p>Init a new instance with a &quot;hello&quot; command:</p>
+<pre class="prettyprint source lang-js"><code>//new Clingy(commands, options)
+const cli = new Clingy({
+    hello: {
+        fn: () => &quot;Hello World!&quot;, //Command function
+        alias: [&quot;helloworld&quot;, &quot;hi&quot;], //Array of aliases
+        args: [] //Array of argument objects
+    }
+});
+</code></pre>
+<p>then parse input</p>
+<pre class="prettyprint source lang-js"><code>cli.parse(&quot;hello&quot;);
+
+/*
+ * Returns:
+ */
+ {
+    success: true,
+    command: {
+        fn:  () => &quot;Hello World!&quot;,
+        alias: [&quot;helloworld&quot;, &quot;hi&quot;],
+        args: [],
+        name: &quot;hello&quot;
+    },
+    path: [&quot;hello&quot;],
+    pathDangling: []
+    args: {
+        _all:[]
+    }
+  }
+</code></pre>
+<p>The same result would be achieved by <code>cli.parse(&quot;hi&quot;);</code> as well, as we registered it as alias.</p>
+<p>If we try looking up a non-existent command, we will get an error object:</p>
+<pre class="prettyprint source lang-js"><code>cli.parse(&quot;foo&quot;);
+
+/*
+ * Returns:
+ */
+{
+    success: false,
+    error: {
+        type: &quot;missingCommand&quot;,
+        missing: &quot;foo&quot;,
+        similar: []
+    },
+    path: []
+}
+</code></pre>
+<h3>Command with arguments</h3>
+<p>You can define any number of arguments that a command can take</p>
+<pre class="prettyprint source lang-js"><code>const cli = new Clingy({
+    double: {
+        fn: args => Number(args.numberToDouble) * 2,
+        alias: [&quot;doublenumber&quot;],
+        args: [
+            {
+                name: &quot;numberToDouble&quot;, //name of the property in the args object
+                required: true //If this is true, the cli will return an error if no argument is present
+            }
+        ]
+    },
+    add: {
+        fn: args => Number(args.number1) + Number(args.number2),
+        alias: [],
+        args: [
+            {
+                name: &quot;number1&quot;,
+                required: true
+            },
+            {
+                name: &quot;number2&quot;,
+                required: false, //If this is false, the value for `default` will be supplemented
+                default: Math.PI
+            }
+        ]
+    }
+});
+</code></pre>
+<p>And then:</p>
+<pre class="prettyprint source lang-js"><code>cli.parse(&quot;double 10&quot;);
+
+/*
+ * Returns:
+ */
+{
+    success: true,
+    command:
+    {
+        fn: args => Number(args.numberToDouble) * 2,
+        alias: [&quot;doublenumber&quot;],
+        args: [
+            {
+                name: &quot;numberToDouble&quot;,
+                required: true
+            }
+        ]
+        name: &quot;double&quot;
+    },
+    path: [&quot;double&quot;],
+    pathDangling: [&quot;10&quot;],
+    args: {
+        _all:[&quot;10&quot;] // Array of all arguments given
+        numberToDouble: &quot;10&quot; // Our argument we got
+    }
+}
+</code></pre>
+<pre class="prettyprint source lang-js"><code>cli.parse(&quot;add 4 5 6&quot;);
+
+/*
+ * Returns:
+ */
+{
+    success: true,
+    command:
+    {
+        fn: args => Number(args.number1) + Number(args.number2),
+        alias: [],
+        args: [
+            {
+                name: &quot;number1&quot;,
+                required: true
+            },
+            {
+                name: &quot;number2&quot;,
+                required: false, //If this is false, the value for `default` will be supplemented
+                default: Math.PI
+            }
+        ]
+    },
+    path: [&quot;add&quot;],
+    pathDangling: [&quot;6&quot;],
+    args: {
+      _all:[&quot;4&quot;,&quot;5&quot;,&quot;6&quot;]
+      number1: &quot;4&quot;,
+      number2: &quot;6&quot;
+    }
+}
+</code></pre>
+<h3>Nested commands</h3>
+<p>Cli-ngy supports subcommands and command groups:</p>
+<pre class="prettyprint source lang-js"><code>const cli = new Clingy({
+    about: {
+        fn: () => &quot;About&quot;,
+        args: [],
+        alias: [&quot;why&quot;, &quot;?&quot;]
+    },
+    myGroup: {
+        fn: () => &quot;Group fn&quot;,
+        args: [],
+        alias: [&quot;group&quot;],
+        sub: {
+            foo: {
+                fn: () => &quot;Group subcommand 1&quot;,
+                args: [],
+                alias: [&quot;fizz&quot;]
+            },
+            bar: {
+                fn: () => &quot;Group subcommand 2&quot;,
+                args: [],
+                alias: [&quot;baaa&quot;]
+            }
+        }
+    }
+});
+</code></pre>
+<p>Which can be accessed with</p>
+<pre class="prettyprint source lang-js"><code>cli.parse(&quot;myGroup foo&quot;); //or with aliases: cli.parse(&quot;group foo&quot;); or cli.parse(&quot;group fizz&quot;);
+
+/*
+ * Returns:
+ */
+{
+    success: true,
+    command: {
+        fn: () => &quot;Group subcommand 1&quot;,
+        args: [],
+        alias: [&quot;fizz&quot;]
+    },
+    path: [&quot;myGroup&quot;, &quot;foo&quot;],
+    pathDangling: [],
+    args: {
+        _all:[]
+    }
+}
+</code></pre>
+<h3>Options</h3>
+<p>The constructor can be called with these options:</p>
+<pre class="prettyprint source lang-js"><code>{
+    /**
+     * If names should be treated case-sensitive for lookup
+     */
+    caseSensitive: true,
+    /**
+     * List of characters to allow as quote-enclosing string
+     * If set to null, quotes-enclosed strings will be disabled
+     */
+    validQuotes: ['&quot;']
+}
+</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.0-dev</a> on Mon Mar 12 2018 19:48:23 GMT+0100 (CET) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

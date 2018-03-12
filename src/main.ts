@@ -30,9 +30,6 @@ import {
     clingyCommandMap
 } from "./types";
 
-/**
- * Default option structure
- */
 const optionsDefault: IClingyOptions = {
     /**
      * If names should be treated case-sensitive for lookup
@@ -104,8 +101,8 @@ const Clingy = class implements IClingy {
      * Creates Clingy instance
      *
      * @constructor
-     * @param {Object} commands Command object
-     * @param {Object} options Option object
+     * @param {Object} commands
+     * @param {Object} options
      */
     constructor(commands: any = {}, options: any = {}) {
         this.options = <IClingyOptions>objDefaultsDeep(options, optionsDefault);
@@ -116,7 +113,7 @@ const Clingy = class implements IClingy {
         this.mapAliased = getAliasedMap(this.map);
     }
     /**
-     * Returns internal maps
+     * Returns all instance maps
      *
      * @returns {Object}
      */
@@ -127,10 +124,10 @@ const Clingy = class implements IClingy {
         };
     }
     /**
-     * Recursively searches a command
+     * Looks up a command by path
      *
-     * @param {Array<string>} path Array of strings indicating the path to get
-     * @param {Array<string>} [pathUsed=[]] Array of strings indicating the path that was taken so far
+     * @param {Array<string>} path
+     * @param {Array<string>} [pathUsed=[]]
      * @returns {Object}
      */
     public getCommand(
@@ -186,7 +183,7 @@ const Clingy = class implements IClingy {
         };
     }
     /**
-     * Parses a cli-input-string to command and args
+     * Parses a CLI-like input string into command and args
      *
      * @param {string} input
      * @returns {Object}

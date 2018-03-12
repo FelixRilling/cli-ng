@@ -8,7 +8,7 @@ import { clingyCommandMap } from "../types";
  * @param {Map} map
  * @returns {Map}
  */
-const getAliasedMap = (map: clingyCommandMap) => {
+const getAliasedMap = (map: clingyCommandMap): clingyCommandMap => {
     const result = new Map(map);
 
     map.forEach((command: IClingyCommand) => {

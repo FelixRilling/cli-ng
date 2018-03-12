@@ -51,6 +51,11 @@ interface IClingyLookupArgs {
     _all: string[];
 }
 
+interface IClingyArgsMapped {
+    args: IClingyLookupArgs;
+    missing: IClingyArg[];
+}
+
 interface IClingyOptions {
     caseSensitive: boolean;
     validQuotes: string[];
@@ -60,7 +65,7 @@ interface IClingyArg {
     [key: string]: any;
     name: string;
     required: boolean;
-    default?: null;
+    default?: any;
 }
 
 interface IClingyCommand {
@@ -84,6 +89,7 @@ export {
     IClingy,
     IClingyOptions,
     IClingyArg,
+    IClingyArgsMapped,
     IClingyCommand,
     IClingyLookupArgs,
     IClingyCommandProcessed,

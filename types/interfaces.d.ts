@@ -37,6 +37,10 @@ interface IClingyLookupArgs {
     [key: string]: string | string[];
     _all: string[];
 }
+interface IClingyArgsMapped {
+    args: IClingyLookupArgs;
+    missing: IClingyArg[];
+}
 interface IClingyOptions {
     caseSensitive: boolean;
     validQuotes: string[];
@@ -45,7 +49,7 @@ interface IClingyArg {
     [key: string]: any;
     name: string;
     required: boolean;
-    default?: null;
+    default?: any;
 }
 interface IClingyCommand {
     [key: string]: any;
@@ -61,4 +65,4 @@ interface IClingyCommandProcessed extends IClingyCommand {
 interface IClingyCommands {
     [key: string]: IClingyCommand;
 }
-export { IClingy, IClingyOptions, IClingyArg, IClingyCommand, IClingyLookupArgs, IClingyCommandProcessed, IClingyCommands, IClingyLookupSuccessful, IClingyLookupMissingCommand, IClingyLookupMissingArg };
+export { IClingy, IClingyOptions, IClingyArg, IClingyArgsMapped, IClingyCommand, IClingyLookupArgs, IClingyCommandProcessed, IClingyCommands, IClingyLookupSuccessful, IClingyLookupMissingCommand, IClingyLookupMissingArg };

@@ -8,7 +8,10 @@ const SPACE = /\s/;
  * @param {Array<string>} validQuotes
  * @returns {Array<string>}
  */
-const splitWithQuotedStrings = (str: string, validQuotes: string[]) => {
+const splitWithQuotedStrings = (
+    str: string,
+    validQuotes: string[]
+): string[] => {
     const result: string[] = [];
     let partStr: string[] = [];
     let inString = false;
@@ -45,7 +48,7 @@ const splitWithQuotedStrings = (str: string, validQuotes: string[]) => {
  * @param {Array<string>|null} validQuotes
  * @returns {Array<string>}
  */
-const parseString = (strInput: string, validQuotes: string[]) => {
+const parseString = (strInput: string, validQuotes: string[]): string[] => {
     const str = strInput.trim();
 
     // Only use the 'complex' algorithm if allowQuotedStrings is true

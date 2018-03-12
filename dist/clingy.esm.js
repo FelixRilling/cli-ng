@@ -189,6 +189,7 @@ const Clingy = class {
     /**
      * Creates Clingy instance
      *
+     * @constructor
      * @param {Object} commands Command object
      * @param {Object} options Option object
      */

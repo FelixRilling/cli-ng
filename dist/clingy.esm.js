@@ -1,4 +1,4 @@
-import { arrFrom, isString, objDefaults, objDefaultsDeep, objEntries } from 'lightdash';
+import { isString, objDefaults, objDefaultsDeep } from 'lightdash';
 import similar from 'similar-strings';
 
 /**
@@ -192,7 +192,7 @@ const Clingy = class {
      */
     constructor(commands = {}, options = {}) {
         this.options = objDefaultsDeep(options, optionsDefault);
-        this.map = mapCommands(objEntries(commands), this.options.caseSensitive);
+        this.map = mapCommands(Object.entries(commands), this.options.caseSensitive);
         this.mapAliased = getAliasedMap(this.map);
     }
     /**
@@ -227,7 +227,7 @@ const Clingy = class {
                 error: {
                     type: "missingCommand",
                     missing: [commandNameCurrent],
-                    similar: similar(commandNameCurrent, arrFrom(this.mapAliased.keys()))
+                    similar: similar(commandNameCurrent, Array.from(this.mapAliased.keys()))
                 },
                 path: pathUsedNew
             };

@@ -196,7 +196,7 @@ const Clingy = class {
      */
     constructor(commands = {}, options = {}) {
         this.options = lightdash.objDefaultsDeep(options, optionsDefault);
-        this.map = mapCommands(lightdash.objEntries(commands), this.options.caseSensitive);
+        this.map = mapCommands(Object.entries(commands), this.options.caseSensitive);
         this.mapAliased = getAliasedMap(this.map);
     }
     /**
@@ -231,7 +231,7 @@ const Clingy = class {
                 error: {
                     type: "missingCommand",
                     missing: [commandNameCurrent],
-                    similar: similar(commandNameCurrent, lightdash.arrFrom(this.mapAliased.keys()))
+                    similar: similar(commandNameCurrent, Array.from(this.mapAliased.keys()))
                 },
                 path: pathUsedNew
             };

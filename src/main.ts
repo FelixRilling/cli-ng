@@ -1,12 +1,6 @@
 "use strict";
 
-import {
-    arrFrom,
-    isString,
-    objDefaults,
-    objDefaultsDeep,
-    objEntries
-} from "lightdash";
+import { isString, objDefaults, objDefaultsDeep } from "lightdash";
 import similar from "similar-strings";
 import {
     IClingy,
@@ -107,7 +101,7 @@ const Clingy = class implements IClingy {
     constructor(commands: any = {}, options: any = {}) {
         this.options = <IClingyOptions>objDefaultsDeep(options, optionsDefault);
         this.map = mapCommands(
-            objEntries(commands),
+            Object.entries(commands),
             this.options.caseSensitive
         );
         this.mapAliased = getAliasedMap(this.map);
@@ -150,7 +144,7 @@ const Clingy = class implements IClingy {
                     missing: [commandNameCurrent],
                     similar: similar(
                         commandNameCurrent,
-                        arrFrom(this.mapAliased.keys())
+                        Array.from(this.mapAliased.keys())
                     )
                 },
                 path: pathUsedNew

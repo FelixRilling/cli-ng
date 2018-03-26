@@ -11,18 +11,20 @@ var clingy = (function () {
      * @param {string} type
      * @returns {boolean}
      * @example
-     * // returns true
      * isTypeOf({}, "object")
+     * // => true
+     *
      * isTypeOf([], "object")
+     * // => true
+     *
      * isTypeOf("foo", "string")
+     * // => true
      *
      * @example
-     * // returns false
      * isTypeOf("foo", "number")
+     * // => false
      */
     const isTypeOf = (val, type) => typeof val === type;
-    const _Object = Object;
-    const _Array = Array;
     /**
      * Checks if a value is an array.
      *
@@ -34,16 +36,19 @@ var clingy = (function () {
      * @param {any} val
      * @returns {boolean}
      * @example
-     * // returns true
      * isArray([]);
+     * // => true
+     *
      * isArray([1, 2, 3]);
+     * // => true
      *
      * @example
-     * // returns false
      * isArray({});
+     * // => false
      */
 
-    const isArray = _Array.isArray;
+
+    const isArray = Array.isArray;
     /**
      * Checks if a value is undefined.
      *
@@ -53,69 +58,26 @@ var clingy = (function () {
      * @param {any} val
      * @returns {boolean}
      * @example
-     * // returns false
      * const a = {};
      *
      * isUndefined(a.b)
+     * // => true
+     *
      * isUndefined(undefined)
+     * // => true
      *
      * @example
-     * // returns false
      * const a = {};
      *
      * isUndefined(1)
+     * // => false
+     *
      * isUndefined(a)
+     * // => false
      */
 
 
     const isUndefined = val => isTypeOf(val, "undefined");
-    /**
-     * Checks if a value is defined.
-     *
-     * @function isDefined
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
-     * @example
-     * // returns true
-     * const a = {};
-     *
-     * isDefined(1)
-     * isDefined(a)
-     *
-     * @example
-     * // returns false
-     * const a = {};
-     *
-     * isDefined(a.b)
-     * isDefined(undefined)
-     */
-
-
-    const isDefined = val => !isUndefined(val);
-    /**
-     * Checks if a target has a certain key.
-     *
-     * @function hasKey
-     * @memberof Has
-     * @since 1.0.0
-     * @param {any} target
-     * @param {string} key
-     * @returns {boolean}
-     * @example
-     * // returns true
-     * hasKey([1, 2, 3], "0")
-     * hasKey({foo: 0}, "foo")
-     * hasKey("foo", "replace")
-     *
-     * @example
-     * // returns false
-     * hasKey({}, "foo")
-     */
-
-
-    const hasKey = (target, key) => isDefined(target[key]);
     /**
      * Checks if a value is undefined or null.
      *
@@ -125,14 +87,18 @@ var clingy = (function () {
      * @param {any} val
      * @returns {boolean}
      * @example
-     * // returns true
      * isNil(null)
+     * // => true
+     *
      * isNil(undefined)
+     * // => true
      *
      * @example
-     * // returns false
      * isNil(0)
-     * isNil({})
+     * // => false
+     *
+     * isNil("")
+     * // => false
      */
 
 
@@ -149,52 +115,22 @@ var clingy = (function () {
      * @param {any} val
      * @returns {boolean}
      * @example
-     * // returns true
      * isObjectLike({})
+     * // => true
+     *
      * isObjectLike([])
+     * // => true
      *
      * @example
-     * // returns false
      * isObjectLike(1)
+     * // => false
+     *
      * isObjectLike(() => 1))
+     * // => false
      */
 
 
     const isObjectLike = val => !isNil(val) && isTypeOf(val, "object");
-    /**
-     * Returns an array of the objects entries.
-     *
-     * `Object.entries` shorthand.
-     *
-     * @function objEntries
-     * @memberof Object
-     * @since 1.0.0
-     * @param {Object} obj
-     * @returns {any[]} Array<[key: any, val: any]>]
-     * @example
-     * // returns [["a", 1], ["b", 2], ["c", 3]]
-     * objEntries({a: 1, b: 2, c: 3})
-     */
-
-
-    const objEntries = _Object.entries;
-    /**
-     * Iterates over each element in an array
-     *
-     * Wrapper around arr.forEach to have a cleaner API and better minified code
-     *
-     * @function forEach
-     * @memberof For
-     * @param {any[]} arr
-     * @param {function} fn fn(val: any, index: number, arr: any[])
-     * @example
-     * // returns a = [0, 2, 6]
-     * const a = [1, 2, 3];
-     *
-     * forEach(a, (val, index)=>a[index] = val * index)
-     */
-
-    const forEach = (arr, fn) => arr.forEach(fn);
     /**
      * Iterates over each entry of an object
      *
@@ -203,15 +139,15 @@ var clingy = (function () {
      * @param {object} obj
      * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
      * @example
-     * // returns a = {a: 0, b: 2}
      * const a = {a: 1, b: 2};
      *
      * forEachEntry(a, (key, val, index) => a[key] = val * index)
+     * // a = {a: 0, b: 2}
      */
 
 
     const forEachEntry = (obj, fn) => {
-      forEach(objEntries(obj), (entry, index) => {
+      Object.entries(obj).forEach((entry, index) => {
         fn(entry[0], entry[1], index, obj);
       });
     };
@@ -224,54 +160,16 @@ var clingy = (function () {
      * @param {any} val
      * @returns {boolean}
      * @example
-     * // returns true
      * isString("foo")
+     * // => true
      *
      * @example
-     * // returns false
      * isString(1)
+     * // => false
      */
 
 
     const isString = val => isTypeOf(val, "string");
-    /**
-     * Creates a new array with the values of the input iterable.
-     *
-     * `Array.from` shorthand.
-     *
-     * @function arrFrom
-     * @memberof Array
-     * @since 1.0.0
-     * @param {any} arr
-     * @returns {any[]}
-     * @example
-     * // returns a = [1, 2, 3], b = [1, 10, 3]
-     * const a = [1, 2, 3];
-     * const b = arrFrom(a);
-     *
-     * b[1] = 10;
-     */
-
-
-    const arrFrom = _Array.from;
-    /**
-     * Merges contents of two objects.
-     *
-     * `Object.assign` shorthand.
-     *
-     * @function objMerge
-     * @memberof Object
-     * @since 2.7.0
-     * @param {Object} obj
-     * @param {Object} objSecondary
-     * @returns {Object}
-     * @example
-     * // returns {a: 1, b: 2}
-     * objMerge({a: 1}, {b: 2})
-     */
-
-
-    const objMerge = _Object.assign;
     /**
      * Creates a new object with the entries of the input object.
      *
@@ -281,14 +179,16 @@ var clingy = (function () {
      * @param {Object} obj
      * @returns {Object}
      * @example
-     * // returns a = {a: 4, b: 2}, b = {a: 10, b: 2}
      * const a = {a: 4, b: 2};
      * const b = objFrom(a);
      *
      * b.a = 10;
+     * // a = {a: 4, b: 2}
+     * // b = {a: 10, b: 2}
      */
 
-    const objFrom = obj => objMerge({}, obj);
+
+    const objFrom = obj => Object.assign({}, obj);
     /**
      * Sets every nil property of object to the value from the default object.
      *
@@ -299,15 +199,15 @@ var clingy = (function () {
      * @param {Object} objDefault
      * @returns {Object}
      * @example
-     * // returns a = {a: 1, b: 2, c: 5}
      * objDefaults({a: 1, c: 5}, {a: 1, b: 2, c: 3})
+     * // => {a: 1, b: 2, c: 5}
      */
 
 
     const objDefaults = (obj, objDefault) => {
-      const result = isArray(obj) ? arrFrom(obj) : objFrom(obj);
+      const result = isArray(obj) ? Array.from(obj) : objFrom(obj);
       forEachEntry(objDefault, (keyDefault, valDefault) => {
-        if (!hasKey(obj, keyDefault)) {
+        if (isUndefined(obj[keyDefault])) {
           result[keyDefault] = valDefault;
         }
       });
@@ -323,8 +223,8 @@ var clingy = (function () {
      * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
      * @returns {Object}
      * @example
-     * // returns a = {a: 8, b: 4}
      * objMap({a: 4, b: 2}, (key, val) => val * 2)
+     * // => {a: 8, b: 4}
      */
 
 
@@ -345,8 +245,8 @@ var clingy = (function () {
      * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
      * @returns {Object}
      * @example
-     * // returns {a: {b: 4, c: [20, 40]}}
      * arrMapDeep({a: {b: 2, c: [10, 20]}}, (key, val) => val * 2)
+     * // => {a: {b: 4, c: [20, 40]}}
      */
 
 
@@ -360,11 +260,12 @@ var clingy = (function () {
      * @param {Object} obj
      * @returns {Object}
      * @example
-     * // returns a = {a: {b: 2, c: {a: 10, b: 20}}, b = {a: {b: 2, c: {a: 123, b: 20}}}
      * const a = {a: {b: 2, c: {a: 10, b: 20}}};
      * const b = objFromDeep(a);
      *
      * b.a.c.a = 123;
+     * // a = {a: {b: 2, c: {a: 10, b: 20}}
+     * // b = {a: {b: 2, c: {a: 123, b: 20}}}
      */
 
 
@@ -379,13 +280,13 @@ var clingy = (function () {
      * @param {Object} objDefault
      * @returns {Object}
      * @example
-     * // returns a = {a: [1, 2, 3], b: 2, c: {f: "x"}}
      * objDefaultsDeep({a: [1, 2], c: {f: "x"}}, {a: [1, 2, 3], b: 2, c: {f: "y"}})
+     * // => {a: [1, 2, 3], b: 2, c: {f: "x"}}
      */
 
 
     const objDefaultsDeep = (obj, objDefault) => {
-      const result = isArray(obj) ? arrFrom(obj) : objFromDeep(obj);
+      const result = isArray(obj) ? Array.from(obj) : objFromDeep(obj);
       forEachEntry(objDefault, (keyDefault, valDefault) => {
         const valGiven = obj[keyDefault];
 

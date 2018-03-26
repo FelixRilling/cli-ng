@@ -49,7 +49,7 @@
     },
     "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
     "dependencies": {
-        "lightdash": "^4.0.0",
+        "lightdash": "^5.0.2",
         "similar-strings": "^2.1.0"
     },
     "devDependencies": {
@@ -57,15 +57,15 @@
         "@babel/plugin-external-helpers": "^7.0.0-beta.42",
         "@babel/preset-env": "^7.0.0-beta.42",
         "docdash": "git+https://github.com/clenemt/docdash.git",
-        "eslint": "^4.19.0",
+        "eslint": "^4.19.1",
         "jasmine": "^3.1.0",
         "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git",
         "npm-run-all": "^4.1.2",
         "prettier": "^1.11.1",
         "rollup": "^0.57.1",
-        "rollup-plugin-babel": "^4.0.0-beta.2",
+        "rollup-plugin-babel": "^4.0.0-beta.3",
         "rollup-plugin-json": "^2.3.0",
-        "rollup-plugin-node-resolve": "^3.2.0",
+        "rollup-plugin-node-resolve": "^3.3.0",
         "rollup-plugin-typescript2": "^0.12.0",
         "rollup-plugin-uglify-es": "0.0.1",
         "tslint": "^5.9.1",

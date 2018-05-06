@@ -1,4 +1,4 @@
-var clingy = (function () {
+var Clingy = (function () {
     'use strict';
 
     /**

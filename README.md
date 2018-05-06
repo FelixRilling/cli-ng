@@ -9,12 +9,12 @@ A module to parse cli-input text and commands.
 Init a new instance with a "hello" command:
 
 ```js
-//new Clingy(commands, options)
+// new Clingy(commands, [options])
 const cli = new Clingy({
     hello: {
-        fn: () => "Hello World!", //Command function
-        alias: ["helloworld", "hi"], //Array of aliases
-        args: [] //Array of argument objects
+        fn: () => "Hello World!", // Command function
+        alias: ["helloworld", "hi"], // Array of aliases
+        args: [] // Array of argument objects
     }
 });
 ```
@@ -24,9 +24,7 @@ then parse input
 ```js
 cli.parse("hello");
 
-/*
- * Returns:
- */
+// Returns:
  {
     success: true,
     command: {
@@ -40,7 +38,7 @@ cli.parse("hello");
     args: {
         _all:[]
     }
-  }
+}
 ```
 
 The same result would be achieved by `cli.parse("hi");` as well, as we registered it as alias.
@@ -50,9 +48,7 @@ If we try looking up a non-existent command, we will get an error object:
 ```js
 cli.parse("foo");
 
-/*
- * Returns:
- */
+// Returns :
 {
     success: false,
     error: {
@@ -75,8 +71,8 @@ const cli = new Clingy({
         alias: ["doublenumber"],
         args: [
             {
-                name: "numberToDouble", //name of the property in the args object
-                required: true //If this is true, the cli will return an error if no argument is present
+                name: "numberToDouble", // Name of the property in the args object
+                required: true // If this is true, the cli will return an error if no argument is present
             }
         ]
     },
@@ -90,7 +86,7 @@ const cli = new Clingy({
             },
             {
                 name: "number2",
-                required: false, //If this is false, the value for `default` will be supplemented
+                required: false, // If this is false, the value for `default` will be supplemented
                 default: Math.PI
             }
         ]
@@ -103,9 +99,7 @@ And then:
 ```js
 cli.parse("double 10");
 
-/*
- * Returns:
- */
+// Returns:
 {
     success: true,
     command:
@@ -132,26 +126,14 @@ cli.parse("double 10");
 ```js
 cli.parse("add 4 5 6");
 
-/*
- * Returns:
- */
+//  Returns:
 {
     success: true,
     command:
     {
         fn: args => Number(args.number1) + Number(args.number2),
         alias: [],
-        args: [
-            {
-                name: "number1",
-                required: true
-            },
-            {
-                name: "number2",
-                required: false, //If this is false, the value for `default` will be supplemented
-                default: Math.PI
-            }
-        ]
+        args: [...]
     },
     path: ["add"],
     pathDangling: ["6"],
@@ -197,11 +179,9 @@ const cli = new Clingy({
 Which can be accessed with
 
 ```js
-cli.parse("myGroup foo"); //or with aliases: cli.parse("group foo"); or cli.parse("group fizz");
+cli.parse("myGroup foo"); // Or with aliases: cli.parse("group foo"); or cli.parse("group fizz");
 
-/*
- * Returns:
- */
+// Returns:
 {
     success: true,
     command: {

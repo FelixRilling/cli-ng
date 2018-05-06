@@ -53,8 +53,8 @@ cli.parse("foo");
     success: false,
     error: {
         type: "missingCommand",
-        missing: "foo",
-        similar: []
+        missing: "foo", // name of the missing command, useful for nested commands
+        similar: ["hi"] // Suggest similar commands based on string similarity
     },
     path: []
 }

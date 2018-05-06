@@ -6,7 +6,7 @@ import { IClingyCommand, IClingyLookupMissingArg, IClingyLookupMissingCommand, I
  * @class
  */
 declare const Clingy: {
-    new (commands?: any, options?: any): {
+    new (commands: object, options?: object): {
         options: IClingyOptions;
         map: Map<string, IClingyCommand>;
         mapAliased: Map<string, IClingyCommand>;

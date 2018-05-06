@@ -190,9 +190,9 @@ const Clingy = class {
      * @public
      * @constructor
      * @param {Object} commands
-     * @param {Object} options
+     * @param {Object} [options={}]
      */
-    constructor(commands = {}, options = {}) {
+    constructor(commands, options = {}) {
         this.options = objDefaultsDeep(options, optionsDefault);
         this.map = mapCommands(Object.entries(commands), this.options.caseSensitive);
         this.mapAliased = getAliasedMap(this.map);

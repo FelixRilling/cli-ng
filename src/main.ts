@@ -96,9 +96,9 @@ const Clingy = class implements IClingy {
      * @public
      * @constructor
      * @param {Object} commands
-     * @param {Object} options
+     * @param {Object} [options={}]
      */
-    constructor(commands: any = {}, options: any = {}) {
+    constructor(commands: object, options: object = {}) {
         this.options = <IClingyOptions>objDefaultsDeep(options, optionsDefault);
         this.map = mapCommands(
             Object.entries(commands),

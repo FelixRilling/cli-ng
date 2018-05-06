@@ -83,6 +83,7 @@ const mapCommands = (
 /**
  * Clingy class
  *
+ * @public
  * @class
  */
 const Clingy = class implements IClingy {
@@ -92,6 +93,7 @@ const Clingy = class implements IClingy {
     /**
      * Creates Clingy instance
      *
+     * @public
      * @constructor
      * @param {Object} commands
      * @param {Object} options
@@ -107,6 +109,7 @@ const Clingy = class implements IClingy {
     /**
      * Returns all instance maps
      *
+     * @public
      * @returns {Object}
      */
     public getAll() {
@@ -118,6 +121,7 @@ const Clingy = class implements IClingy {
     /**
      * Looks up a command by path
      *
+     * @public
      * @param {Array<string>} path
      * @param {Array<string>} [pathUsed=[]]
      * @returns {Object}
@@ -127,7 +131,7 @@ const Clingy = class implements IClingy {
         pathUsed: string[] = []
     ): IClingyLookupSuccessful | IClingyLookupMissingCommand {
         if (path.length < 1) {
-            throw new Error("Path does not contain at least one item");
+            throw new TypeError("Path does not contain at least one item");
         }
         const commandNameCurrent = this.options.caseSensitive
             ? path[0]
@@ -148,6 +152,7 @@ const Clingy = class implements IClingy {
                 path: pathUsedNew
             };
         }
+
         const command = <IClingyCommandProcessed>this.mapAliased.get(
             commandNameCurrent
         );
@@ -177,6 +182,7 @@ const Clingy = class implements IClingy {
     /**
      * Parses a CLI-like input string into command and args
      *
+     * @public
      * @param {string} input
      * @returns {Object}
      */
@@ -190,8 +196,7 @@ const Clingy = class implements IClingy {
         const commandLookup = this.getCommand(inputParsed);
 
         if (!commandLookup.success) {
-            // Error: Command not found
-            return commandLookup;
+            return commandLookup; // Error: Command not found
         }
 
         const command = commandLookup.command;
@@ -199,20 +204,18 @@ const Clingy = class implements IClingy {
         const argsMapped = mapArgs(command.args, args);
 
         if (argsMapped.missing.length !== 0) {
-            // Error: Missing arguments
             return <IClingyLookupMissingArg>{
                 success: false,
                 error: {
                     type: "missingArg",
                     missing: argsMapped.missing
                 }
-            };
+            }; // Error: Missing arguments
         }
 
         commandLookup.args = argsMapped.args;
 
-        // Success
-        return commandLookup;
+        return commandLookup; // Success
     }
 };
 

@@ -180,12 +180,14 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
 /**
  * Clingy class
  *
+ * @public
  * @class
  */
 const Clingy = class {
     /**
      * Creates Clingy instance
      *
+     * @public
      * @constructor
      * @param {Object} commands
      * @param {Object} options
@@ -198,6 +200,7 @@ const Clingy = class {
     /**
      * Returns all instance maps
      *
+     * @public
      * @returns {Object}
      */
     getAll() {
@@ -209,13 +212,14 @@ const Clingy = class {
     /**
      * Looks up a command by path
      *
+     * @public
      * @param {Array<string>} path
      * @param {Array<string>} [pathUsed=[]]
      * @returns {Object}
      */
     getCommand(path, pathUsed = []) {
         if (path.length < 1) {
-            throw new Error("Path does not contain at least one item");
+            throw new TypeError("Path does not contain at least one item");
         }
         const commandNameCurrent = this.options.caseSensitive
             ? path[0]
@@ -252,6 +256,7 @@ const Clingy = class {
     /**
      * Parses a CLI-like input string into command and args
      *
+     * @public
      * @param {string} input
      * @returns {Object}
      */
@@ -259,25 +264,22 @@ const Clingy = class {
         const inputParsed = parseString(input, this.options.validQuotes);
         const commandLookup = this.getCommand(inputParsed);
         if (!commandLookup.success) {
-            // Error: Command not found
-            return commandLookup;
+            return commandLookup; // Error: Command not found
         }
         const command = commandLookup.command;
         const args = commandLookup.pathDangling;
         const argsMapped = mapArgs(command.args, args);
         if (argsMapped.missing.length !== 0) {
-            // Error: Missing arguments
             return {
                 success: false,
                 error: {
                     type: "missingArg",
                     missing: argsMapped.missing
                 }
-            };
+            }; // Error: Missing arguments
         }
         commandLookup.args = argsMapped.args;
-        // Success
-        return commandLookup;
+        return commandLookup; // Success
     }
 };
 

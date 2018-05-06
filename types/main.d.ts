@@ -2,6 +2,7 @@ import { IClingyCommand, IClingyLookupMissingArg, IClingyLookupMissingCommand, I
 /**
  * Clingy class
  *
+ * @public
  * @class
  */
 declare const Clingy: {

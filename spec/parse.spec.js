@@ -83,4 +83,16 @@ describe("Parse", () => {
 
         expect(result.success).toBe(true);
     });
+
+    it("Missing command similar", () => {
+        const result = cli.parse("ad");
+
+        expect(result.error.similar).toEqual(["add"]);
+    });
+
+    it("Missing command similar 2", () => {
+        const result = cli.parse("h ello");
+
+        expect(result.error.similar).toEqual(["?"]);
+    });
 });

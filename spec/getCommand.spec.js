@@ -43,7 +43,7 @@ const cli = new Clingy({
 describe("Get", () => {
     it("Empty Arr", () => {
         expect(() => cli.getCommand([])).toThrowError(
-            Error,
+            TypeError,
             "Path does not contain at least one item"
         );
     });
@@ -73,7 +73,7 @@ describe("Get", () => {
     });
 
     it("Nested Existent", () => {
-        const result = cli.getCommand(["about", "foo"]);
+        const result = cli.getCommand(["about", "bar", "buzz"]);
 
         expect(result.success).toBe(true);
     });

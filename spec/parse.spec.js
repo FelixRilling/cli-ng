@@ -43,7 +43,7 @@ const cli = new Clingy({
 describe("Parse", () => {
     it("Empty command", () => {
         expect(() => cli.parse("")).toThrowError(
-            Error,
+            TypeError,
             "Path does not contain at least one item"
         );
     });
@@ -74,6 +74,12 @@ describe("Parse", () => {
 
     it("Advanced command with multiple args", () => {
         const result = cli.parse("add 12 42");
+
+        expect(result.success).toBe(true);
+    });
+
+    it("Advanced command with stringed args", () => {
+        const result = cli.parse('add "12" "42.2"');
 
         expect(result.success).toBe(true);
     });

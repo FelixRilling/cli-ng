@@ -68,7 +68,7 @@
         "rollup-plugin-node-resolve": "^3.3.0",
         "rollup-plugin-typescript2": "^0.13.0",
         "rollup-plugin-uglify-es": "0.0.1",
-        "tslint": "^5.9.1",
+        "tslint": "^5.10.0",
         "typescript": "^2.8.3",
         "uglify-es": "^3.3.10"
     }

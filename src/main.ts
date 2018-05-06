@@ -1,5 +1,3 @@
-"use strict";
-
 import { isString, objDefaults, objDefaultsDeep } from "lightdash";
 import similar from "similar-strings";
 import {

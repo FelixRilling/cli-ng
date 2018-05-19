@@ -132,6 +132,25 @@ var Clingy = (function () {
 
     const isObjectLike = val => !isNil(val) && isTypeOf(val, "object");
     /**
+     * Checks if a value is a string.
+     *
+     * @function isString
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @returns {boolean}
+     * @example
+     * isString("foo")
+     * // => true
+     *
+     * @example
+     * isString(1)
+     * // => false
+     */
+
+
+    const isString = val => isTypeOf(val, "string");
+    /**
      * Iterates over each entry of an object
      *
      * @function forEachEntry
@@ -152,24 +171,27 @@ var Clingy = (function () {
       });
     };
     /**
-     * Checks if a value is a string.
+     * Maps each entry of an object and returns the result.
      *
-     * @function isString
-     * @memberof Is
+     * @function objMap
+     * @memberof Object
      * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
+     * @param {Object} obj
+     * @param {function} fn fn(key: any, val: any, index: number, obj: object)
+     * @returns {Object}
      * @example
-     * isString("foo")
-     * // => true
-     *
-     * @example
-     * isString(1)
-     * // => false
+     * objMap({a: 4, b: 2}, (key, val) => val * 2)
+     * // => {a: 8, b: 4}
      */
 
 
-    const isString = val => isTypeOf(val, "string");
+    const objMap = (obj, fn) => {
+      const objNew = {};
+      forEachEntry(obj, (key, val, index) => {
+        objNew[key] = fn(key, val, index, obj);
+      });
+      return objNew;
+    };
     /**
      * Creates a new object with the entries of the input object.
      *
@@ -214,35 +236,13 @@ var Clingy = (function () {
       return result;
     };
     /**
-     * Maps each entry of an object and returns the result.
-     *
-     * @function objMap
-     * @memberof Object
-     * @since 1.0.0
-     * @param {Object} obj
-     * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
-     * @returns {Object}
-     * @example
-     * objMap({a: 4, b: 2}, (key, val) => val * 2)
-     * // => {a: 8, b: 4}
-     */
-
-
-    const objMap = (obj, fn) => {
-      const objNew = {};
-      forEachEntry(obj, (key, val, index) => {
-        objNew[key] = fn(key, val, index, obj);
-      });
-      return objNew;
-    };
-    /**
      * Recursively maps each entry of an object and returns the result.
      *
      * @function objMapDeep
      * @memberof Object
      * @since 1.0.0
      * @param {Object} obj
-     * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
+     * @param {function} fn fn(key: any, val: any, index: number, obj: object)
      * @returns {Object}
      * @example
      * arrMapDeep({a: {b: 2, c: [10, 20]}}, (key, val) => val * 2)

@@ -1,5 +1,4 @@
-import { isString, objDefaults, objDefaultsDeep } from 'lightdash';
-import similar from 'similar-strings';
+import { isString, objDefaults, objDefaultsDeep, strSimilar } from 'lightdash';
 
 /**
  * Default argument structure
@@ -166,7 +165,7 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
     const commandKey = caseSensitive
         ? command[0]
         : command[0].toLowerCase();
-    const commandValue = objDefaultsDeep(command[1], commandDefaultFactory(index));
+    const commandValue = (objDefaultsDeep(command[1], commandDefaultFactory(index)));
     // Save key as name property to keep track in aliases
     commandValue.name = commandKey;
     // Merge each arg with default arg structure
@@ -231,12 +230,12 @@ const Clingy = class {
                 error: {
                     type: "missingCommand",
                     missing: [commandNameCurrent],
-                    similar: similar(commandNameCurrent, Array.from(this.mapAliased.keys()))
+                    similar: strSimilar(commandNameCurrent, Array.from(this.mapAliased.keys()))
                 },
                 path: pathUsedNew
             };
         }
-        const command = this.mapAliased.get(commandNameCurrent);
+        const command = (this.mapAliased.get(commandNameCurrent));
         const commandPathNew = path.slice(1);
         pathUsedNew.push(commandNameCurrent);
         // Recurse into sub if more items in path and sub exists

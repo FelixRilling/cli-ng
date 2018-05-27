@@ -1,9 +1,6 @@
 'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
 var lightdash = require('lightdash');
-var similar = _interopDefault(require('similar-strings'));
 
 /**
  * Default argument structure
@@ -170,7 +167,7 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
     const commandKey = caseSensitive
         ? command[0]
         : command[0].toLowerCase();
-    const commandValue = lightdash.objDefaultsDeep(command[1], commandDefaultFactory(index));
+    const commandValue = (lightdash.objDefaultsDeep(command[1], commandDefaultFactory(index)));
     // Save key as name property to keep track in aliases
     commandValue.name = commandKey;
     // Merge each arg with default arg structure
@@ -235,12 +232,12 @@ const Clingy = class {
                 error: {
                     type: "missingCommand",
                     missing: [commandNameCurrent],
-                    similar: similar(commandNameCurrent, Array.from(this.mapAliased.keys()))
+                    similar: lightdash.strSimilar(commandNameCurrent, Array.from(this.mapAliased.keys()))
                 },
                 path: pathUsedNew
             };
         }
-        const command = this.mapAliased.get(commandNameCurrent);
+        const command = (this.mapAliased.get(commandNameCurrent));
         const commandPathNew = path.slice(1);
         pathUsedNew.push(commandNameCurrent);
         // Recurse into sub if more items in path and sub exists

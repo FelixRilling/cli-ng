@@ -1,5 +1,4 @@
-import { isString, objDefaults, objDefaultsDeep } from "lightdash";
-import similar from "similar-strings";
+import { isString, objDefaults, objDefaultsDeep, strSimilar } from "lightdash";
 import {
     IClingy,
     IClingyArg,
@@ -56,9 +55,8 @@ const mapCommands = (
             const commandKey = caseSensitive
                 ? command[0]
                 : command[0].toLowerCase();
-            const commandValue = <IClingyCommand>objDefaultsDeep(
-                command[1],
-                commandDefaultFactory(index)
+            const commandValue = <IClingyCommand>(
+                objDefaultsDeep(command[1], commandDefaultFactory(index))
             );
 
             // Save key as name property to keep track in aliases
@@ -144,7 +142,7 @@ const Clingy = class implements IClingy {
                 error: {
                     type: "missingCommand",
                     missing: [commandNameCurrent],
-                    similar: similar(
+                    similar: strSimilar(
                         commandNameCurrent,
                         Array.from(this.mapAliased.keys())
                     )
@@ -153,8 +151,8 @@ const Clingy = class implements IClingy {
             };
         }
 
-        const command = <IClingyCommandProcessed>this.mapAliased.get(
-            commandNameCurrent
+        const command = <IClingyCommandProcessed>(
+            this.mapAliased.get(commandNameCurrent)
         );
         const commandPathNew = path.slice(1);
 

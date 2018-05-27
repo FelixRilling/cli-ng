@@ -151,7 +151,7 @@ var Clingy = (function () {
 
     const isString = val => isTypeOf(val, "string");
     /**
-     * Iterates over each entry of an object
+     * Iterates over each entry of an object.
      *
      * @function forEachEntry
      * @memberof For
@@ -169,6 +169,129 @@ var Clingy = (function () {
       Object.entries(obj).forEach((entry, index) => {
         fn(entry[0], entry[1], index, obj);
       });
+    };
+    /**
+     * Returns levenshtein string distance of two strings.
+     *
+     * @function strDistance
+     * @memberof String
+     * @since 6.3.0
+     * @param {string} str1
+     * @param {string} str2
+     * @returns {number}
+     * @example
+     * strDistance("Kitten", "Sitting")
+     * // => 3
+     *
+     * strDistance("String", "Stribng")
+     * // => 1
+     *
+     * strDistance("foo", "foo")
+     * // => 0
+     */
+
+
+    const strDistance = (str1, str2) => {
+      // Cache string length
+      const str1Length = str1.length;
+      const str2Length = str2.length;
+
+      if (str1Length === 0) {
+        // Exit early if str1 is empty
+        return str2Length;
+      }
+
+      if (str2Length === 0) {
+        // Exit early if str2 is empty
+        return str1Length;
+      } // Create matrix that is (str2.length+1)x(str1.length+1) fields
+
+
+      const matrix = []; // Increment along the first column of each row
+
+      for (let y = 0; y <= str2Length; y++) {
+        matrix[y] = [y];
+      } // Increment each column in the first row
+
+
+      for (let x = 0; x <= str1Length; x++) {
+        matrix[0][x] = x;
+      } // Fill matrix
+
+
+      for (let y = 1; y <= str2Length; y++) {
+        const matrixColumnCurrent = matrix[y];
+        const matrixColumnLast = matrix[y - 1];
+
+        for (let x = 1; x <= str1Length; x++) {
+          if (str2.charAt(y - 1) === str1.charAt(x - 1)) {
+            // Check if letter at the position is the same
+            matrixColumnCurrent[x] = matrixColumnLast[x - 1];
+          } else {
+            // Check for substitution/insertion/deletion
+            const substitution = matrixColumnLast[x - 1] + 1;
+            const insertion = matrixColumnCurrent[x - 1] + 1;
+            const deletion = matrixColumnLast[x] + 1; // Get smallest of the three
+
+            matrixColumnCurrent[x] = Math.min(substitution, insertion, deletion);
+          }
+        }
+      } // Return max value
+
+
+      return matrix[str2Length][str1Length];
+    };
+    /**
+     * Collects the values of an array in a Map as arrays.
+     *
+     * @function arrCollect
+     * @memberof Array
+     * @since 6.1.0
+     * @param {any[]} arr
+     * @param {function} fn fn(val: any, index: number, arr: any[])
+     * @returns {Map<any, any[]>} Map<val: any, arr: any[]>
+     * @example
+     * arrCollect([1, 2, 3, 4, 5], val => val % 2)
+     * // => Map<any, any[]>{0: [2, 4], 1: [1, 3, 5]}
+     */
+
+
+    const arrCollect = (arr, fn) => {
+      const result = new Map();
+      arr.forEach((val, index) => {
+        const key = fn(val, index, arr);
+        result.set(key, result.has(key) ? [...result.get(key), val] : [val]);
+      });
+      return result;
+    };
+    /**
+     * Returns strings similar to the input based on the list given.
+     *
+     * @function strSimilar
+     * @memberof String
+     * @since 6.3.0
+     * @param {string} str
+     * @param {Array<string>} list
+     * @param {boolean} [returnFull=false]
+     * @returns {Array<string>|Map<number,string[]>}
+     * @example
+     * strSimilar("Fob", ["Foo", "Bar"])
+     * // => ["Foo"]
+     *
+     * strSimilar("cmmit", ["init", "commit", "push"])
+     * // => ["commit"]
+     *
+     * strSimilar("Kitten", ["Sitten", "Sitting", "Bitten"])
+     * // => ["Sitten", "Bitten"]
+     *
+     * strSimilar("cmmit", ["init", "commit", "push"], true)
+     * // => Map<number, string[]>{"1": ["commit"], "3": ["init"], "5": ["push"]}
+     */
+
+
+    const strSimilar = (str, list, returnFull = false) => {
+      const result = arrCollect(list, val => strDistance(str, val));
+      return returnFull ? result : result.get(Math.min(...result.keys()));
     };
     /**
      * Maps each entry of an object and returns the result.
@@ -252,7 +375,7 @@ var Clingy = (function () {
 
     const objMapDeep = (obj, fn) => objMap(obj, (key, val, index, objNew) => isObjectLike(val) ? objMapDeep(val, fn) : fn(key, val, index, objNew));
     /**
-     * Deeply creates a new object with the entries of the input object.
+     * Recursively creates a new object with the entries of the input object.
      *
      * @function objFromDeep
      * @memberof Object
@@ -297,102 +420,6 @@ var Clingy = (function () {
         }
       });
       return result;
-    };
-
-    /**
-     * Calculate levenshtein string distance
-     *
-     * @param {string} str1 Input string 1
-     * @param {string} str2 Input string 2
-     * @returns {number} String distance
-     */
-    const levenshteinStringDistance = (str1, str2) => {
-      // Cache string length
-      const str1Length = str1.length;
-      const str2Length = str2.length;
-
-      if (str1Length === 0) {
-        // Exit early if str1 is empty
-        return str2Length;
-      }
-
-      if (str2Length === 0) {
-        // Exit early if str2 is empty
-        return str1Length;
-      } // Create matrix that is (str2.length+1)x(str1.length+1) fields
-
-
-      const matrix = []; // Increment along the first column of each row
-
-      for (let y = 0; y <= str2Length; y++) {
-        matrix[y] = [y];
-      } // Increment each column in the first row
-
-
-      for (let x = 0; x <= str1Length; x++) {
-        matrix[0][x] = x;
-      } // Fill matrix
-
-
-      for (let y = 1; y <= str2Length; y++) {
-        const matrixColumnCurrent = matrix[y];
-        const matrixColumnLast = matrix[y - 1];
-
-        for (let x = 1; x <= str1Length; x++) {
-          if (str2.charAt(y - 1) === str1.charAt(x - 1)) {
-            // Check if letter at the position is the same
-            matrixColumnCurrent[x] = matrixColumnLast[x - 1];
-          } else {
-            // Check for substitution/insertion/deletion
-            const substitution = matrixColumnLast[x - 1] + 1;
-            const insertion = matrixColumnCurrent[x - 1] + 1;
-            const deletion = matrixColumnLast[x] + 1; // Get smallest of the three
-
-            matrixColumnCurrent[x] = Math.min(substitution, insertion, deletion);
-          }
-        }
-      } // Return max value
-
-
-      return matrix[str2Length][str1Length];
-    };
-
-    /**
-     * Returns value of the smallest key in an object
-     *
-     * @private
-     * @param  {Object} obj
-     * @returns {any}
-     */
-
-    const getLowestKeyValue = obj => {
-      const keys = Object.keys(obj).map(key => Number(key)); // Get Array of keys as numbers
-
-      const lowestKey = Math.min(...keys);
-      return obj[lowestKey];
-    };
-    /**
-     * Get closest match to string
-     *
-     * @param {string} str String to compare
-     * @param {Array<string>} list List of strings to check
-     * @param {boolean} [returnFull=false] If the whole result should be returned instead of just the lowest matches
-     * @returns {Array<string>|Object} Lowest distance strings or full result, depending on the value of returnFull
-     */
-
-
-    const similarStrings = (str, list, returnFull = false) => {
-      const result = {};
-      list.forEach(listItem => {
-        const listItemDistance = levenshteinStringDistance(str, listItem); // Create new array in result if it doesn't exist for this distance
-
-        if (!result[listItemDistance]) {
-          result[listItemDistance] = [listItem];
-        } else {
-          result[listItemDistance].push(listItem);
-        }
-      });
-      return returnFull ? result : getLowestKeyValue(result);
     };
 
     /**
@@ -633,7 +660,7 @@ var Clingy = (function () {
             error: {
               type: "missingCommand",
               missing: [commandNameCurrent],
-              similar: similarStrings(commandNameCurrent, Array.from(this.mapAliased.keys()))
+              similar: strSimilar(commandNameCurrent, Array.from(this.mapAliased.keys()))
             },
             path: pathUsedNew
           };

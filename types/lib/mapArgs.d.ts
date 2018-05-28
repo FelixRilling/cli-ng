@@ -8,4 +8,4 @@ import { IClingyArg, IClingyArgsMapped } from "../interfaces";
  * @returns {Object}
  */
 declare const mapArgs: (expectedArgs: IClingyArg[], givenArgs: string[]) => IClingyArgsMapped;
-export default mapArgs;
+export { mapArgs };

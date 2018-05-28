@@ -26,4 +26,4 @@ const getAliasedMap = (map: clingyCommandMap): clingyCommandMap => {
     return result;
 };
 
-export default getAliasedMap;
+export { getAliasedMap };

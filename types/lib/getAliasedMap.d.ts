@@ -7,4 +7,4 @@ import { IClingyCommand } from "../interfaces";
  * @returns {Map}
  */
 declare const getAliasedMap: (map: Map<string, IClingyCommand>) => Map<string, IClingyCommand>;
-export default getAliasedMap;
+export { getAliasedMap };

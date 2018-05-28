@@ -10,11 +10,11 @@ import {
     IClingyLookupSuccessful,
     IClingyOptions
 } from "./interfaces";
-import argDefaultFactory from "./lib/argDefaultFactory";
-import commandDefaultFactory from "./lib/commandDefaultFactory";
-import getAliasedMap from "./lib/getAliasedMap";
-import mapArgs from "./lib/mapArgs";
-import parseString from "./lib/parseString";
+import { argDefaultFactory } from "./lib/argDefaultFactory";
+import { commandDefaultFactory } from "./lib/commandDefaultFactory";
+import { getAliasedMap } from "./lib/getAliasedMap";
+import { mapArgs } from "./lib/mapArgs";
+import { parseString } from "./lib/parseString";
 import {
     clingyCommandEntries,
     clingyCommandEntry,
@@ -23,18 +23,18 @@ import {
 
 const optionsDefault: IClingyOptions = {
     /**
-     * If names should be treated case-sensitive for lookup
+     * If names should be treated case-sensitive for lookup.
      */
     caseSensitive: true,
     /**
-     * List of characters to allow as quote-enclosing string
-     * If set to null, quotes-enclosed strings will be disabled
+     * List of characters to allow as quote-enclosing string.
+     * If set to null, quotes-enclosed strings will be disabled.
      */
     validQuotes: ['"']
 };
 
 /**
- * Creates a map and sub-maps out of a command object
+ * Creates a map and sub-maps out of a command object.
  *
  * @private
  * @param {Array<IClingyCommand>} commandEntries
@@ -79,7 +79,7 @@ const mapCommands = (
     );
 
 /**
- * Clingy class
+ * Clingy class.
  *
  * @public
  * @class
@@ -89,7 +89,7 @@ const Clingy = class implements IClingy {
     public map: clingyCommandMap;
     public mapAliased: clingyCommandMap;
     /**
-     * Creates Clingy instance
+     * Creates Clingy instance.
      *
      * @public
      * @constructor
@@ -105,7 +105,7 @@ const Clingy = class implements IClingy {
         this.mapAliased = getAliasedMap(this.map);
     }
     /**
-     * Returns all instance maps
+     * Returns all instance maps.
      *
      * @public
      * @returns {Object}
@@ -117,7 +117,7 @@ const Clingy = class implements IClingy {
         };
     }
     /**
-     * Looks up a command by path
+     * Looks up a command by path.
      *
      * @public
      * @param {Array<string>} path
@@ -158,7 +158,7 @@ const Clingy = class implements IClingy {
 
         pathUsedNew.push(commandNameCurrent);
 
-        // Recurse into sub if more items in path and sub exists
+        // Recursively go into sub if more items in path and sub exists
         if (path.length > 1 && command.sub !== null) {
             const commandSubResult = command.sub.getCommand(
                 commandPathNew,
@@ -178,7 +178,7 @@ const Clingy = class implements IClingy {
         };
     }
     /**
-     * Parses a CLI-like input string into command and args
+     * Parses a CLI-like input string into command and args.
      *
      * @public
      * @param {string} input

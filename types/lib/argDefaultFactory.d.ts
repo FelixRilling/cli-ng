@@ -8,4 +8,4 @@ import { IClingyArg } from "../interfaces";
  * @returns {Object}
  */
 declare const argDefaultFactory: (index: number) => IClingyArg;
-export default argDefaultFactory;
+export { argDefaultFactory };

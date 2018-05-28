@@ -8,4 +8,4 @@ import { IClingyCommand } from "../interfaces";
  * @returns {Object}
  */
 declare const commandDefaultFactory: (index: number) => IClingyCommand;
-export default commandDefaultFactory;
+export { commandDefaultFactory };

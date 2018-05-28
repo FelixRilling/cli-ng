@@ -507,18 +507,18 @@ var Clingy = (function () {
 
     const optionsDefault = {
       /**
-       * If names should be treated case-sensitive for lookup
+       * If names should be treated case-sensitive for lookup.
        */
       caseSensitive: true,
 
       /**
-       * List of characters to allow as quote-enclosing string
-       * If set to null, quotes-enclosed strings will be disabled
+       * List of characters to allow as quote-enclosing string.
+       * If set to null, quotes-enclosed strings will be disabled.
        */
       validQuotes: ['"']
     };
     /**
-     * Creates a map and sub-maps out of a command object
+     * Creates a map and sub-maps out of a command object.
      *
      * @private
      * @param {Array<IClingyCommand>} commandEntries
@@ -544,7 +544,7 @@ var Clingy = (function () {
       return [commandKey, commandValue];
     }));
     /**
-     * Clingy class
+     * Clingy class.
      *
      * @public
      * @class
@@ -553,7 +553,7 @@ var Clingy = (function () {
 
     const Clingy = class {
       /**
-       * Creates Clingy instance
+       * Creates Clingy instance.
        *
        * @public
        * @constructor
@@ -566,7 +566,7 @@ var Clingy = (function () {
         this.mapAliased = getAliasedMap(this.map);
       }
       /**
-       * Returns all instance maps
+       * Returns all instance maps.
        *
        * @public
        * @returns {Object}
@@ -580,7 +580,7 @@ var Clingy = (function () {
         };
       }
       /**
-       * Looks up a command by path
+       * Looks up a command by path.
        *
        * @public
        * @param {Array<string>} path
@@ -611,7 +611,7 @@ var Clingy = (function () {
 
         const command = this.mapAliased.get(commandNameCurrent);
         const commandPathNew = path.slice(1);
-        pathUsedNew.push(commandNameCurrent); // Recurse into sub if more items in path and sub exists
+        pathUsedNew.push(commandNameCurrent); // Recursively go into sub if more items in path and sub exists
 
         if (path.length > 1 && command.sub !== null) {
           const commandSubResult = command.sub.getCommand(commandPathNew, pathUsedNew);
@@ -629,7 +629,7 @@ var Clingy = (function () {
         };
       }
       /**
-       * Parses a CLI-like input string into command and args
+       * Parses a CLI-like input string into command and args.
        *
        * @public
        * @param {string} input

@@ -18,4 +18,4 @@ const commandDefaultFactory = (index: number): IClingyCommand => {
     };
 };
 
-export default commandDefaultFactory;
+export { commandDefaultFactory };

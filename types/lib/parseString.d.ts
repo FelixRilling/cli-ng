@@ -7,4 +7,4 @@
  * @returns {Array<string>}
  */
 declare const parseString: (strInput: string, validQuotes: string[]) => string[];
-export default parseString;
+export { parseString };

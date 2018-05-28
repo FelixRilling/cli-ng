@@ -40,4 +40,4 @@ const mapArgs = (
     return result;
 };
 
-export default mapArgs;
+export { mapArgs };

@@ -57,4 +57,4 @@ const parseString = (strInput: string, validQuotes: string[]): string[] => {
         : str.split(SPACE);
 };
 
-export default parseString;
+export { parseString };

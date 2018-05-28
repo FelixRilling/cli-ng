@@ -1,6 +1,6 @@
 import { IClingyCommand, IClingyLookupMissingArg, IClingyLookupMissingCommand, IClingyLookupSuccessful, IClingyOptions } from "./interfaces";
 /**
- * Clingy class
+ * Clingy class.
  *
  * @public
  * @class

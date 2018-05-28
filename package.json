@@ -49,7 +49,7 @@
     },
     "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
     "dependencies": {
-        "lightdash": "^6.3.0"
+        "lightdash": "^7.0.0"
     },
     "devDependencies": {
         "@babel/core": "^7.0.0-beta.49",

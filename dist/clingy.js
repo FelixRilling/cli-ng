@@ -102,7 +102,7 @@ var Clingy = (function () {
      */
 
 
-    const isNil = val => isUndefined(val) || val === null;
+    const isNil = val => val == null;
     /**
      * Checks if a value is not nil and has a type of object.
      *

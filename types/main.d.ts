@@ -10,11 +10,32 @@ declare const Clingy: {
         options: IClingyOptions;
         map: Map<string, IClingyCommand>;
         mapAliased: Map<string, IClingyCommand>;
+        /**
+         * Returns all instance maps.
+         *
+         * @public
+         * @returns {Object}
+         */
         getAll(): {
             map: Map<string, IClingyCommand>;
             mapAliased: Map<string, IClingyCommand>;
         };
+        /**
+         * Looks up a command by path.
+         *
+         * @public
+         * @param {Array<string>} path
+         * @param {Array<string>} [pathUsed=[]]
+         * @returns {Object}
+         */
         getCommand(path: string[], pathUsed?: string[]): IClingyLookupSuccessful | IClingyLookupMissingCommand;
+        /**
+         * Parses a CLI-like input string into command and args.
+         *
+         * @public
+         * @param {string} input
+         * @returns {Object}
+         */
         parse(input: string): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg;
     };
 };

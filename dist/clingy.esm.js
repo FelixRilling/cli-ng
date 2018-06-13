@@ -1,40 +1,6 @@
 import { isString, objDefaults, objDefaultsDeep, strSimilar } from 'lightdash';
 
 /**
- * Default argument structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const argDefaultFactory = (index) => {
-    return {
-        name: `arg${index}`,
-        required: true,
-        default: null
-    };
-};
-
-/**
- * Default command structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const commandDefaultFactory = (index) => {
-    return {
-        name: `command${index}`,
-        fn: () => { },
-        alias: [],
-        args: [],
-        sub: null
-    };
-};
-
-/**
  * Creates an aliased map from a normal map
  *
  * @private
@@ -91,6 +57,66 @@ const mapArgs = (expectedArgs, givenArgs) => {
     });
     return result;
 };
+
+/**
+ * Default argument structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const argDefaultFactory = (index) => {
+    return {
+        name: `arg${index}`,
+        required: true,
+        default: null
+    };
+};
+
+/**
+ * Default command structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const commandDefaultFactory = (index) => {
+    return {
+        name: `command${index}`,
+        fn: () => { },
+        alias: [],
+        args: [],
+        sub: null
+    };
+};
+
+/**
+ * Creates a map and sub-maps out of a command object.
+ *
+ * @private
+ * @param {Array<IClingyCommand>} commandEntries
+ * @returns {Map}
+ */
+const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.map((command, index) => {
+    if (!isString(command[0])) {
+        throw new TypeError(`command key '${command[0]}' is not a string`);
+    }
+    const commandKey = caseSensitive
+        ? command[0]
+        : command[0].toLowerCase();
+    const commandValue = (objDefaultsDeep(command[1], commandDefaultFactory(index)));
+    // Save key as name property to keep track in aliases
+    commandValue.name = commandKey;
+    // Merge each arg with default arg structure
+    commandValue.args = commandValue.args.map((arg, argIndex) => (objDefaults(arg, argDefaultFactory(argIndex))));
+    // If sub-groups exist, recurse by creating a new Clingy instance
+    if (commandValue.sub !== null) {
+        commandValue.sub = new Clingy(commandValue.sub);
+    }
+    return [commandKey, commandValue];
+}));
 
 const SPACE = /\s/;
 /**
@@ -151,31 +177,6 @@ const optionsDefault = {
      */
     validQuotes: ['"']
 };
-/**
- * Creates a map and sub-maps out of a command object.
- *
- * @private
- * @param {Array<IClingyCommand>} commandEntries
- * @returns {Map}
- */
-const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.map((command, index) => {
-    if (!isString(command[0])) {
-        throw new TypeError(`command key '${command[0]}' is not a string`);
-    }
-    const commandKey = caseSensitive
-        ? command[0]
-        : command[0].toLowerCase();
-    const commandValue = (objDefaultsDeep(command[1], commandDefaultFactory(index)));
-    // Save key as name property to keep track in aliases
-    commandValue.name = commandKey;
-    // Merge each arg with default arg structure
-    commandValue.args = commandValue.args.map((arg, argIndex) => objDefaults(arg, argDefaultFactory(argIndex)));
-    // If sub-groups exist, recurse by creating a new Clingy instance
-    if (commandValue.sub !== null) {
-        commandValue.sub = new Clingy(commandValue.sub);
-    }
-    return [commandKey, commandValue];
-}));
 /**
  * Clingy class.
  *

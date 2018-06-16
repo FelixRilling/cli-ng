@@ -1,4 +1,17 @@
-import { IClingyLookupMissingArg, IClingyLookupMissingCommand, IClingyLookupSuccessful, IClingyOptions } from "./interfaces";
+import { IClingyLookupMissingArg, IClingyLookupMissingCommand, IClingyLookupSuccessful } from "./lib/lookup";
+import { clingyCommandMap } from "./lib/map";
+import { IClingyOptions } from "./lib/options";
+interface IClingy {
+    options: IClingyOptions;
+    map: clingyCommandMap;
+    mapAliased: clingyCommandMap;
+    getAll(): {
+        map: clingyCommandMap;
+        mapAliased: clingyCommandMap;
+    };
+    getCommand(path: string[], pathUsed?: string[]): IClingyLookupSuccessful | IClingyLookupMissingCommand;
+    parse(input: string): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg;
+}
 /**
  * Clingy class.
  *
@@ -8,8 +21,8 @@ import { IClingyLookupMissingArg, IClingyLookupMissingCommand, IClingyLookupSucc
 declare const Clingy: {
     new (commands: object, options?: object): {
         options: IClingyOptions;
-        map: Map<string, import("./interfaces").IClingyCommand>;
-        mapAliased: Map<string, import("./interfaces").IClingyCommand>;
+        map: Map<string, import("./lib/command").IClingyCommand>;
+        mapAliased: Map<string, import("./lib/command").IClingyCommand>;
         /**
          * Returns all instance maps.
          *
@@ -17,8 +30,8 @@ declare const Clingy: {
          * @returns {Object}
          */
         getAll(): {
-            map: Map<string, import("./interfaces").IClingyCommand>;
-            mapAliased: Map<string, import("./interfaces").IClingyCommand>;
+            map: Map<string, import("./lib/command").IClingyCommand>;
+            mapAliased: Map<string, import("./lib/command").IClingyCommand>;
         };
         /**
          * Looks up a command by path.
@@ -39,4 +52,4 @@ declare const Clingy: {
         parse(input: string): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg;
     };
 };
-export { Clingy };
+export { Clingy, IClingy };

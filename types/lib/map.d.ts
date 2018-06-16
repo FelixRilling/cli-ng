@@ -1,4 +1,5 @@
-import { IClingyCommand } from "../interfaces";
+import { IClingyCommand } from "./command";
+declare type clingyCommandMap = Map<string, IClingyCommand>;
 /**
  * Creates an aliased map from a normal map
  *
@@ -7,4 +8,4 @@ import { IClingyCommand } from "../interfaces";
  * @returns {Map}
  */
 declare const getAliasedMap: (map: Map<string, IClingyCommand>) => Map<string, IClingyCommand>;
-export { getAliasedMap };
+export { getAliasedMap, clingyCommandMap };

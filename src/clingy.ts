@@ -1,30 +1,34 @@
 import { objDefaultsDeep, strSimilar } from "lightdash";
+import { mapArgs } from "./lib/arg";
+import { IClingyCommandProcessed, mapCommands } from "./lib/command";
 import {
-    IClingy,
-    IClingyCommandProcessed,
     IClingyLookupMissingArg,
     IClingyLookupMissingCommand,
-    IClingyLookupSuccessful,
-    IClingyOptions
-} from "./interfaces";
-
-import { getAliasedMap } from "./lib/getAliasedMap";
-import { mapArgs } from "./lib/mapArgs";
-import { mapCommands } from "./lib/mapCommands";
+    IClingyLookupSuccessful
+} from "./lib/lookup";
+import { clingyCommandMap, getAliasedMap } from "./lib/map";
+import { IClingyOptions, optionsDefault } from "./lib/options";
 import { parseString } from "./lib/parseString";
-import { clingyCommandMap } from "./types";
 
-const optionsDefault: IClingyOptions = {
-    /**
-     * If names should be treated case-sensitive for lookup.
-     */
-    caseSensitive: true,
-    /**
-     * List of characters to allow as quote-enclosing string.
-     * If set to null, quotes-enclosed strings will be disabled.
-     */
-    validQuotes: ['"']
-};
+interface IClingy {
+    options: IClingyOptions;
+    map: clingyCommandMap;
+    mapAliased: clingyCommandMap;
+    getAll(): {
+        map: clingyCommandMap;
+        mapAliased: clingyCommandMap;
+    };
+    getCommand(
+        path: string[],
+        pathUsed?: string[]
+    ): IClingyLookupSuccessful | IClingyLookupMissingCommand;
+    parse(
+        input: string
+    ):
+        | IClingyLookupSuccessful
+        | IClingyLookupMissingCommand
+        | IClingyLookupMissingArg;
+}
 
 /**
  * Clingy class.
@@ -165,4 +169,4 @@ const Clingy = class implements IClingy {
     }
 };
 
-export { Clingy };
+export { Clingy, IClingy };

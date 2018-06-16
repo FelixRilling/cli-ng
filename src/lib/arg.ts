@@ -1,4 +1,32 @@
-import { IClingyArg, IClingyArgsMapped } from "../interfaces";
+import { IClingyLookupArgs } from "./lookup";
+
+interface IClingyArgsMapped {
+    args: IClingyLookupArgs;
+    missing: IClingyArg[];
+}
+
+interface IClingyArg {
+    [key: string]: any;
+    name: string;
+    required: boolean;
+    default?: any;
+}
+
+/**
+ * Default argument structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const argDefaultFactory = (index: number): IClingyArg => {
+    return {
+        name: `arg${index}`,
+        required: true,
+        default: null
+    };
+};
 
 /**
  * Matches command-map arguments with input args
@@ -40,4 +68,4 @@ const mapArgs = (
     return result;
 };
 
-export { mapArgs };
+export { mapArgs, IClingyArg, IClingyArgsMapped, argDefaultFactory };

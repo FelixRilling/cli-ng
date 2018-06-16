@@ -3,27 +3,20 @@
 var lightdash = require('lightdash');
 
 /**
- * Creates an aliased map from a normal map
+ * Default argument structure
  *
  * @private
- * @param {Map} map
- * @returns {Map}
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
  */
-const getAliasedMap = (map) => {
-    const result = new Map(map);
-    map.forEach((command) => {
-        command.alias.forEach((alias) => {
-            if (result.has(alias)) {
-                throw new Error(`Alias ${alias} conflicts with a previously defined key`);
-            }
-            else {
-                result.set(alias, command);
-            }
-        });
-    });
-    return result;
+const argDefaultFactory = (index) => {
+    return {
+        name: `arg${index}`,
+        required: true,
+        default: null
+    };
 };
-
 /**
  * Matches command-map arguments with input args
  *
@@ -61,22 +54,6 @@ const mapArgs = (expectedArgs, givenArgs) => {
 };
 
 /**
- * Default argument structure
- *
- * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
- */
-const argDefaultFactory = (index) => {
-    return {
-        name: `arg${index}`,
-        required: true,
-        default: null
-    };
-};
-
-/**
  * Default command structure
  *
  * @private
@@ -93,7 +70,6 @@ const commandDefaultFactory = (index) => {
         sub: null
     };
 };
-
 /**
  * Creates a map and sub-maps out of a command object.
  *
@@ -119,6 +95,40 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
     }
     return [commandKey, commandValue];
 }));
+
+/**
+ * Creates an aliased map from a normal map
+ *
+ * @private
+ * @param {Map} map
+ * @returns {Map}
+ */
+const getAliasedMap = (map) => {
+    const result = new Map(map);
+    map.forEach((command) => {
+        command.alias.forEach((alias) => {
+            if (result.has(alias)) {
+                throw new Error(`Alias ${alias} conflicts with a previously defined key`);
+            }
+            else {
+                result.set(alias, command);
+            }
+        });
+    });
+    return result;
+};
+
+const optionsDefault = {
+    /**
+     * If names should be treated case-sensitive for lookup.
+     */
+    caseSensitive: true,
+    /**
+     * List of characters to allow as quote-enclosing string.
+     * If set to null, quotes-enclosed strings will be disabled.
+     */
+    validQuotes: ['"']
+};
 
 const SPACE = /\s/;
 /**
@@ -168,17 +178,6 @@ const parseString = (strInput, validQuotes) => {
         : str.split(SPACE);
 };
 
-const optionsDefault = {
-    /**
-     * If names should be treated case-sensitive for lookup.
-     */
-    caseSensitive: true,
-    /**
-     * List of characters to allow as quote-enclosing string.
-     * If set to null, quotes-enclosed strings will be disabled.
-     */
-    validQuotes: ['"']
-};
 /**
  * Clingy class.
  *

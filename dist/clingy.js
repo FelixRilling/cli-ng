@@ -366,26 +366,20 @@ var Clingy = (function () {
     };
 
     /**
-     * Creates an aliased map from a normal map
+     * Default argument structure
      *
      * @private
-     * @param {Map} map
-     * @returns {Map}
+     * @param {Object} arg
+     * @param {number} index
+     * @returns {Object}
      */
-    const getAliasedMap = map => {
-      const result = new Map(map);
-      map.forEach(command => {
-        command.alias.forEach(alias => {
-          if (result.has(alias)) {
-            throw new Error(`Alias ${alias} conflicts with a previously defined key`);
-          } else {
-            result.set(alias, command);
-          }
-        });
-      });
-      return result;
+    const argDefaultFactory = index => {
+      return {
+        name: `arg${index}`,
+        required: true,
+        default: null
+      };
     };
-
     /**
      * Matches command-map arguments with input args
      *
@@ -394,6 +388,8 @@ var Clingy = (function () {
      * @param {Array<Object>} givenArgs
      * @returns {Object}
      */
+
+
     const mapArgs = (expectedArgs, givenArgs) => {
       const result = {
         args: {
@@ -423,22 +419,6 @@ var Clingy = (function () {
     };
 
     /**
-     * Default argument structure
-     *
-     * @private
-     * @param {Object} arg
-     * @param {number} index
-     * @returns {Object}
-     */
-    const argDefaultFactory = index => {
-      return {
-        name: `arg${index}`,
-        required: true,
-        default: null
-      };
-    };
-
-    /**
      * Default command structure
      *
      * @private
@@ -446,6 +426,7 @@ var Clingy = (function () {
      * @param {number} index
      * @returns {Object}
      */
+
     const commandDefaultFactory = index => {
       return {
         name: `command${index}`,
@@ -455,7 +436,6 @@ var Clingy = (function () {
         sub: null
       };
     };
-
     /**
      * Creates a map and sub-maps out of a command object.
      *
@@ -463,6 +443,7 @@ var Clingy = (function () {
      * @param {Array<IClingyCommand>} commandEntries
      * @returns {Map}
      */
+
 
     const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.map((command, index) => {
       if (!isString(command[0])) {
@@ -482,6 +463,40 @@ var Clingy = (function () {
 
       return [commandKey, commandValue];
     }));
+
+    /**
+     * Creates an aliased map from a normal map
+     *
+     * @private
+     * @param {Map} map
+     * @returns {Map}
+     */
+    const getAliasedMap = map => {
+      const result = new Map(map);
+      map.forEach(command => {
+        command.alias.forEach(alias => {
+          if (result.has(alias)) {
+            throw new Error(`Alias ${alias} conflicts with a previously defined key`);
+          } else {
+            result.set(alias, command);
+          }
+        });
+      });
+      return result;
+    };
+
+    const optionsDefault = {
+      /**
+       * If names should be treated case-sensitive for lookup.
+       */
+      caseSensitive: true,
+
+      /**
+       * List of characters to allow as quote-enclosing string.
+       * If set to null, quotes-enclosed strings will be disabled.
+       */
+      validQuotes: ['"']
+    };
 
     const SPACE = /\s/;
     /**
@@ -532,18 +547,6 @@ var Clingy = (function () {
       return validQuotes !== null ? splitWithQuotedStrings(str, validQuotes) : str.split(SPACE);
     };
 
-    const optionsDefault = {
-      /**
-       * If names should be treated case-sensitive for lookup.
-       */
-      caseSensitive: true,
-
-      /**
-       * List of characters to allow as quote-enclosing string.
-       * If set to null, quotes-enclosed strings will be disabled.
-       */
-      validQuotes: ['"']
-    };
     /**
      * Clingy class.
      *

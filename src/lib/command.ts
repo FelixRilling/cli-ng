@@ -1,17 +1,46 @@
 import { isString, objDefaults, objDefaultsDeep } from "lightdash";
-import { Clingy } from "../clingy";
-import {
-    IClingyArg,
-    IClingyCommand,
-    IClingyCommandProcessed
-} from "../interfaces";
-import {
-    clingyCommandEntries,
-    clingyCommandEntry,
-    clingyCommandMap
-} from "../types";
-import { argDefaultFactory } from "./argDefaultFactory";
-import { commandDefaultFactory } from "./commandDefaultFactory";
+import { Clingy, IClingy } from "../clingy";
+import { IClingyArg } from "./arg";
+import { argDefaultFactory } from "./arg";
+import { clingyCommandMap } from "./map";
+
+interface IClingyCommandProcessed extends IClingyCommand {
+    name: string;
+    sub: IClingy | null;
+}
+
+interface IClingyCommands {
+    [key: string]: IClingyCommand;
+}
+interface IClingyCommand {
+    [key: string]: any;
+    fn: (...args: any[]) => any;
+    alias: string[];
+    args: IClingyArg[];
+    sub: IClingyCommands | IClingy | null;
+}
+
+type clingyCommandEntry = [string, IClingyCommand];
+
+type clingyCommandEntries = clingyCommandEntry[];
+
+/**
+ * Default command structure
+ *
+ * @private
+ * @param {Object} arg
+ * @param {number} index
+ * @returns {Object}
+ */
+const commandDefaultFactory = (index: number): IClingyCommand => {
+    return {
+        name: `command${index}`,
+        fn: () => {},
+        alias: [],
+        args: [],
+        sub: null
+    };
+};
 
 /**
  * Creates a map and sub-maps out of a command object.
@@ -62,4 +91,12 @@ const mapCommands = (
         )
     );
 
-export { mapCommands };
+export {
+    IClingyCommandProcessed,
+    IClingyCommands,
+    IClingyCommand,
+    mapCommands,
+    clingyCommandEntry,
+    clingyCommandEntries,
+    commandDefaultFactory
+};

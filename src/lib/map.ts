@@ -1,5 +1,6 @@
-import { IClingyCommand } from "../interfaces";
-import { clingyCommandMap } from "../types";
+import { IClingyCommand } from "./command";
+
+type clingyCommandMap = Map<string, IClingyCommand>;
 
 /**
  * Creates an aliased map from a normal map
@@ -26,4 +27,4 @@ const getAliasedMap = (map: clingyCommandMap): clingyCommandMap => {
     return result;
 };
 
-export { getAliasedMap };
+export { getAliasedMap, clingyCommandMap };

@@ -2,45 +2,45 @@
 
 const Clingy = require("../dist/clingy.common");
 
-const cli = new Clingy({
-    about: {
-        fn: () => "About",
-        args: [],
-        alias: ["why", "?"],
-        sub: {
-            bar: () => "bar"
-        }
-    },
-    double: {
-        fn: args => args.number * 2,
-        args: [
-            {
-                name: "number",
-                type: "number",
-                required: true
-            }
-        ],
-        alias: []
-    },
-    add: {
-        fn: args => args.a + args.b,
-        args: [
-            {
-                name: "a",
-                type: "number",
-                required: true
-            },
-            {
-                name: "b",
-                type: "number",
-                required: true
-            }
-        ],
-        alias: ["addNumbers"]
-    }
-});
-
 describe("Parse", () => {
+    const cli = new Clingy({
+        about: {
+            fn: () => "About",
+            args: [],
+            alias: ["why", "?"],
+            sub: {
+                bar: () => "bar"
+            }
+        },
+        double: {
+            fn: args => args.number * 2,
+            args: [
+                {
+                    name: "number",
+                    type: "number",
+                    required: true
+                }
+            ],
+            alias: []
+        },
+        add: {
+            fn: args => args.a + args.b,
+            args: [
+                {
+                    name: "a",
+                    type: "number",
+                    required: true
+                },
+                {
+                    name: "b",
+                    type: "number",
+                    required: true
+                }
+            ],
+            alias: ["addNumbers"]
+        }
+    });
+
     it("Empty command", () => {
         expect(() => cli.parse("")).toThrowError(
             TypeError,

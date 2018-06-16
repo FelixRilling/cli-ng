@@ -2,45 +2,45 @@
 
 const Clingy = require("../dist/clingy.common");
 
-const cli = new Clingy({
-    about: {
-        fn: () => "About",
-        args: [],
-        alias: ["why", "?"],
-        sub: {
-            bar: () => "bar"
+describe("getCommand", () => {
+    const cli = new Clingy({
+        about: {
+            fn: () => "About",
+            args: [],
+            alias: ["why", "?"],
+            sub: {
+                bar: () => "bar"
+            }
+        },
+        double: {
+            fn: args => args.number * 2,
+            args: [
+                {
+                    name: "number",
+                    type: "number",
+                    required: true
+                }
+            ],
+            alias: []
+        },
+        add: {
+            fn: args => args.a + args.b,
+            args: [
+                {
+                    name: "a",
+                    type: "number",
+                    required: true
+                },
+                {
+                    name: "b",
+                    type: "number",
+                    required: true
+                }
+            ],
+            alias: ["addNumbers"]
         }
-    },
-    double: {
-        fn: args => args.number * 2,
-        args: [
-            {
-                name: "number",
-                type: "number",
-                required: true
-            }
-        ],
-        alias: []
-    },
-    add: {
-        fn: args => args.a + args.b,
-        args: [
-            {
-                name: "a",
-                type: "number",
-                required: true
-            },
-            {
-                name: "b",
-                type: "number",
-                required: true
-            }
-        ],
-        alias: ["addNumbers"]
-    }
-});
+    });
 
-describe("Get", () => {
     it("Empty Arr", () => {
         expect(() => cli.getCommand([])).toThrowError(
             TypeError,

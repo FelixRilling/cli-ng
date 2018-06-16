@@ -3,42 +3,42 @@
 const Clingy = require("../dist/clingy.common");
 const { isInstanceOf, isArray, isFunction } = require("lightdash");
 
-const cli = new Clingy({
-    myCommand: {
-        fn: () => "About",
-        args: [],
-        alias: ["why", "?"]
-    },
-    missingFn: {
-        args: [],
-        alias: []
-    },
-    missingArgs: {
-        fn: () => {},
-        alias: []
-    },
-    missingAlias: {
-        fn: () => {},
-        args: []
-    },
-    missingAll: {},
-    nested: {
-        fn: () => 1,
-        args: [],
-        alias: [],
-        sub: {
-            nested2: {
-                fn: () => 4,
-                alias: ["nestedMore"],
-                sub: {
-                    nested3: { fn: () => 5, alias: ["nestedEvenMore"] }
+describe("Init", () => {
+    const cli = new Clingy({
+        myCommand: {
+            fn: () => "About",
+            args: [],
+            alias: ["why", "?"]
+        },
+        missingFn: {
+            args: [],
+            alias: []
+        },
+        missingArgs: {
+            fn: () => {},
+            alias: []
+        },
+        missingAlias: {
+            fn: () => {},
+            args: []
+        },
+        missingAll: {},
+        nested: {
+            fn: () => 1,
+            args: [],
+            alias: [],
+            sub: {
+                nested2: {
+                    fn: () => 4,
+                    alias: ["nestedMore"],
+                    sub: {
+                        nested3: { fn: () => 5, alias: ["nestedEvenMore"] }
+                    }
                 }
             }
         }
-    }
-});
+    });
 
-describe("Init", () => {
     it("Main", () => {
         expect(() => isInstanceOf(cli, Clingy)).toBeTruthy();
     });

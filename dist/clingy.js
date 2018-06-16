@@ -447,7 +447,7 @@ var Clingy = (function () {
 
     const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.map((command, index) => {
       if (!isString(command[0])) {
-        throw new TypeError(`command key '${command[0]}' is not a string`);
+        throw new Error(`command key '${command[0]}' is not a string`);
       }
 
       const commandKey = caseSensitive ? command[0] : command[0].toLowerCase();

@@ -57,7 +57,7 @@ const mapCommands = (
         commandEntries.map(
             (command, index): clingyCommandEntry => {
                 if (!isString(command[0])) {
-                    throw new TypeError(
+                    throw new Error(
                         `command key '${command[0]}' is not a string`
                     );
                 }

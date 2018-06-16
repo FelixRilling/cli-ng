@@ -4,7 +4,8 @@ import { IClingyCommandProcessed, mapCommands } from "./lib/command";
 import {
     IClingyLookupMissingArg,
     IClingyLookupMissingCommand,
-    IClingyLookupSuccessful
+    IClingyLookupSuccessful,
+    missingErrorTypes
 } from "./lib/lookup";
 import { clingyCommandMap, getAliasedMap } from "./lib/map";
 import { IClingyOptions, optionsDefault } from "./lib/options";
@@ -92,7 +93,7 @@ const Clingy = class implements IClingy {
             return <IClingyLookupMissingCommand>{
                 success: false,
                 error: {
-                    type: "missingCommand",
+                    type: missingErrorTypes.command,
                     missing: [commandNameCurrent],
                     similar: strSimilar(
                         commandNameCurrent,
@@ -157,7 +158,7 @@ const Clingy = class implements IClingy {
             return <IClingyLookupMissingArg>{
                 success: false,
                 error: {
-                    type: "missingArg",
+                    type: missingErrorTypes.arg,
                     missing: argsMapped.missing
                 }
             }; // Error: Missing arguments

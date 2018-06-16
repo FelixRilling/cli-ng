@@ -106,7 +106,7 @@ const getAliasedMap = (map) => {
     map.forEach((command) => {
         command.alias.forEach((alias) => {
             if (result.has(alias)) {
-                throw new Error(`Alias ${alias} conflicts with a previously defined key`);
+                throw new Error(`Alias '${alias}' conflicts with a previously defined key`);
             }
             else {
                 result.set(alias, command);
@@ -212,7 +212,7 @@ const Clingy = class {
             return {
                 success: false,
                 error: {
-                    type: "missingCommand",
+                    type: "missingCommand" /* command */,
                     missing: [commandNameCurrent],
                     similar: strSimilar(commandNameCurrent, Array.from(this.mapAliased.keys()))
                 },
@@ -256,7 +256,7 @@ const Clingy = class {
             return {
                 success: false,
                 error: {
-                    type: "missingArg",
+                    type: "missingArg" /* arg */,
                     missing: argsMapped.missing
                 }
             }; // Error: Missing arguments

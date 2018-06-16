@@ -16,7 +16,7 @@ const getAliasedMap = (map: clingyCommandMap): clingyCommandMap => {
         command.alias.forEach((alias: string) => {
             if (result.has(alias)) {
                 throw new Error(
-                    `Alias ${alias} conflicts with a previously defined key`
+                    `Alias '${alias}' conflicts with a previously defined key`
                 );
             } else {
                 result.set(alias, command);

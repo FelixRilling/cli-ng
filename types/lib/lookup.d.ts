@@ -10,7 +10,7 @@ interface IClingyLookupSuccessful {
 interface IClingyLookupMissingCommand {
     success: false;
     error: {
-        type: "missingCommand";
+        type: missingErrorTypes.command;
         missing: string[];
         similar: string[];
     };
@@ -19,7 +19,7 @@ interface IClingyLookupMissingCommand {
 interface IClingyLookupMissingArg {
     success: false;
     error: {
-        type: "missingArg";
+        type: missingErrorTypes.arg;
         missing: IClingyArg[];
     };
 }
@@ -27,4 +27,8 @@ interface IClingyLookupArgs {
     [key: string]: string | string[];
     _all: string[];
 }
-export { IClingyLookupArgs, IClingyLookupMissingArg, IClingyLookupMissingCommand, IClingyLookupSuccessful };
+declare const enum missingErrorTypes {
+    command = "missingCommand",
+    arg = "missingArg"
+}
+export { IClingyLookupArgs, IClingyLookupMissingArg, IClingyLookupMissingCommand, IClingyLookupSuccessful, missingErrorTypes };

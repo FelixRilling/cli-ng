@@ -1,10 +1,10 @@
 /**
- * Parses a string into an Array
+ * Parses a string into an Array while supporting quoted strings
  *
  * @private
- * @param {string} strInput
- * @param {Array<string>|null} validQuotes
+ * @param {string} str
+ * @param {Array<string>} validQuotes
  * @returns {Array<string>}
  */
-declare const parseString: (strInput: string, validQuotes: string[]) => string[];
+declare const parseString: (str: string, validQuotes: string[]) => string[];
 export { parseString };

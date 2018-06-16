@@ -7,12 +7,12 @@ const optionsDefault: IClingyOptions = {
     /**
      * If names should be treated case-sensitive for lookup.
      */
-    caseSensitive: true,
+    caseSensitive: false,
     /**
      * List of characters to allow as quote-enclosing string.
      * If set to null, quotes-enclosed strings will be disabled.
      */
-    validQuotes: ['"']
+    validQuotes: ['"', "“", "”"]
 };
 
 export { IClingyOptions, optionsDefault };

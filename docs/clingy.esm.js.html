@@ -11,7 +11,6 @@
     <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -41,12 +40,11 @@
             <pre class="prettyprint source linenums"><code>import { isString, objDefaults, objDefaultsDeep, strSimilar } from 'lightdash';
 
 /**
- * Default argument structure
+ * Default argument factory.
  *
  * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
+ * @param {number} index index to use for default name.
+ * @returns {object} argument object.
  */
 const argDefaultFactory = (index) => {
     return {
@@ -56,12 +54,12 @@ const argDefaultFactory = (index) => {
     };
 };
 /**
- * Matches command-map arguments with input args
+ * Matches command-map arguments with input args.
  *
  * @private
- * @param {Array&lt;Object>} expectedArgs
- * @param {Array&lt;Object>} givenArgs
- * @returns {Object}
+ * @param {Array&lt;object>} expectedArgs array of expected args.
+ * @param {Array&lt;object>} givenArgs array of given args.
+ * @returns {object} mapArgs result object.
  */
 const mapArgs = (expectedArgs, givenArgs) => {
     const result = {
@@ -92,12 +90,11 @@ const mapArgs = (expectedArgs, givenArgs) => {
 };
 
 /**
- * Default command structure
+ * Default command factory.
  *
  * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
+ * @param {number} index index to use for the default name.
+ * @returns {object} command object.
  */
 const commandDefaultFactory = (index) => {
     return {
@@ -112,8 +109,9 @@ const commandDefaultFactory = (index) => {
  * Creates a map and sub-maps out of a command object.
  *
  * @private
- * @param {Array&lt;IClingyCommand>} commandEntries
- * @returns {Map}
+ * @param {Array&lt;IClingyCommand>} commandEntries entries of a command object.
+ * @param {boolean} caseSensitive if commands should be case sensitive.
+ * @returns {Map} command map.
  */
 const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.map((command, index) => {
     if (!isString(command[0])) {
@@ -135,11 +133,11 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
 }));
 
 /**
- * Creates an aliased map from a normal map
+ * Creates an aliased map from a normal map.
  *
  * @private
- * @param {Map} map
- * @returns {Map}
+ * @param {Map} map command map to alias.
+ * @returns {Map} aliased command map.
  */
 const getAliasedMap = (map) => {
     const result = new Map(map);
@@ -148,9 +146,7 @@ const getAliasedMap = (map) => {
             if (result.has(alias)) {
                 throw new Error(`Alias '${alias}' conflicts with a previously defined key`);
             }
-            else {
-                result.set(alias, command);
-            }
+            result.set(alias, command);
         });
     });
     return result;
@@ -163,19 +159,18 @@ const optionsDefault = {
     caseSensitive: false,
     /**
      * List of characters to allow as quote-enclosing string.
-     * If set to null, quotes-enclosed strings will be disabled.
      */
-    validQuotes: ['"', "“", "”"]
+    validQuotes: ["\"", "“", "”"]
 };
 
 const SPACE = /\s/;
 /**
- * Parses a string into an Array while supporting quoted strings
+ * Parses a string into an Array while supporting quoted strings.
  *
  * @private
- * @param {string} str
- * @param {Array&lt;string>} validQuotes
- * @returns {Array&lt;string>}
+ * @param {string} str string to parse.
+ * @param {Array&lt;string>} validQuotes array of valid quotes.
+ * @returns {Array&lt;string>} list of parsed strings.
  */
 const parseString = (str, validQuotes) => {
     const result = [];
@@ -212,8 +207,8 @@ const Clingy = class {
      *
      * @public
      * @constructor
-     * @param {Object} commands
-     * @param {Object} [options={}]
+     * @param {object} commands object of commands to init the instance with.
+     * @param {object} [options={}] options object.
      */
     constructor(commands, options = {}) {
         this.options = objDefaultsDeep(options, optionsDefault);
@@ -224,7 +219,7 @@ const Clingy = class {
      * Returns all instance maps.
      *
      * @public
-     * @returns {Object}
+     * @returns {object} object of the internal maps.
      */
     getAll() {
         return {
@@ -236,9 +231,9 @@ const Clingy = class {
      * Looks up a command by path.
      *
      * @public
-     * @param {Array&lt;string>} path
-     * @param {Array&lt;string>} [pathUsed=[]]
-     * @returns {Object}
+     * @param {Array&lt;string>} path command path to look up.
+     * @param {Array&lt;string>} [pathUsed=[]] when called from itself, the path already taken.
+     * @returns {object}
      */
     getCommand(path, pathUsed = []) {
         if (path.length &lt; 1) {
@@ -280,8 +275,8 @@ const Clingy = class {
      * Parses a CLI-like input string into command and args.
      *
      * @public
-     * @param {string} input
-     * @returns {Object}
+     * @param {string} input input string to parse.
+     * @returns {object} result object.
      */
     parse(input) {
         const inputParsed = parseString(input, this.options.validQuotes);
@@ -319,7 +314,7 @@ export default Clingy;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.0-dev</a> on Sat Jun 16 2018 12:32:55 GMT+0200 (Central European Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jun 24 2018 10:30:57 GMT+0200 (Central European Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

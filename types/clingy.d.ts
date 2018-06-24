@@ -27,7 +27,7 @@ declare const Clingy: {
          * Returns all instance maps.
          *
          * @public
-         * @returns {Object}
+         * @returns {object} object of the internal maps.
          */
         getAll(): {
             map: Map<string, import("src/lib/command").IClingyCommand>;
@@ -37,17 +37,17 @@ declare const Clingy: {
          * Looks up a command by path.
          *
          * @public
-         * @param {Array<string>} path
-         * @param {Array<string>} [pathUsed=[]]
-         * @returns {Object}
+         * @param {Array<string>} path command path to look up.
+         * @param {Array<string>} [pathUsed=[]] when called from itself, the path already taken.
+         * @returns {object}
          */
         getCommand(path: string[], pathUsed?: string[]): IClingyLookupSuccessful | IClingyLookupMissingCommand;
         /**
          * Parses a CLI-like input string into command and args.
          *
          * @public
-         * @param {string} input
-         * @returns {Object}
+         * @param {string} input input string to parse.
+         * @returns {object} result object.
          */
         parse(input: string): IClingyLookupSuccessful | IClingyLookupMissingCommand | IClingyLookupMissingArg;
     };

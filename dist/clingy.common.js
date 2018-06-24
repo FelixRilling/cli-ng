@@ -3,12 +3,11 @@
 var lightdash = require('lightdash');
 
 /**
- * Default argument structure
+ * Default argument factory.
  *
  * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
+ * @param {number} index index to use for default name.
+ * @returns {object} argument object.
  */
 const argDefaultFactory = (index) => {
     return {
@@ -18,12 +17,12 @@ const argDefaultFactory = (index) => {
     };
 };
 /**
- * Matches command-map arguments with input args
+ * Matches command-map arguments with input args.
  *
  * @private
- * @param {Array<Object>} expectedArgs
- * @param {Array<Object>} givenArgs
- * @returns {Object}
+ * @param {Array<object>} expectedArgs array of expected args.
+ * @param {Array<object>} givenArgs array of given args.
+ * @returns {object} mapArgs result object.
  */
 const mapArgs = (expectedArgs, givenArgs) => {
     const result = {
@@ -54,12 +53,11 @@ const mapArgs = (expectedArgs, givenArgs) => {
 };
 
 /**
- * Default command structure
+ * Default command factory.
  *
  * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
+ * @param {number} index index to use for the default name.
+ * @returns {object} command object.
  */
 const commandDefaultFactory = (index) => {
     return {
@@ -74,8 +72,9 @@ const commandDefaultFactory = (index) => {
  * Creates a map and sub-maps out of a command object.
  *
  * @private
- * @param {Array<IClingyCommand>} commandEntries
- * @returns {Map}
+ * @param {Array<IClingyCommand>} commandEntries entries of a command object.
+ * @param {boolean} caseSensitive if commands should be case sensitive.
+ * @returns {Map} command map.
  */
 const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.map((command, index) => {
     if (!lightdash.isString(command[0])) {
@@ -97,11 +96,11 @@ const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.ma
 }));
 
 /**
- * Creates an aliased map from a normal map
+ * Creates an aliased map from a normal map.
  *
  * @private
- * @param {Map} map
- * @returns {Map}
+ * @param {Map} map command map to alias.
+ * @returns {Map} aliased command map.
  */
 const getAliasedMap = (map) => {
     const result = new Map(map);
@@ -110,9 +109,7 @@ const getAliasedMap = (map) => {
             if (result.has(alias)) {
                 throw new Error(`Alias '${alias}' conflicts with a previously defined key`);
             }
-            else {
-                result.set(alias, command);
-            }
+            result.set(alias, command);
         });
     });
     return result;
@@ -125,19 +122,18 @@ const optionsDefault = {
     caseSensitive: false,
     /**
      * List of characters to allow as quote-enclosing string.
-     * If set to null, quotes-enclosed strings will be disabled.
      */
     validQuotes: ["\"", "“", "”"]
 };
 
 const SPACE = /\s/;
 /**
- * Parses a string into an Array while supporting quoted strings
+ * Parses a string into an Array while supporting quoted strings.
  *
  * @private
- * @param {string} str
- * @param {Array<string>} validQuotes
- * @returns {Array<string>}
+ * @param {string} str string to parse.
+ * @param {Array<string>} validQuotes array of valid quotes.
+ * @returns {Array<string>} list of parsed strings.
  */
 const parseString = (str, validQuotes) => {
     const result = [];
@@ -174,8 +170,8 @@ const Clingy = class {
      *
      * @public
      * @constructor
-     * @param {Object} commands
-     * @param {Object} [options={}]
+     * @param {object} commands object of commands to init the instance with.
+     * @param {object} [options={}] options object.
      */
     constructor(commands, options = {}) {
         this.options = lightdash.objDefaultsDeep(options, optionsDefault);
@@ -186,7 +182,7 @@ const Clingy = class {
      * Returns all instance maps.
      *
      * @public
-     * @returns {Object}
+     * @returns {object} object of the internal maps.
      */
     getAll() {
         return {
@@ -198,9 +194,9 @@ const Clingy = class {
      * Looks up a command by path.
      *
      * @public
-     * @param {Array<string>} path
-     * @param {Array<string>} [pathUsed=[]]
-     * @returns {Object}
+     * @param {Array<string>} path command path to look up.
+     * @param {Array<string>} [pathUsed=[]] when called from itself, the path already taken.
+     * @returns {object}
      */
     getCommand(path, pathUsed = []) {
         if (path.length < 1) {
@@ -242,8 +238,8 @@ const Clingy = class {
      * Parses a CLI-like input string into command and args.
      *
      * @public
-     * @param {string} input
-     * @returns {Object}
+     * @param {string} input input string to parse.
+     * @returns {object} result object.
      */
     parse(input) {
         const inputParsed = parseString(input, this.options.validQuotes);

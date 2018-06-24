@@ -10,7 +10,6 @@ const optionsDefault: IClingyOptions = {
     caseSensitive: false,
     /**
      * List of characters to allow as quote-enclosing string.
-     * If set to null, quotes-enclosed strings will be disabled.
      */
     validQuotes: ["\"", "“", "”"]
 };

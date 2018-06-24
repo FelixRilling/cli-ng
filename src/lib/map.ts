@@ -3,11 +3,11 @@ import { IClingyCommand } from "./command";
 type clingyCommandMap = Map<string, IClingyCommand>;
 
 /**
- * Creates an aliased map from a normal map
+ * Creates an aliased map from a normal map.
  *
  * @private
- * @param {Map} map
- * @returns {Map}
+ * @param {Map} map command map to alias.
+ * @returns {Map} aliased command map.
  */
 const getAliasedMap = (map: clingyCommandMap): clingyCommandMap => {
     const result = new Map(map);
@@ -18,9 +18,9 @@ const getAliasedMap = (map: clingyCommandMap): clingyCommandMap => {
                 throw new Error(
                     `Alias '${alias}' conflicts with a previously defined key`
                 );
-            } else {
-                result.set(alias, command);
             }
+
+            result.set(alias, command);
         });
     });
 

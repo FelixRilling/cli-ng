@@ -46,8 +46,8 @@ const Clingy = class implements IClingy {
      *
      * @public
      * @constructor
-     * @param {Object} commands
-     * @param {Object} [options={}]
+     * @param {object} commands object of commands to init the instance with.
+     * @param {object} [options={}] options object.
      */
     constructor(commands: object, options: object = {}) {
         this.options = <IClingyOptions>objDefaultsDeep(options, optionsDefault);
@@ -61,7 +61,7 @@ const Clingy = class implements IClingy {
      * Returns all instance maps.
      *
      * @public
-     * @returns {Object}
+     * @returns {object} object of the internal maps.
      */
     public getAll() {
         return {
@@ -73,9 +73,9 @@ const Clingy = class implements IClingy {
      * Looks up a command by path.
      *
      * @public
-     * @param {Array<string>} path
-     * @param {Array<string>} [pathUsed=[]]
-     * @returns {Object}
+     * @param {Array<string>} path command path to look up.
+     * @param {Array<string>} [pathUsed=[]] when called from itself, the path already taken.
+     * @returns {object}
      */
     public getCommand(
         path: string[],
@@ -134,8 +134,8 @@ const Clingy = class implements IClingy {
      * Parses a CLI-like input string into command and args.
      *
      * @public
-     * @param {string} input
-     * @returns {Object}
+     * @param {string} input input string to parse.
+     * @returns {object} result object.
      */
     public parse(
         input: string

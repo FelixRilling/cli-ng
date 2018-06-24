@@ -25,7 +25,7 @@ then parse input
 cli.parse("hello");
 
 // Returns:
- {
+{
     success: true,
     command: {
         fn:  () => "Hello World!",
@@ -147,7 +147,7 @@ cli.parse("add 4 5 6");
 
 ### Nested commands
 
-Cli-ngy supports subcommands and command groups:
+Cli-ngy supports subcommands of any depth with the `sub` property:
 
 ```js
 const cli = new Clingy({
@@ -176,7 +176,7 @@ const cli = new Clingy({
 });
 ```
 
-Which can be accessed with
+Which can be accessed with:
 
 ```js
 cli.parse("myGroup foo"); // Or with aliases: cli.parse("group foo"); or cli.parse("group fizz");
@@ -199,18 +199,17 @@ cli.parse("myGroup foo"); // Or with aliases: cli.parse("group foo"); or cli.par
 
 ### Options
 
-The constructor can be called with these options:
+The constructor can take these options:
 
 ```js
 {
     /**
-     * If names should be treated case-sensitive for lookup
+     * If names should be treated case-sensitive for lookup.
      */
-    caseSensitive: true,
+    caseSensitive: false,
     /**
-     * List of characters to allow as quote-enclosing string
-     * If set to null, quotes-enclosed strings will be disabled
+     * List of characters to allow as quote-enclosing string.
      */
-    validQuotes: ['"']
+    validQuotes: ["\"", "“", "”"]
 }
 ```

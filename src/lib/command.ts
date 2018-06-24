@@ -25,12 +25,11 @@ type clingyCommandEntry = [string, IClingyCommand];
 type clingyCommandEntries = clingyCommandEntry[];
 
 /**
- * Default command structure
+ * Default command factory.
  *
  * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
+ * @param {number} index index to use for the default name.
+ * @returns {object} command object.
  */
 const commandDefaultFactory = (index: number): IClingyCommand => {
     return {
@@ -46,8 +45,9 @@ const commandDefaultFactory = (index: number): IClingyCommand => {
  * Creates a map and sub-maps out of a command object.
  *
  * @private
- * @param {Array<IClingyCommand>} commandEntries
- * @returns {Map}
+ * @param {Array<IClingyCommand>} commandEntries entries of a command object.
+ * @param {boolean} caseSensitive if commands should be case sensitive.
+ * @returns {Map} command map.
  */
 const mapCommands = (
     commandEntries: clingyCommandEntries,

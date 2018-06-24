@@ -10,21 +10,20 @@ interface IClingyArg {
     default?: any;
 }
 /**
- * Default argument structure
+ * Default argument factory.
  *
  * @private
- * @param {Object} arg
- * @param {number} index
- * @returns {Object}
+ * @param {number} index index to use for default name.
+ * @returns {object} argument object.
  */
 declare const argDefaultFactory: (index: number) => IClingyArg;
 /**
- * Matches command-map arguments with input args
+ * Matches command-map arguments with input args.
  *
  * @private
- * @param {Array<Object>} expectedArgs
- * @param {Array<Object>} givenArgs
- * @returns {Object}
+ * @param {Array<object>} expectedArgs array of expected args.
+ * @param {Array<object>} givenArgs array of given args.
+ * @returns {object} mapArgs result object.
  */
 declare const mapArgs: (expectedArgs: IClingyArg[], givenArgs: string[]) => IClingyArgsMapped;
 export { mapArgs, IClingyArg, IClingyArgsMapped, argDefaultFactory };

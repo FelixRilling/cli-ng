@@ -16,12 +16,7 @@ export default {
     plugins: [
         resolve(),
         typescript({
-            cacheRoot: "./.cache/ts/iife-min",
-            tsconfigOverride: {
-                compilerOptions: {
-                    target: "es2015"
-                }
-            }
+            cacheRoot: "./.cache/ts/iife-min"
         }),
         uglify()
     ]

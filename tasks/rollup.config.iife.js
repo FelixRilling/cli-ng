@@ -1,6 +1,5 @@
 import typescript from "rollup-plugin-typescript2";
 import resolve from "rollup-plugin-node-resolve";
-import babel from "rollup-plugin-babel";
 import { settings } from "../package.json";
 
 export default {
@@ -16,8 +15,12 @@ export default {
     plugins: [
         resolve(),
         typescript({
-            cacheRoot: "./.cache/ts/iife"
-        }),
-        babel()
+            cacheRoot: "./.cache/ts/iife",
+            tsconfigOverride: {
+                compilerOptions: {
+                    target: "es2015"
+                }
+            }
+        })
     ]
 };

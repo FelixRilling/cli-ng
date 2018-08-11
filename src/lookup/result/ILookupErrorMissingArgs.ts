@@ -1,4 +1,9 @@
-import {ILookupResult} from "./ILookupResult";
+import {ILookupResult, ResultType} from "./ILookupResult";
+import {IArgument} from "../../argument/IArgument";
 
-export interface ILookupErrorMissingArgs extends ILookupResult {
+interface ILookupErrorMissingArgs extends ILookupResult {
+    type: ResultType.ERROR_MISSING_ARGUMENT;
+    missing: IArgument[];
 }
+
+export {ILookupErrorMissingArgs};

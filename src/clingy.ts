@@ -14,7 +14,11 @@ const Clingy = class {
     public readonly map: CommandMap;
     public readonly mapAliased: CommandMap;
 
-    constructor(commands: CommandMap = new CommandMap(), caseSensitive: boolean = true, legalQuotes: commandPath = ["\""]) {
+    constructor(
+        commands: CommandMap = new CommandMap(),
+        caseSensitive: boolean = true,
+        legalQuotes: commandPath = ["\""]
+    ) {
         this.lookupResolver = new LookupResolver(caseSensitive);
         this.inputParser = new InputParser(legalQuotes);
         this.map = commands;
@@ -45,14 +49,14 @@ const Clingy = class {
         const lookupResult =
             this.getPath(path);
 
-        return lookupResult != null && lookupResult.success;
+        return lookupResult != null && lookupResult.successful;
     }
 
     /**
      * Resolves a path to a command.
      *
      * @param path Path to look up.
-     * @return Lookup result, either {@link LookupSuccess} or {@link LookupErrorNotFound}.
+     * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
      */
     public getPath(path: commandPath): ILookupResult {
         this.logger.debug("Resolving path: {}", path);
@@ -63,7 +67,7 @@ const Clingy = class {
      * Parses a string into a command and arguments.
      *
      * @param input String to parse.
-     * @return Lookup result, either {@link LookupSuccess}, {@link LookupErrorNotFound} or {@link LookupErrorMissingArgs}.
+     * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound} or {@link ILookupErrorMissingArgs}.
      */
     public parse(input: string): ILookupResult {
         this.logger.debug("Parsing input: '{}'", input);
@@ -75,4 +79,4 @@ const Clingy = class {
     }
 };
 
-export {Clingy};
+export {Clingy, commandPath};

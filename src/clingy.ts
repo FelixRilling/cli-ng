@@ -1,173 +1,78 @@
-import { objDefaultsDeep, strSimilar } from "lightdash";
-import { mapArgs } from "./lib/arg";
-import { IClingyCommandProcessed, mapCommands } from "./lib/command";
-import {
-    IClingyLookupMissingArg,
-    IClingyLookupMissingCommand,
-    IClingyLookupSuccessful,
-    missingErrorTypes
-} from "./lib/lookup";
-import { clingyCommandMap, getAliasedMap } from "./lib/map";
-import { IClingyOptions, optionsDefault } from "./lib/options";
-import { parseString } from "./lib/parseString";
+import * as loglevel from "loglevel";
+import {ILookupResult} from "./lookup/result/ILookupResult";
+import {ICommand} from "./command/ICommand";
+import {LookupResolver} from "./lookup/lookupResolver";
+import {InputParser} from "./parser/inputParser";
+import {CommandMap} from "./command/commandMap";
 
-interface IClingy {
-    options: IClingyOptions;
-    map: clingyCommandMap;
-    mapAliased: clingyCommandMap;
-    getAll(): {
-        map: clingyCommandMap;
-        mapAliased: clingyCommandMap;
-    };
-    getCommand(
-        path: string[],
-        pathUsed?: string[]
-    ): IClingyLookupSuccessful | IClingyLookupMissingCommand;
-    parse(
-        input: string
-    ):
-        | IClingyLookupSuccessful
-        | IClingyLookupMissingCommand
-        | IClingyLookupMissingArg;
-}
+type commandPath = string[];
 
-/**
- * Clingy class.
- *
- * @public
- * @class
- */
-const Clingy = class implements IClingy {
-    public options: IClingyOptions;
-    public map: clingyCommandMap;
-    public mapAliased: clingyCommandMap;
-    /**
-     * Creates Clingy instance.
-     *
-     * @public
-     * @constructor
-     * @param {object} commands object of commands to init the instance with.
-     * @param {object} [options={}] options object.
-     */
-    constructor(commands: object, options: object = {}) {
-        this.options = <IClingyOptions>objDefaultsDeep(options, optionsDefault);
-        this.map = mapCommands(
-            Object.entries(commands),
-            this.options.caseSensitive
-        );
-        this.mapAliased = getAliasedMap(this.map);
+const Clingy = class {
+    public readonly logger: loglevel.Logger = loglevel.getLogger("Clingy");
+    public readonly lookupResolver: LookupResolver;
+    public readonly inputParser: InputParser;
+    public readonly map: CommandMap;
+    public readonly mapAliased: CommandMap;
+
+    constructor(commands: CommandMap = new CommandMap(), caseSensitive: boolean = true, legalQuotes: commandPath = ["\""]) {
+        this.lookupResolver = new LookupResolver(caseSensitive);
+        this.inputParser = new InputParser(legalQuotes);
+        this.map = commands;
+        this.mapAliased = new CommandMap();
+        this.updateAliases();
     }
-    /**
-     * Returns all instance maps.
-     *
-     * @public
-     * @returns {object} object of the internal maps.
-     */
-    public getAll() {
-        return {
-            map: this.map,
-            mapAliased: this.mapAliased
-        };
+
+    public setCommand(key: string, command: ICommand): void {
+        this.map.set(key, command);
+        this.updateAliases();
     }
-    /**
-     * Looks up a command by path.
-     *
-     * @public
-     * @param {Array<string>} path command path to look up.
-     * @param {Array<string>} [pathUsed=[]] when called from itself, the path already taken.
-     * @returns {object}
-     */
-    public getCommand(
-        path: string[],
-        pathUsed: string[] = []
-    ): IClingyLookupSuccessful | IClingyLookupMissingCommand {
-        if (path.length < 1) {
-            throw new TypeError("Path does not contain at least one item");
-        }
-        const commandNameCurrent = this.options.caseSensitive
-            ? path[0]
-            : path[0].toLowerCase();
-        const pathUsedNew = pathUsed;
 
-        if (!this.mapAliased.has(commandNameCurrent)) {
-            return <IClingyLookupMissingCommand>{
-                success: false,
-                error: {
-                    type: missingErrorTypes.command,
-                    missing: [commandNameCurrent],
-                    similar: strSimilar(
-                        commandNameCurrent,
-                        Array.from(this.mapAliased.keys())
-                    )
-                },
-                path: pathUsedNew
-            };
-        }
-
-        const command = <IClingyCommandProcessed>(
-            this.mapAliased.get(commandNameCurrent)
-        );
-        const commandPathNew = path.slice(1);
-
-        pathUsedNew.push(commandNameCurrent);
-
-        // Recursively go into sub if more items in path and sub exists
-        if (path.length > 1 && command.sub !== null) {
-            const commandSubResult = command.sub.getCommand(
-                commandPathNew,
-                pathUsedNew
-            );
-
-            if (commandSubResult.success) {
-                return commandSubResult;
-            }
-        }
-
-        return {
-            success: true,
-            command,
-            path: pathUsedNew,
-            pathDangling: commandPathNew
-        };
+    public getCommand(key: string): ICommand | undefined {
+        return this.mapAliased.get(key);
     }
+
+    public hasCommand(key: string): boolean {
+        return this.mapAliased.has(key);
+    }
+
     /**
-     * Parses a CLI-like input string into command and args.
+     * Checks if a path resolves to a command.
      *
-     * @public
-     * @param {string} input input string to parse.
-     * @returns {object} result object.
+     * @param path Path to look up.
+     * @return If the path resolves to a command.
      */
-    public parse(
-        input: string
-    ):
-        | IClingyLookupSuccessful
-        | IClingyLookupMissingCommand
-        | IClingyLookupMissingArg {
-        const inputParsed = parseString(input, this.options.validQuotes);
-        const commandLookup = this.getCommand(inputParsed);
+    public hasPath(path: commandPath): boolean {
+        const lookupResult =
+            this.getPath(path);
 
-        if (!commandLookup.success) {
-            return commandLookup; // Error: Command not found
-        }
+        return lookupResult != null && lookupResult.success;
+    }
 
-        const command = commandLookup.command;
-        const args = commandLookup.pathDangling;
-        const argsMapped = mapArgs(command.args, args);
+    /**
+     * Resolves a path to a command.
+     *
+     * @param path Path to look up.
+     * @return Lookup result, either {@link LookupSuccess} or {@link LookupErrorNotFound}.
+     */
+    public getPath(path: commandPath): ILookupResult {
+        this.logger.debug("Resolving path: {}", path);
+        return this.lookupResolver.resolve(this.mapAliased, path);
+    }
 
-        if (argsMapped.missing.length !== 0) {
-            return <IClingyLookupMissingArg>{
-                success: false,
-                error: {
-                    type: missingErrorTypes.arg,
-                    missing: argsMapped.missing
-                }
-            }; // Error: Missing arguments
-        }
+    /**
+     * Parses a string into a command and arguments.
+     *
+     * @param input String to parse.
+     * @return Lookup result, either {@link LookupSuccess}, {@link LookupErrorNotFound} or {@link LookupErrorMissingArgs}.
+     */
+    public parse(input: string): ILookupResult {
+        this.logger.debug("Parsing input: '{}'", input);
+        return this.lookupResolver.resolve(this.mapAliased, this.inputParser.parse(input), true);
+    }
 
-        commandLookup.args = argsMapped.args;
+    public updateAliases() {
 
-        return commandLookup; // Success
     }
 };
 
-export { Clingy, IClingy };
+export {Clingy};

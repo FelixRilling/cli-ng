@@ -21,8 +21,8 @@ interface IClingy {
 declare const Clingy: {
     new (commands: object, options?: object): {
         options: IClingyOptions;
-        map: Map<string, import("src/lib/command").IClingyCommand>;
-        mapAliased: Map<string, import("src/lib/command").IClingyCommand>;
+        map: Map<string, import("src/_old/lib/command").IClingyCommand>;
+        mapAliased: Map<string, import("src/_old/lib/command").IClingyCommand>;
         /**
          * Returns all instance maps.
          *
@@ -30,8 +30,8 @@ declare const Clingy: {
          * @returns {object} object of the internal maps.
          */
         getAll(): {
-            map: Map<string, import("src/lib/command").IClingyCommand>;
-            mapAliased: Map<string, import("src/lib/command").IClingyCommand>;
+            map: Map<string, import("src/_old/lib/command").IClingyCommand>;
+            mapAliased: Map<string, import("src/_old/lib/command").IClingyCommand>;
         };
         /**
          * Looks up a command by path.

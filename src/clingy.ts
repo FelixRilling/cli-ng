@@ -7,6 +7,9 @@ import {InputParser} from "./parser/inputParser";
 
 type commandPath = string[];
 
+/**
+ * Core {@link Clingy} class, entry point for creation of a new instance.
+ */
 class Clingy {
     public readonly logger: loglevel.Logger = loglevel.getLogger("Clingy");
     public readonly lookupResolver: LookupResolver;
@@ -14,6 +17,13 @@ class Clingy {
     public readonly map: CommandMap;
     public readonly mapAliased: CommandMap;
 
+    /**
+     * Creates a new {@link Clingy} instance.
+     *
+     * @param commands      Map of commands to create the instance with.
+     * @param caseSensitive If commands names should be treated as case sensitive during lookup.
+     * @param legalQuotes   List of quotes to use when parsing strings.
+     */
     constructor(
         commands: CommandMap = new CommandMap(),
         caseSensitive: boolean = true,
@@ -40,10 +50,10 @@ class Clingy {
     }
 
     /**
-     * Checks if a path resolves to a command.
+     * Checks if a pathUsed resolves to a command.
      *
      * @param path Path to look up.
-     * @return If the path resolves to a command.
+     * @return If the pathUsed resolves to a command.
      */
     public hasPath(path: commandPath): boolean {
         const lookupResult =
@@ -53,13 +63,13 @@ class Clingy {
     }
 
     /**
-     * Resolves a path to a command.
+     * Resolves a pathUsed to a command.
      *
      * @param path Path to look up.
      * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
      */
     public getPath(path: commandPath): ILookupResult {
-        this.logger.debug("Resolving path: {}", path);
+        this.logger.debug("Resolving pathUsed: {}", path);
         return this.lookupResolver.resolve(this.mapAliased, path);
     }
 
@@ -75,8 +85,28 @@ class Clingy {
         return this.lookupResolver.resolve(this.mapAliased, this.inputParser.parse(input), true);
     }
 
+    /**
+     * @private
+     */
     public updateAliases() {
+        this.logger.debug("Updating aliased map.");
+        this.mapAliased.clear();
 
+        this.map.forEach((value, key) => {
+            this.mapAliased.set(key, value);
+
+            value.alias.forEach((alias) => {
+                if (this.mapAliased.has(alias)) {
+                    this.logger.warn("Alias '{}' conflicts with a previously defined key, will be ignored.", alias);
+                } else {
+                    this.logger.trace("Created alias '{}' for '{}'", alias, key);
+                    this.mapAliased.set(alias, value);
+                }
+            });
+        });
+
+
+        this.logger.debug("Done updating aliased map.");
     }
 }
 

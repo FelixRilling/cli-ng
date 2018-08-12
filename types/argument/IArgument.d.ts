@@ -3,5 +3,4 @@ interface IArgument {
     required: boolean;
     defaultValue: string;
 }
-
 export { IArgument };

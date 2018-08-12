@@ -1,104 +1,144 @@
+import { isNil } from "lightdash";
 import * as loglevel from "loglevel";
-import {ILookupResult, ResultType} from "./result/ILookupResult";
-import {CommandMap} from "../command/commandMap";
-import {commandPath} from "../clingy";
-import {getSimilar} from "../command/util/commandUtil";
-import {ArgumentMatcher, resolvedArgumentMap} from "../argument/argumentMatcher";
-import {isNil} from "lightdash";
-import {ICommand} from "../command/ICommand";
-import {ILookupErrorMissingArgs} from "./result/ILookupErrorMissingArgs";
-import {ILookupErrorNotFound} from "./result/ILookupErrorNotFound";
-import {ILookupSuccess} from "./result/ILookupSuccess";
+import {
+    ArgumentMatcher,
+    resolvedArgumentMap
+} from "../argument/argumentMatcher";
+import { commandPath } from "../clingy";
+import { CommandMap } from "../command/commandMap";
+import { ICommand } from "../command/ICommand";
+import { getSimilar } from "../command/util/commandUtil";
+import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
+import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
+import { ILookupResult, ResultType } from "./result/ILookupResult";
+import { ILookupSuccess } from "./result/ILookupSuccess";
 
+/**
+ * Lookup tools for resolving paths through {@link CommandMap}s.
+ */
 class LookupResolver {
-    private readonly logger: loglevel.Logger = loglevel.getLogger("LookupResolver");
+    private readonly logger: loglevel.Logger = loglevel.getLogger(
+        "LookupResolver"
+    );
     private readonly caseSensitive: boolean;
 
+    /**
+     * Creates a new {@link LookupResolver}.
+     *
+     * @param caseSensitive If the lookup should honor case.
+     */
     constructor(caseSensitive: boolean = true) {
         this.caseSensitive = caseSensitive;
     }
 
     /**
-     * Resolves a path through a {@link CommandMap}.
+     * Resolves a pathUsed through a {@link CommandMap}.
      *
      * @param mapAliased     Map to use.
      * @param path           Path to getPath.
-     * @param parseArguments If dangling path items should be treated as arguments.
+     * @param parseArguments If dangling pathUsed items should be treated as arguments.
      * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
      * or {@link ILookupErrorMissingArgs}.
      */
-    public resolve(mapAliased: CommandMap, path: commandPath, parseArguments: boolean = false): ILookupResult | null {
+    public resolve(
+        mapAliased: CommandMap,
+        path: commandPath,
+        parseArguments: boolean = false
+    ): ILookupResult {
         return this.resolveInternal(mapAliased, path, [], parseArguments);
     }
 
-    private resolveInternal(mapAliased: CommandMap, path: commandPath, pathUsed: commandPath, parseArguments: boolean = false): ILookupResult | null {
+    private resolveInternal(
+        mapAliased: CommandMap,
+        path: commandPath,
+        pathUsed: commandPath,
+        parseArguments: boolean = false
+    ): ILookupResult {
         if (path.length === 0) {
-            this.logger.info("Empty path was given, returning early.");
-            return null;
+            throw new Error("Path cannot be empty.");
         }
 
         const currentPathFragment = path[0];
+        const pathNew = path.slice(1);
+        pathUsed.push(currentPathFragment);
 
-        if (this.caseSensitive ?
-            !mapAliased.has(currentPathFragment) :
-            !mapAliased.hasIgnoreCase(currentPathFragment)) {
-            this.logger.warn("Command '{}' could not be found.", currentPathFragment);
-
+        if (
+            this.caseSensitive
+                ? !mapAliased.has(currentPathFragment)
+                : !mapAliased.hasIgnoreCase(currentPathFragment)
+        ) {
+            this.logger.warn(
+                "Command '{}' could not be found.",
+                currentPathFragment
+            );
             return <ILookupErrorNotFound>{
                 successful: false,
-                path: pathUsed,
-                pathDangling: path,
+                pathUsed,
+                pathDangling: pathNew,
                 type: ResultType.ERROR_NOT_FOUND,
                 missing: currentPathFragment,
                 similar: getSimilar(mapAliased, currentPathFragment)
             };
         }
-
-        const command = <ICommand>(this.caseSensitive ?
-            mapAliased.get(currentPathFragment) :
-            mapAliased.getIgnoreCase(currentPathFragment));
-        const pathNew = path.slice(1);
-        pathUsed.push(currentPathFragment);
-        this.logger.debug("Successfully looked up command: {}", currentPathFragment);
+        const command = <ICommand>(
+            (this.caseSensitive
+                ? mapAliased.get(currentPathFragment)
+                : mapAliased.getIgnoreCase(currentPathFragment))
+        );
+        this.logger.debug(
+            "Successfully looked up command: {}",
+            currentPathFragment
+        );
 
         let argumentsResolved: resolvedArgumentMap;
-        if (isNil(command.args) || command.args.length === 0) {
+        if (
+            !parseArguments ||
+            isNil(command.args) ||
+            command.args.length === 0
+        ) {
             this.logger.debug("No arguments defined, using empty list.");
             argumentsResolved = new Map();
         } else {
             this.logger.debug("Looking up arguments: {}", pathNew);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
 
-
             if (argumentMatcher.missing.length > 0) {
-                this.logger.warn("Some arguments could not be found: {}", argumentMatcher.missing);
+                this.logger.warn(
+                    "Some arguments could not be found: {}",
+                    argumentMatcher.missing
+                );
 
                 return <ILookupErrorMissingArgs>{
                     successful: false,
-                    path: pathUsed,
-                    pathDangling: path,
+                    pathUsed,
+                    pathDangling: pathNew,
                     type: ResultType.ERROR_MISSING_ARGUMENT,
                     missing: argumentMatcher.missing
                 };
             }
 
             argumentsResolved = argumentMatcher.result;
-            this.logger.debug("Successfully looked up arguments: {}", argumentsResolved);
-
+            this.logger.debug(
+                "Successfully looked up arguments: {}",
+                argumentsResolved
+            );
         }
 
         const lookupSuccess = <ILookupSuccess>{
             successful: true,
-            path: pathUsed,
-            pathDangling: path,
+            pathUsed,
+            pathDangling: pathNew,
             type: ResultType.SUCCESS,
             command,
             args: argumentsResolved
         };
-        this.logger.debug("Returning successful lookup result: {}", lookupSuccess);
+        this.logger.debug(
+            "Returning successful lookup result: {}",
+            lookupSuccess
+        );
 
         return lookupSuccess;
     }
 }
 
-export {LookupResolver};
+export { LookupResolver };

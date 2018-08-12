@@ -1,6 +1,5 @@
 import { IArgument } from "../argument/IArgument";
 import { Clingy } from "../clingy";
-
 interface ICommand {
     alias: string[];
     fn: (...args: any[]) => void;
@@ -8,5 +7,4 @@ interface ICommand {
     data: any;
     sub: Clingy | null;
 }
-
 export { ICommand };

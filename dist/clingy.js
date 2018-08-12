@@ -1,6 +1,286 @@
 var Clingy = (function () {
     'use strict';
 
+    /*
+    * loglevel - https://github.com/pimterry/loglevel
+    *
+    * Copyright (c) 2013 Tim Perry
+    * Licensed under the MIT license.
+    */
+    (function (root, definition) {
+        if (typeof define === 'function' && define.amd) {
+            define(definition);
+        } else if (typeof module === 'object' && module.exports) {
+            module.exports = definition();
+        } else {
+            root.log = definition();
+        }
+    }(undefined, function () {
+
+        // Slightly dubious tricks to cut down minimized file size
+        var noop = function() {};
+        var undefinedType = "undefined";
+
+        var logMethods = [
+            "trace",
+            "debug",
+            "info",
+            "warn",
+            "error"
+        ];
+
+        // Cross-browser bind equivalent that works at least back to IE6
+        function bindMethod(obj, methodName) {
+            var method = obj[methodName];
+            if (typeof method.bind === 'function') {
+                return method.bind(obj);
+            } else {
+                try {
+                    return Function.prototype.bind.call(method, obj);
+                } catch (e) {
+                    // Missing bind shim or IE8 + Modernizr, fallback to wrapping
+                    return function() {
+                        return Function.prototype.apply.apply(method, [obj, arguments]);
+                    };
+                }
+            }
+        }
+
+        // Build the best logging method possible for this env
+        // Wherever possible we want to bind, not wrap, to preserve stack traces
+        function realMethod(methodName) {
+            if (methodName === 'debug') {
+                methodName = 'log';
+            }
+
+            if (typeof console === undefinedType) {
+                return false; // No method possible, for now - fixed later by enableLoggingWhenConsoleArrives
+            } else if (console[methodName] !== undefined) {
+                return bindMethod(console, methodName);
+            } else if (console.log !== undefined) {
+                return bindMethod(console, 'log');
+            } else {
+                return noop;
+            }
+        }
+
+        // These private functions always need `this` to be set properly
+
+        function replaceLoggingMethods(level, loggerName) {
+            /*jshint validthis:true */
+            for (var i = 0; i < logMethods.length; i++) {
+                var methodName = logMethods[i];
+                this[methodName] = (i < level) ?
+                    noop :
+                    this.methodFactory(methodName, level, loggerName);
+            }
+
+            // Define log.log as an alias for log.debug
+            this.log = this.debug;
+        }
+
+        // In old IE versions, the console isn't present until you first open it.
+        // We build realMethod() replacements here that regenerate logging methods
+        function enableLoggingWhenConsoleArrives(methodName, level, loggerName) {
+            return function () {
+                if (typeof console !== undefinedType) {
+                    replaceLoggingMethods.call(this, level, loggerName);
+                    this[methodName].apply(this, arguments);
+                }
+            };
+        }
+
+        // By default, we use closely bound real methods wherever possible, and
+        // otherwise we wait for a console to appear, and then try again.
+        function defaultMethodFactory(methodName, level, loggerName) {
+            /*jshint validthis:true */
+            return realMethod(methodName) ||
+                   enableLoggingWhenConsoleArrives.apply(this, arguments);
+        }
+
+        function Logger(name, defaultLevel, factory) {
+          var self = this;
+          var currentLevel;
+          var storageKey = "loglevel";
+          if (name) {
+            storageKey += ":" + name;
+          }
+
+          function persistLevelIfPossible(levelNum) {
+              var levelName = (logMethods[levelNum] || 'silent').toUpperCase();
+
+              if (typeof window === undefinedType) return;
+
+              // Use localStorage if available
+              try {
+                  window.localStorage[storageKey] = levelName;
+                  return;
+              } catch (ignore) {}
+
+              // Use session cookie as fallback
+              try {
+                  window.document.cookie =
+                    encodeURIComponent(storageKey) + "=" + levelName + ";";
+              } catch (ignore) {}
+          }
+
+          function getPersistedLevel() {
+              var storedLevel;
+
+              if (typeof window === undefinedType) return;
+
+              try {
+                  storedLevel = window.localStorage[storageKey];
+              } catch (ignore) {}
+
+              // Fallback to cookies if local storage gives us nothing
+              if (typeof storedLevel === undefinedType) {
+                  try {
+                      var cookie = window.document.cookie;
+                      var location = cookie.indexOf(
+                          encodeURIComponent(storageKey) + "=");
+                      if (location !== -1) {
+                          storedLevel = /^([^;]+)/.exec(cookie.slice(location))[1];
+                      }
+                  } catch (ignore) {}
+              }
+
+              // If the stored level is not valid, treat it as if nothing was stored.
+              if (self.levels[storedLevel] === undefined) {
+                  storedLevel = undefined;
+              }
+
+              return storedLevel;
+          }
+
+          /*
+           *
+           * Public logger API - see https://github.com/pimterry/loglevel for details
+           *
+           */
+
+          self.name = name;
+
+          self.levels = { "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3,
+              "ERROR": 4, "SILENT": 5};
+
+          self.methodFactory = factory || defaultMethodFactory;
+
+          self.getLevel = function () {
+              return currentLevel;
+          };
+
+          self.setLevel = function (level, persist) {
+              if (typeof level === "string" && self.levels[level.toUpperCase()] !== undefined) {
+                  level = self.levels[level.toUpperCase()];
+              }
+              if (typeof level === "number" && level >= 0 && level <= self.levels.SILENT) {
+                  currentLevel = level;
+                  if (persist !== false) {  // defaults to true
+                      persistLevelIfPossible(level);
+                  }
+                  replaceLoggingMethods.call(self, level, name);
+                  if (typeof console === undefinedType && level < self.levels.SILENT) {
+                      return "No console available for logging";
+                  }
+              } else {
+                  throw "log.setLevel() called with invalid level: " + level;
+              }
+          };
+
+          self.setDefaultLevel = function (level) {
+              if (!getPersistedLevel()) {
+                  self.setLevel(level, false);
+              }
+          };
+
+          self.enableAll = function(persist) {
+              self.setLevel(self.levels.TRACE, persist);
+          };
+
+          self.disableAll = function(persist) {
+              self.setLevel(self.levels.SILENT, persist);
+          };
+
+          // Initialize with the right level
+          var initialLevel = getPersistedLevel();
+          if (initialLevel == null) {
+              initialLevel = defaultLevel == null ? "WARN" : defaultLevel;
+          }
+          self.setLevel(initialLevel, false);
+        }
+
+        /*
+         *
+         * Top-level API
+         *
+         */
+
+        var defaultLogger = new Logger();
+
+        var _loggersByName = {};
+        defaultLogger.getLogger = function getLogger(name) {
+            if (typeof name !== "string" || name === "") {
+              throw new TypeError("You must supply a name when creating a logger.");
+            }
+
+            var logger = _loggersByName[name];
+            if (!logger) {
+              logger = _loggersByName[name] = new Logger(
+                name, defaultLogger.getLevel(), defaultLogger.methodFactory);
+            }
+            return logger;
+        };
+
+        // Grab the current global log variable in case of overwrite
+        var _log = (typeof window !== undefinedType) ? window.log : undefined;
+        defaultLogger.noConflict = function() {
+            if (typeof window !== undefinedType &&
+                   window.log === defaultLogger) {
+                window.log = _log;
+            }
+
+            return defaultLogger;
+        };
+
+        defaultLogger.getLoggers = function getLoggers() {
+            return _loggersByName;
+        };
+
+        return defaultLogger;
+    }));
+
+    /**
+     * Map containing {@link ICommand}s.
+     */
+    class CommandMap extends Map {
+        /**
+         * Checks if the map contains a key, ignoring case.
+         *
+         * @param key Key to check for.
+         * @return If the map contains a key, ignoring case.
+         */
+        hasIgnoreCase(key) {
+            return Array.from(this.keys())
+                .map(k => k.toLowerCase())
+                .includes(key.toLowerCase());
+        }
+        /**
+         * Returns the value for the key, ignoring case.
+         *
+         * @param key Key to check for.
+         * @return The value for the key, ignoring case.
+         */
+        getIgnoreCase(key) {
+            this.forEach((value, k) => {
+                if (key.toLowerCase() === k.toLowerCase()) {
+                    return value;
+                }
+            });
+            return null;
+        }
+    }
+
     /**
      * Checks if the value has a certain type-string.
      *
@@ -24,58 +304,6 @@ var Clingy = (function () {
      * isTypeOf("foo", "number")
      * // => false
      */
-    const isTypeOf = (val, type) => typeof val === type;
-
-    /**
-     * Checks if a value is an array.
-     *
-     * `Array.isArray` shorthand.
-     *
-     * @function isArray
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
-     * @example
-     * isArray([]);
-     * // => true
-     *
-     * isArray([1, 2, 3]);
-     * // => true
-     *
-     * @example
-     * isArray({});
-     * // => false
-     */
-    const isArray = Array.isArray;
-
-    /**
-     * Checks if a value is undefined.
-     *
-     * @function isUndefined
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
-     * @example
-     * const a = {};
-     *
-     * isUndefined(a.b)
-     * // => true
-     *
-     * isUndefined(undefined)
-     * // => true
-     *
-     * @example
-     * const a = {};
-     *
-     * isUndefined(1)
-     * // => false
-     *
-     * isUndefined(a)
-     * // => false
-     */
-    const isUndefined = (val) => isTypeOf(val, "undefined");
 
     /**
      * Checks if a value is undefined or null.
@@ -100,70 +328,6 @@ var Clingy = (function () {
      * // => false
      */
     const isNil = (val) => val == null;
-
-    /**
-     * Checks if a value is not nil and has a type of object.
-     *
-     * The main difference to isObject is that functions are not considered object-like,
-     * because `typeof function(){}` returns "function".
-     *
-     * @function isObjectLike
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
-     * @example
-     * isObjectLike({})
-     * // => true
-     *
-     * isObjectLike([])
-     * // => true
-     *
-     * @example
-     * isObjectLike(1)
-     * // => false
-     *
-     * isObjectLike(() => 1))
-     * // => false
-     */
-    const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
-
-    /**
-     * Checks if a value is a string.
-     *
-     * @function isString
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
-     * @example
-     * isString("foo")
-     * // => true
-     *
-     * @example
-     * isString(1)
-     * // => false
-     */
-    const isString = (val) => isTypeOf(val, "string");
-
-    /**
-     * Iterates over each entry of an object.
-     *
-     * @function forEachEntry
-     * @memberof For
-     * @param {object} obj
-     * @param {function} fn fn(key: any, val: any, index: number, arr: any[])
-     * @example
-     * const a = {a: 1, b: 2};
-     *
-     * forEachEntry(a, (key, val, index) => a[key] = val * index)
-     * // a = {a: 0, b: 2}
-     */
-    const forEachEntry = (obj, fn) => {
-        Object.entries(obj).forEach((entry, index) => {
-            fn(entry[0], entry[1], index, obj);
-        });
-    };
 
     /**
      * Returns levenshtein string distance of two strings.
@@ -282,340 +446,253 @@ var Clingy = (function () {
     };
 
     /**
-     * Creates a new object with the entries of the input object.
-     *
-     * @function objFrom
-     * @memberof Object
-     * @since 1.0.0
-     * @param {Object} obj
-     * @returns {Object}
-     * @example
-     * const a = {a: 4, b: 2};
-     * const b = objFrom(a);
-     *
-     * b.a = 10;
-     * // a = {a: 4, b: 2}
-     * // b = {a: 10, b: 2}
+     * Orchestrates mapping of {@link IArgument}s to user-provided input.
      */
-    const objFrom = (obj) => Object.assign({}, obj);
-
-    /**
-     * Sets every nil property of object to the value from the default object.
-     *
-     * @function objDefaults
-     * @memberof Object
-     * @since 2.6.0
-     * @param {Object} obj
-     * @param {Object} objDefault
-     * @returns {Object}
-     * @example
-     * objDefaults({a: 1, c: 5}, {a: 1, b: 2, c: 3})
-     * // => {a: 1, b: 2, c: 5}
-     */
-    const objDefaults = (obj, objDefault) => {
-        const result = isArray(obj)
-            ? Array.from(obj)
-            : objFrom(obj);
-        forEachEntry(objDefault, (keyDefault, valDefault) => {
-            if (isUndefined(obj[keyDefault])) {
-                result[keyDefault] = valDefault;
-            }
-        });
-        return result;
-    };
-
-    /**
-     * Recursively sets every nil property of object to the value from the default object.
-     *
-     * @function objDefaultsDeep
-     * @memberof Object
-     * @since 2.7.0
-     * @param {Object} obj
-     * @param {Object} objDefault
-     * @returns {Object}
-     * @example
-     * objDefaultsDeep({a: [1, 2], c: {f: "x"}}, {a: [1, 2, 3], b: 2, c: {f: "y"}})
-     * // => {a: [1, 2, 3], b: 2, c: {f: "x"}}
-     */
-    const objDefaultsDeep = (obj, objDefault) => {
-        const result = isArray(obj)
-            ? Array.from(obj)
-            : objFrom(obj);
-        forEachEntry(objDefault, (keyDefault, valDefault) => {
-            const valGiven = obj[keyDefault];
-            if (isObjectLike(valDefault)) {
-                result[keyDefault] = isObjectLike(valGiven)
-                    ? objDefaultsDeep(valGiven, valDefault)
-                    : valDefault;
-            }
-            else {
-                result[keyDefault] = isUndefined(valGiven) ? valDefault : valGiven;
-            }
-        });
-        return result;
-    };
-
-    /**
-     * Default argument factory.
-     *
-     * @private
-     * @param {number} index index to use for default name.
-     * @returns {object} argument object.
-     */
-    const argDefaultFactory = (index) => {
-        return {
-            name: `arg${index}`,
-            required: true,
-            default: null
-        };
-    };
-    /**
-     * Matches command-map arguments with input args.
-     *
-     * @private
-     * @param {Array<object>} expectedArgs array of expected args.
-     * @param {Array<object>} givenArgs array of given args.
-     * @returns {object} mapArgs result object.
-     */
-    const mapArgs = (expectedArgs, givenArgs) => {
-        const result = {
-            args: {
-                _all: givenArgs // Special arg that contains all other args
-            },
-            missing: []
-        };
-        expectedArgs.forEach((expectedArg, index) => {
-            const givenArg = givenArgs[index];
-            if (givenArg) {
-                // Arg exists
-                result.args[expectedArg.name] = givenArg;
-            }
-            else {
-                // Arg doesn't exist
-                if (!expectedArg.required) {
-                    // Use default value
-                    result.args[expectedArg.name] = expectedArg.default;
+    class ArgumentMatcher {
+        /**
+         * Matches a list of {@link IArgument}s to a list of string input arguments.
+         *
+         * @param expected {@link Argument} list of a {@link ICommand}
+         * @param provided List of user-provided arguments.
+         */
+        constructor(expected, provided) {
+            this.missing = [];
+            this.result = new Map();
+            const logger = undefined("ArgumentMatcher");
+            logger.debug("Matching arguments {} with {}", expected, provided);
+            expected.forEach((expectedArg, i) => {
+                if (i < provided.length) {
+                    logger.trace("Found matching argument for {}, adding to result: {}", expectedArg.name, provided[i]);
+                    this.result.set(expectedArg.name, provided[i]);
+                }
+                else if (!expectedArg.required) {
+                    logger.trace("No matching argument found for {}, using default: {}", expectedArg.name, expectedArg.defaultValue);
+                    this.result.set(expectedArg.name, expectedArg.defaultValue);
                 }
                 else {
-                    // Mark as missing
-                    result.missing.push(expectedArg);
+                    logger.trace("No matching argument found for {}, adding to missing.", expectedArg.name);
+                    this.missing.push(expectedArg);
                 }
-            }
-        });
-        return result;
-    };
-
-    /**
-     * Default command factory.
-     *
-     * @private
-     * @param {number} index index to use for the default name.
-     * @returns {object} command object.
-     */
-    const commandDefaultFactory = (index) => {
-        return {
-            name: `command${index}`,
-            fn: () => { },
-            alias: [],
-            args: [],
-            sub: null
-        };
-    };
-    /**
-     * Creates a map and sub-maps out of a command object.
-     *
-     * @private
-     * @param {Array<IClingyCommand>} commandEntries entries of a command object.
-     * @param {boolean} caseSensitive if commands should be case sensitive.
-     * @returns {Map} command map.
-     */
-    const mapCommands = (commandEntries, caseSensitive) => new Map(commandEntries.map((command, index) => {
-        if (!isString(command[0])) {
-            throw new Error(`command key '${command[0]}' is not a string`);
-        }
-        const commandKey = caseSensitive
-            ? command[0]
-            : command[0].toLowerCase();
-        const commandValue = (objDefaultsDeep(command[1], commandDefaultFactory(index)));
-        // Save key as name property to keep track in aliases
-        commandValue.name = commandKey;
-        // Merge each arg with default arg structure
-        commandValue.args = commandValue.args.map((arg, argIndex) => (objDefaults(arg, argDefaultFactory(argIndex))));
-        // If sub-groups exist, recurse by creating a new Clingy instance
-        if (commandValue.sub !== null) {
-            commandValue.sub = new Clingy(commandValue.sub);
-        }
-        return [commandKey, commandValue];
-    }));
-
-    /**
-     * Creates an aliased map from a normal map.
-     *
-     * @private
-     * @param {Map} map command map to alias.
-     * @returns {Map} aliased command map.
-     */
-    const getAliasedMap = (map) => {
-        const result = new Map(map);
-        map.forEach((command) => {
-            command.alias.forEach((alias) => {
-                if (result.has(alias)) {
-                    throw new Error(`Alias '${alias}' conflicts with a previously defined key`);
-                }
-                result.set(alias, command);
             });
-        });
-        return result;
-    };
+            logger.debug("Finished matching arguments: {} expected, {} found and {} missing.", expected.length, this.result.size, this.missing.length);
+        }
+    }
 
-    const optionsDefault = {
-        /**
-         * If names should be treated case-sensitive for lookup.
-         */
-        caseSensitive: false,
-        /**
-         * List of characters to allow as quote-enclosing string.
-         */
-        validQuotes: ["\"", "“", "”"]
-    };
-
-    const SPACE = /\s/;
-    /**
-     * Parses a string into an Array while supporting quoted strings.
-     *
-     * @private
-     * @param {string} str string to parse.
-     * @param {Array<string>} validQuotes array of valid quotes.
-     * @returns {Array<string>} list of parsed strings.
-     */
-    const parseString = (str, validQuotes) => {
-        const result = [];
-        let partStr = [];
-        let isInString = false;
-        str.trim()
-            .split("")
-            .forEach((letter, index) => {
-            const isSpace = SPACE.test(letter);
-            if (validQuotes.includes(letter)) {
-                isInString = !isInString;
-            }
-            else if (isInString || !isSpace) {
-                partStr.push(letter);
-            }
-            if ((partStr.length > 0 && isSpace && !isInString) ||
-                index === str.length - 1) {
-                result.push(partStr.join(""));
-                partStr = [];
-            }
-        });
-        return result;
-    };
+    const getSimilar = (mapAliased, name) => strSimilar(name, Array.from(mapAliased.keys()), false);
 
     /**
-     * Clingy class.
-     *
-     * @public
-     * @class
+     * Lookup tools for resolving paths through {@link CommandMap}s.
      */
-    const Clingy = class {
+    class LookupResolver {
         /**
-         * Creates Clingy instance.
+         * Creates a new {@link LookupResolver}.
          *
-         * @public
-         * @constructor
-         * @param {object} commands object of commands to init the instance with.
-         * @param {object} [options={}] options object.
+         * @param caseSensitive If the lookup should honor case.
          */
-        constructor(commands, options = {}) {
-            this.options = objDefaultsDeep(options, optionsDefault);
-            this.map = mapCommands(Object.entries(commands), this.options.caseSensitive);
-            this.mapAliased = getAliasedMap(this.map);
+        constructor(caseSensitive = true) {
+            this.logger = undefined("LookupResolver");
+            this.caseSensitive = caseSensitive;
         }
         /**
-         * Returns all instance maps.
+         * Resolves a pathUsed through a {@link CommandMap}.
          *
-         * @public
-         * @returns {object} object of the internal maps.
+         * @param mapAliased     Map to use.
+         * @param path           Path to getPath.
+         * @param parseArguments If dangling pathUsed items should be treated as arguments.
+         * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
+         * or {@link ILookupErrorMissingArgs}.
          */
-        getAll() {
-            return {
-                map: this.map,
-                mapAliased: this.mapAliased
-            };
+        resolve(mapAliased, path, parseArguments = false) {
+            return this.resolveInternal(mapAliased, path, [], parseArguments);
         }
-        /**
-         * Looks up a command by path.
-         *
-         * @public
-         * @param {Array<string>} path command path to look up.
-         * @param {Array<string>} [pathUsed=[]] when called from itself, the path already taken.
-         * @returns {object}
-         */
-        getCommand(path, pathUsed = []) {
-            if (path.length < 1) {
-                throw new TypeError("Path does not contain at least one item");
+        resolveInternal(mapAliased, path, pathUsed, parseArguments = false) {
+            if (path.length === 0) {
+                throw new Error("Path cannot be empty.");
             }
-            const commandNameCurrent = this.options.caseSensitive
-                ? path[0]
-                : path[0].toLowerCase();
-            const pathUsedNew = pathUsed;
-            if (!this.mapAliased.has(commandNameCurrent)) {
+            const currentPathFragment = path[0];
+            const pathNew = path.slice(1);
+            pathUsed.push(currentPathFragment);
+            if (this.caseSensitive
+                ? !mapAliased.has(currentPathFragment)
+                : !mapAliased.hasIgnoreCase(currentPathFragment)) {
+                this.logger.warn("Command '{}' could not be found.", currentPathFragment);
                 return {
-                    success: false,
-                    error: {
-                        type: "missingCommand" /* command */,
-                        missing: [commandNameCurrent],
-                        similar: strSimilar(commandNameCurrent, Array.from(this.mapAliased.keys()))
-                    },
-                    path: pathUsedNew
+                    successful: false,
+                    pathUsed,
+                    pathDangling: pathNew,
+                    type: 1 /* ERROR_NOT_FOUND */,
+                    missing: currentPathFragment,
+                    similar: getSimilar(mapAliased, currentPathFragment)
                 };
             }
-            const command = (this.mapAliased.get(commandNameCurrent));
-            const commandPathNew = path.slice(1);
-            pathUsedNew.push(commandNameCurrent);
-            // Recursively go into sub if more items in path and sub exists
-            if (path.length > 1 && command.sub !== null) {
-                const commandSubResult = command.sub.getCommand(commandPathNew, pathUsedNew);
-                if (commandSubResult.success) {
-                    return commandSubResult;
-                }
+            const command = ((this.caseSensitive
+                ? mapAliased.get(currentPathFragment)
+                : mapAliased.getIgnoreCase(currentPathFragment)));
+            this.logger.debug("Successfully looked up command: {}", currentPathFragment);
+            let argumentsResolved;
+            if (!parseArguments ||
+                isNil(command.args) ||
+                command.args.length === 0) {
+                this.logger.debug("No arguments defined, using empty list.");
+                argumentsResolved = new Map();
             }
-            return {
-                success: true,
+            else {
+                this.logger.debug("Looking up arguments: {}", pathNew);
+                const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
+                if (argumentMatcher.missing.length > 0) {
+                    this.logger.warn("Some arguments could not be found: {}", argumentMatcher.missing);
+                    return {
+                        successful: false,
+                        pathUsed,
+                        pathDangling: pathNew,
+                        type: 2 /* ERROR_MISSING_ARGUMENT */,
+                        missing: argumentMatcher.missing
+                    };
+                }
+                argumentsResolved = argumentMatcher.result;
+                this.logger.debug("Successfully looked up arguments: {}", argumentsResolved);
+            }
+            const lookupSuccess = {
+                successful: true,
+                pathUsed,
+                pathDangling: pathNew,
+                type: 0 /* SUCCESS */,
                 command,
-                path: pathUsedNew,
-                pathDangling: commandPathNew
+                args: argumentsResolved
             };
+            this.logger.debug("Returning successful lookup result: {}", lookupSuccess);
+            return lookupSuccess;
+        }
+    }
+
+    /**
+     * Manages parsing input strings into a pathUsed list.
+     */
+    class InputParser {
+        /**
+         * Creates an {@link InputParser}.
+         *
+         * @param legalQuotes List of quotes to use when parsing strings.
+         */
+        constructor(legalQuotes = ['"']) {
+            this.logger = undefined("InputParser");
+            this.legalQuotes = legalQuotes;
+            this.pattern = this.generateMatcher();
+        }
+        static escapeRegexCharacter(str) {
+            return `\\Q${str}\\E`;
         }
         /**
-         * Parses a CLI-like input string into command and args.
+         * Parses an input string.
          *
-         * @public
-         * @param {string} input input string to parse.
-         * @returns {object} result object.
+         * @param input Input string to parse.
+         * @return Path list.
          */
         parse(input) {
-            const inputParsed = parseString(input, this.options.validQuotes);
-            const commandLookup = this.getCommand(inputParsed);
-            if (!commandLookup.success) {
-                return commandLookup; // Error: Command not found
-            }
-            const command = commandLookup.command;
-            const args = commandLookup.pathDangling;
-            const argsMapped = mapArgs(command.args, args);
-            if (argsMapped.missing.length !== 0) {
-                return {
-                    success: false,
-                    error: {
-                        type: "missingArg" /* arg */,
-                        missing: argsMapped.missing
-                    }
-                }; // Error: Missing arguments
-            }
-            commandLookup.args = argsMapped.args;
-            return commandLookup; // Success
+            this.logger.debug("Parsing input '{}'", input);
+            // @ts-ignore Can be converted to array, despite what TS says.
+            return Array.from(input.match(this.pattern));
         }
-    };
+        generateMatcher() {
+            const matchBase = "(\\S+)";
+            this.logger.debug("Creating matcher.");
+            const matchItems = this.legalQuotes
+                .map(InputParser.escapeRegexCharacter)
+                .map(quote => `${quote}(.+?)${quote}`);
+            matchItems.push(matchBase);
+            let result;
+            try {
+                result = new RegExp(matchItems.join("|"), "");
+            }
+            catch (e) {
+                this.logger.error("The parsing pattern is invalid, this should never happen.", e);
+                throw e;
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Core {@link Clingy} class, entry point for creation of a new instance.
+     */
+    class Clingy {
+        /**
+         * Creates a new {@link Clingy} instance.
+         *
+         * @param commands      Map of commands to create the instance with.
+         * @param caseSensitive If commands names should be treated as case sensitive during lookup.
+         * @param legalQuotes   List of quotes to use when parsing strings.
+         */
+        constructor(commands = new CommandMap(), caseSensitive = true, legalQuotes = ["\""]) {
+            this.logger = undefined("Clingy");
+            this.lookupResolver = new LookupResolver(caseSensitive);
+            this.inputParser = new InputParser(legalQuotes);
+            this.map = commands;
+            this.mapAliased = new CommandMap();
+            this.updateAliases();
+        }
+        setCommand(key, command) {
+            this.map.set(key, command);
+            this.updateAliases();
+        }
+        getCommand(key) {
+            return this.mapAliased.get(key);
+        }
+        hasCommand(key) {
+            return this.mapAliased.has(key);
+        }
+        /**
+         * Checks if a pathUsed resolves to a command.
+         *
+         * @param path Path to look up.
+         * @return If the pathUsed resolves to a command.
+         */
+        hasPath(path) {
+            const lookupResult = this.getPath(path);
+            return lookupResult != null && lookupResult.successful;
+        }
+        /**
+         * Resolves a pathUsed to a command.
+         *
+         * @param path Path to look up.
+         * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
+         */
+        getPath(path) {
+            this.logger.debug("Resolving pathUsed: {}", path);
+            return this.lookupResolver.resolve(this.mapAliased, path);
+        }
+        /**
+         * Parses a string into a command and arguments.
+         *
+         * @param input String to parse.
+         * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
+         * or {@link ILookupErrorMissingArgs}.
+         */
+        parse(input) {
+            this.logger.debug("Parsing input: '{}'", input);
+            return this.lookupResolver.resolve(this.mapAliased, this.inputParser.parse(input), true);
+        }
+        /**
+         * @private
+         */
+        updateAliases() {
+            this.logger.debug("Updating aliased map.");
+            this.mapAliased.clear();
+            this.map.forEach((value, key) => {
+                this.mapAliased.set(key, value);
+                value.alias.forEach((alias) => {
+                    if (this.mapAliased.has(alias)) {
+                        this.logger.warn("Alias '{}' conflicts with a previously defined key, will be ignored.", alias);
+                    }
+                    else {
+                        this.logger.trace("Created alias '{}' for '{}'", alias, key);
+                        this.mapAliased.set(alias, value);
+                    }
+                });
+            });
+            this.logger.debug("Done updating aliased map.");
+        }
+    }
 
     return Clingy;
 

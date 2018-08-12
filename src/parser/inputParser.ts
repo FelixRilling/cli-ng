@@ -1,21 +1,26 @@
 import * as loglevel from "loglevel";
 
 /**
- * Manages parsing input strings into a path list.
+ * Manages parsing input strings into a pathUsed list.
  */
-class InputParser{
-    private readonly logger: loglevel.Logger = loglevel.getLogger("InputParser");
-    private readonly legalQuotes: string[];
-    private readonly pattern: RegExp;
-
+class InputParser {
     /**
      * Creates an {@link InputParser}.
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes: string[] = ["\""]) {
+    constructor(legalQuotes: string[] = ['"']) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
+    }
+    private readonly logger: loglevel.Logger = loglevel.getLogger(
+        "InputParser"
+    );
+    private readonly legalQuotes: string[];
+    private readonly pattern: RegExp;
+
+    private static escapeRegexCharacter(str: string): string {
+        return `\\Q${str}\\E`;
     }
 
     /**
@@ -29,10 +34,6 @@ class InputParser{
 
         // @ts-ignore Can be converted to array, despite what TS says.
         return Array.from(input.match(this.pattern));
-    }
-
-    private static escapeRegexCharacter(str: string): string {
-        return `\Q${str}\E`;
     }
 
     private generateMatcher(): RegExp {
@@ -50,13 +51,15 @@ class InputParser{
         try {
             result = new RegExp(matchItems.join("|"), "");
         } catch (e) {
-            this.logger.error("The parsing pattern is invalid, this should never happen.", e);
+            this.logger.error(
+                "The parsing pattern is invalid, this should never happen.",
+                e
+            );
             throw e;
         }
 
         return result;
     }
-
 }
 
-export {InputParser};
+export { InputParser };

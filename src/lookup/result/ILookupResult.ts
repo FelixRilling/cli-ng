@@ -6,9 +6,9 @@ const enum ResultType {
 
 interface ILookupResult {
     successful: boolean;
-    path: commandPath;
+    pathUsed: commandPath;
     pathDangling: commandPath;
     type: ResultType;
 }
 
-export {ILookupResult, ResultType};
+export {ResultType, ILookupResult};

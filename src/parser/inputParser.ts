@@ -1,4 +1,4 @@
-import * as loglevel from "loglevel";
+import { logaloo } from "../logaloo/logaloo";
 
 /**
  * Manages parsing input strings into a pathUsed list.
@@ -9,13 +9,11 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes: string[] = ['"']) {
+    constructor(legalQuotes: string[] = ["\""]) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
-    private readonly logger: loglevel.Logger = loglevel.getLogger(
-        "InputParser"
-    );
+    private readonly logger = logaloo.getLogger(InputParser);
     private readonly legalQuotes: string[];
     private readonly pattern: RegExp;
 

@@ -1,4 +1,3 @@
-import { getLogger } from 'loglevel';
 import { strSimilar, isNil } from 'lightdash';
 
 /**
@@ -32,6 +31,63 @@ class CommandMap extends Map {
     }
 }
 
+var Levels;
+(function (Levels) {
+    Levels[Levels["ERROR"] = 0] = "ERROR";
+    Levels[Levels["WARN"] = 1] = "WARN";
+    Levels[Levels["INFO"] = 2] = "INFO";
+    Levels[Levels["DEBUG"] = 3] = "DEBUG";
+    Levels[Levels["TRACE"] = 4] = "TRACE";
+})(Levels || (Levels = {}));
+// tslint:disable-next-line
+let level = Levels.INFO;
+class Logger {
+    constructor(name) {
+        this.name = name;
+    }
+    error(...args) {
+        if (level >= Levels.ERROR) {
+            console.error(this.getPrefix("ERROR"), ...args);
+        }
+    }
+    warn(...args) {
+        if (level >= Levels.WARN) {
+            console.warn(this.getPrefix("WARN"), ...args);
+        }
+    }
+    info(...args) {
+        if (level >= Levels.INFO) {
+            console.info(this.getPrefix("INFO"), ...args);
+        }
+    }
+    debug(...args) {
+        if (level >= Levels.DEBUG) {
+            console.log(this.getPrefix("DEBUG"), ...args);
+        }
+    }
+    trace(...args) {
+        if (level >= Levels.TRACE) {
+            console.log(this.getPrefix("TRACE"), ...args);
+        }
+    }
+    getPrefix(messageLevel) {
+        return `${new Date().toISOString()} ${messageLevel} ${this.name} - `;
+    }
+}
+const logaloo = {
+    /**
+     * Currently active logging level.
+     */
+    level,
+    /**
+     * Get a logger instance.
+     *
+     * @param name A string or a INameable (ex: class, function).
+     * @returns The Logger instance.
+     */
+    getLogger: (name) => new Logger("name" in name ? name.name : name)
+};
+
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
  */
@@ -45,7 +101,7 @@ class ArgumentMatcher {
     constructor(expected, provided) {
         this.missing = [];
         this.result = new Map();
-        const logger = getLogger("ArgumentMatcher");
+        const logger = logaloo.getLogger(ArgumentMatcher);
         logger.debug("Matching arguments {} with {}", expected, provided);
         expected.forEach((expectedArg, i) => {
             if (i < provided.length) {
@@ -77,7 +133,7 @@ class LookupResolver {
      * @param caseSensitive If the lookup should honor case.
      */
     constructor(caseSensitive = true) {
-        this.logger = getLogger("LookupResolver");
+        this.logger = logaloo.getLogger(LookupResolver);
         this.caseSensitive = caseSensitive;
     }
     /**
@@ -161,8 +217,8 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ['"']) {
-        this.logger = getLogger("InputParser");
+    constructor(legalQuotes = ["\""]) {
+        this.logger = logaloo.getLogger(InputParser);
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
@@ -211,7 +267,7 @@ class Clingy {
      * @param legalQuotes   List of quotes to use when parsing strings.
      */
     constructor(commands = new CommandMap(), caseSensitive = true, legalQuotes = ["\""]) {
-        this.logger = getLogger("Clingy");
+        this.logger = logaloo.getLogger(Clingy);
         this.lookupResolver = new LookupResolver(caseSensitive);
         this.inputParser = new InputParser(legalQuotes);
         this.map = commands;
@@ -267,7 +323,7 @@ class Clingy {
         this.mapAliased.clear();
         this.map.forEach((value, key) => {
             this.mapAliased.set(key, value);
-            value.alias.forEach((alias) => {
+            value.alias.forEach(alias => {
                 if (this.mapAliased.has(alias)) {
                     this.logger.warn("Alias '{}' conflicts with a previously defined key, will be ignored.", alias);
                 }

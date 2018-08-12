@@ -1,9 +1,9 @@
-import * as loglevel from "loglevel";
-import {CommandMap} from "./command/commandMap";
-import {ICommand} from "./command/ICommand";
-import {LookupResolver} from "./lookup/lookupResolver";
-import {ILookupResult} from "./lookup/result/ILookupResult";
-import {InputParser} from "./parser/inputParser";
+import { CommandMap } from "./command/commandMap";
+import { ICommand } from "./command/ICommand";
+import { logaloo } from "./logaloo/logaloo";
+import { LookupResolver } from "./lookup/lookupResolver";
+import { ILookupResult } from "./lookup/result/ILookupResult";
+import { InputParser } from "./parser/inputParser";
 
 type commandPath = string[];
 
@@ -11,7 +11,7 @@ type commandPath = string[];
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    public readonly logger: loglevel.Logger = loglevel.getLogger("Clingy");
+    public readonly logger = logaloo.getLogger(Clingy);
     public readonly lookupResolver: LookupResolver;
     public readonly inputParser: InputParser;
     public readonly map: CommandMap;
@@ -56,8 +56,7 @@ class Clingy {
      * @return If the pathUsed resolves to a command.
      */
     public hasPath(path: commandPath): boolean {
-        const lookupResult =
-            this.getPath(path);
+        const lookupResult = this.getPath(path);
 
         return lookupResult != null && lookupResult.successful;
     }
@@ -82,7 +81,11 @@ class Clingy {
      */
     public parse(input: string): ILookupResult {
         this.logger.debug("Parsing input: '{}'", input);
-        return this.lookupResolver.resolve(this.mapAliased, this.inputParser.parse(input), true);
+        return this.lookupResolver.resolve(
+            this.mapAliased,
+            this.inputParser.parse(input),
+            true
+        );
     }
 
     /**
@@ -95,19 +98,25 @@ class Clingy {
         this.map.forEach((value, key) => {
             this.mapAliased.set(key, value);
 
-            value.alias.forEach((alias) => {
+            value.alias.forEach(alias => {
                 if (this.mapAliased.has(alias)) {
-                    this.logger.warn("Alias '{}' conflicts with a previously defined key, will be ignored.", alias);
+                    this.logger.warn(
+                        "Alias '{}' conflicts with a previously defined key, will be ignored.",
+                        alias
+                    );
                 } else {
-                    this.logger.trace("Created alias '{}' for '{}'", alias, key);
+                    this.logger.trace(
+                        "Created alias '{}' for '{}'",
+                        alias,
+                        key
+                    );
                     this.mapAliased.set(alias, value);
                 }
             });
         });
 
-
         this.logger.debug("Done updating aliased map.");
     }
 }
 
-export {Clingy, commandPath};
+export { Clingy, commandPath };

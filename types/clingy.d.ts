@@ -1,4 +1,3 @@
-import * as loglevel from "loglevel";
 import { CommandMap } from "./command/commandMap";
 import { ICommand } from "./command/ICommand";
 import { LookupResolver } from "./lookup/lookupResolver";
@@ -9,7 +8,7 @@ declare type commandPath = string[];
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 declare class Clingy {
-    readonly logger: loglevel.Logger;
+    readonly logger: import("src/logaloo/logaloo").Logger;
     readonly lookupResolver: LookupResolver;
     readonly inputParser: InputParser;
     readonly map: CommandMap;

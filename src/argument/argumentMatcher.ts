@@ -1,4 +1,4 @@
-import * as loglevel from "loglevel";
+import { logaloo } from "../logaloo/logaloo";
 import { IArgument } from "./IArgument";
 
 type resolvedArgumentMap = Map<string, string>;
@@ -20,7 +20,7 @@ class ArgumentMatcher {
         this.missing = [];
         this.result = new Map();
 
-        const logger = loglevel.getLogger("ArgumentMatcher");
+        const logger = logaloo.getLogger(ArgumentMatcher);
         logger.debug("Matching arguments {} with {}", expected, provided);
 
         expected.forEach((expectedArg, i) => {

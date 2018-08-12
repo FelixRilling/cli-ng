@@ -1,5 +1,4 @@
 import { isNil } from "lightdash";
-import * as loglevel from "loglevel";
 import {
     ArgumentMatcher,
     resolvedArgumentMap
@@ -8,6 +7,7 @@ import { commandPath } from "../clingy";
 import { CommandMap } from "../command/commandMap";
 import { ICommand } from "../command/ICommand";
 import { getSimilar } from "../command/util/commandUtil";
+import { logaloo } from "../logaloo/logaloo";
 import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
 import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
 import { ILookupResult, ResultType } from "./result/ILookupResult";
@@ -17,9 +17,7 @@ import { ILookupSuccess } from "./result/ILookupSuccess";
  * Lookup tools for resolving paths through {@link CommandMap}s.
  */
 class LookupResolver {
-    private readonly logger: loglevel.Logger = loglevel.getLogger(
-        "LookupResolver"
-    );
+    private readonly logger = logaloo.getLogger(LookupResolver);
     private readonly caseSensitive: boolean;
 
     /**

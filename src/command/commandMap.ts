@@ -1,4 +1,14 @@
 import {ICommand} from "./ICommand";
 
-export class CommandMap extends Map<string, ICommand> {
+class CommandMap extends Map<string, ICommand> {
+    public hasIgnoreCase(key: string): boolean {
+        return true;
+    }
+
+    public getIgnoreCase(key: string): ICommand | null {
+        return null;
+    }
 }
+
+
+export {CommandMap};

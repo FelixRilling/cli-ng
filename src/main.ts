@@ -1,3 +1,3 @@
-import { Clingy } from "./_old/clingy";
+import { Clingy } from "./clingy";
 
 export default Clingy;

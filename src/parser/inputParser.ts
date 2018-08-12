@@ -3,7 +3,7 @@ import * as loglevel from "loglevel";
 /**
  * Manages parsing input strings into a path list.
  */
-const InputParser = class {
+class InputParser{
     private readonly logger: loglevel.Logger = loglevel.getLogger("InputParser");
     private readonly legalQuotes: string[];
     private readonly pattern: RegExp;
@@ -57,6 +57,6 @@ const InputParser = class {
         return result;
     }
 
-};
+}
 
 export {InputParser};

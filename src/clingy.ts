@@ -1,13 +1,13 @@
 import * as loglevel from "loglevel";
-import {ILookupResult} from "./lookup/result/ILookupResult";
+import {CommandMap} from "./command/commandMap";
 import {ICommand} from "./command/ICommand";
 import {LookupResolver} from "./lookup/lookupResolver";
+import {ILookupResult} from "./lookup/result/ILookupResult";
 import {InputParser} from "./parser/inputParser";
-import {CommandMap} from "./command/commandMap";
 
 type commandPath = string[];
 
-const Clingy = class {
+class Clingy {
     public readonly logger: loglevel.Logger = loglevel.getLogger("Clingy");
     public readonly lookupResolver: LookupResolver;
     public readonly inputParser: InputParser;
@@ -67,7 +67,8 @@ const Clingy = class {
      * Parses a string into a command and arguments.
      *
      * @param input String to parse.
-     * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound} or {@link ILookupErrorMissingArgs}.
+     * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
+     * or {@link ILookupErrorMissingArgs}.
      */
     public parse(input: string): ILookupResult {
         this.logger.debug("Parsing input: '{}'", input);
@@ -77,6 +78,6 @@ const Clingy = class {
     public updateAliases() {
 
     }
-};
+}
 
 export {Clingy, commandPath};

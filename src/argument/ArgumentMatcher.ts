@@ -1,6 +1,6 @@
-import { logaloo } from "../logaloo/logaloo";
-import { IArgument } from "./IArgument";
-import { resolvedArgumentMap } from "./resolvedArgumentMap";
+import {logaloo} from "../logaloo/logaloo";
+import {IArgument} from "./IArgument";
+import {resolvedArgumentMap} from "./resolvedArgumentMap";
 
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
@@ -30,7 +30,7 @@ class ArgumentMatcher {
                     provided[i]
                 );
                 this.result.set(expectedArg.name, provided[i]);
-            } else if (!expectedArg.required) {
+            } else if (!expectedArg.required && expectedArg.defaultValue != null) {
                 logger.trace(
                     "No matching argument found for {}, using default: {}",
                     expectedArg.name,
@@ -55,4 +55,4 @@ class ArgumentMatcher {
     }
 }
 
-export { ArgumentMatcher };
+export {ArgumentMatcher};

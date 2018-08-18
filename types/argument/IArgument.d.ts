@@ -1,6 +1,6 @@
 interface IArgument {
     name: string;
     required: boolean;
-    defaultValue: string;
+    defaultValue?: string;
 }
 export { IArgument };

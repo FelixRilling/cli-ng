@@ -1,3 +1,4 @@
 import {Clingy} from "./Clingy";
+import {CommandMap} from "./command/commandMap";
 
-export default Clingy;
+export {Clingy, CommandMap};

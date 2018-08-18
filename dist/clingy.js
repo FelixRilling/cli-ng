@@ -1,4 +1,4 @@
-var Clingy = (function () {
+var Clingy = (function (exports) {
     'use strict';
 
     /**
@@ -275,7 +275,7 @@ var Clingy = (function () {
                     logger.trace("Found matching argument for {}, adding to result: {}", expectedArg.name, provided[i]);
                     this.result.set(expectedArg.name, provided[i]);
                 }
-                else if (!expectedArg.required) {
+                else if (!expectedArg.required && expectedArg.defaultValue != null) {
                     logger.trace("No matching argument found for {}, using default: {}", expectedArg.name, expectedArg.defaultValue);
                     this.result.set(expectedArg.name, expectedArg.defaultValue);
                 }
@@ -507,7 +507,10 @@ var Clingy = (function () {
         }
     }
 
-    return Clingy;
+    exports.Clingy = Clingy;
+    exports.CommandMap = CommandMap;
 
-}());
+    return exports;
+
+}({}));
 //# sourceMappingURL=clingy.js.map

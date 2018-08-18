@@ -1,5 +1,5 @@
-import { commandPath } from "../command/commandPath";
 import { CommandMap } from "../command/commandMap";
+import { commandPath } from "../command/commandPath";
 import { ILookupResult } from "./result/ILookupResult";
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.

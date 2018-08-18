@@ -24,12 +24,13 @@ class CommandMap extends Map {
      * @return The value for the key, ignoring case.
      */
     getIgnoreCase(key) {
+        let result = null;
         this.forEach((value, k) => {
             if (key.toLowerCase() === k.toLowerCase()) {
-                return value;
+                result = value;
             }
         });
-        return null;
+        return result;
     }
 }
 
@@ -123,6 +124,13 @@ class ArgumentMatcher {
     }
 }
 
+/**
+ * Gets similar keys of a key based on their string distance.
+ *
+ * @param mapAliased Map to use for lookup.
+ * @param name       Key to use.
+ * @return List of similar keys.
+ */
 const getSimilar = (mapAliased, name) => lightdash.strSimilar(name, Array.from(mapAliased.keys()), false);
 
 /**
@@ -224,9 +232,6 @@ class InputParser {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
-    static escapeRegexCharacter(str) {
-        return `\\Q${str}\\E`;
-    }
     /**
      * Parses an input string.
      *
@@ -235,14 +240,13 @@ class InputParser {
      */
     parse(input) {
         this.logger.debug("Parsing input '{}'", input);
-        // @ts-ignore Can be converted to array, despite what TS says.
         return Array.from(input.match(this.pattern));
     }
     generateMatcher() {
         const matchBase = "(\\S+)";
         this.logger.debug("Creating matcher.");
         const matchItems = this.legalQuotes
-            .map(InputParser.escapeRegexCharacter)
+            .map((str) => `\\Q${str}\\E`)
             .map(quote => `${quote}(.+?)${quote}`);
         matchItems.push(matchBase);
         let result;

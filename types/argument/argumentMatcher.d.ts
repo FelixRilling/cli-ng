@@ -1,5 +1,5 @@
 import { IArgument } from "./IArgument";
-declare type resolvedArgumentMap = Map<string, string>;
+import { resolvedArgumentMap } from "./resolvedArgumentMap";
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
  */
@@ -14,4 +14,4 @@ declare class ArgumentMatcher {
      */
     constructor(expected: IArgument[], provided: string[]);
 }
-export { ArgumentMatcher, resolvedArgumentMap };
+export { ArgumentMatcher };

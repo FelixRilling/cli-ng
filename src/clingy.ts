@@ -1,11 +1,10 @@
-import { CommandMap } from "./command/commandMap";
-import { ICommand } from "./command/ICommand";
-import { logaloo } from "./logaloo/logaloo";
-import { LookupResolver } from "./lookup/lookupResolver";
-import { ILookupResult } from "./lookup/result/ILookupResult";
-import { InputParser } from "./parser/inputParser";
-
-type commandPath = string[];
+import {CommandMap} from "./command/commandMap";
+import {ICommand} from "./command/ICommand";
+import {logaloo} from "./logaloo/logaloo";
+import {LookupResolver} from "./lookup/lookupResolver";
+import {ILookupResult} from "./lookup/result/ILookupResult";
+import {InputParser} from "./parser/inputParser";
+import {commandPath} from "./command/commandPath";
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -119,4 +118,4 @@ class Clingy {
     }
 }
 
-export { Clingy, commandPath };
+export {Clingy};

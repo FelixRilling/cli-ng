@@ -1,4 +1,4 @@
-import { commandPath } from "../clingy";
+import { commandPath } from "../command/commandPath";
 import { CommandMap } from "../command/commandMap";
 import { ILookupResult } from "./result/ILookupResult";
 /**

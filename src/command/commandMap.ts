@@ -1,4 +1,4 @@
-import { ICommand } from "./ICommand";
+import {ICommand} from "./ICommand";
 
 /**
  * Map containing {@link ICommand}s.
@@ -23,14 +23,16 @@ class CommandMap extends Map<string, ICommand> {
      * @return The value for the key, ignoring case.
      */
     public getIgnoreCase(key: string): ICommand | null {
+        let result: ICommand | null = null;
+
         this.forEach((value, k) => {
             if (key.toLowerCase() === k.toLowerCase()) {
-                return value;
+                result = value;
             }
         });
 
-        return null;
+        return result;
     }
 }
 
-export { CommandMap };
+export {CommandMap};

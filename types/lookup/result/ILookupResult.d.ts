@@ -1,4 +1,4 @@
-import { commandPath } from "../../clingy";
+import { commandPath } from "../../command/commandPath";
 declare const enum ResultType {
     SUCCESS = 0,
     ERROR_NOT_FOUND = 1,

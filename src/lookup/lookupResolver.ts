@@ -1,17 +1,15 @@
-import { isNil } from "lightdash";
-import {
-    ArgumentMatcher,
-    resolvedArgumentMap
-} from "../argument/argumentMatcher";
-import { commandPath } from "../clingy";
-import { CommandMap } from "../command/commandMap";
-import { ICommand } from "../command/ICommand";
-import { getSimilar } from "../command/util/commandUtil";
-import { logaloo } from "../logaloo/logaloo";
-import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
-import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
-import { ILookupResult, ResultType } from "./result/ILookupResult";
-import { ILookupSuccess } from "./result/ILookupSuccess";
+import {isNil} from "lightdash";
+import {ArgumentMatcher} from "../argument/argumentMatcher";
+import {resolvedArgumentMap} from "../argument/resolvedArgumentMap";
+import {CommandMap} from "../command/commandMap";
+import {commandPath} from "../command/commandPath";
+import {ICommand} from "../command/ICommand";
+import {getSimilar} from "../command/util/commandUtil";
+import {logaloo} from "../logaloo/logaloo";
+import {ILookupErrorMissingArgs} from "./result/ILookupErrorMissingArgs";
+import {ILookupErrorNotFound} from "./result/ILookupErrorNotFound";
+import {ILookupResult, ResultType} from "./result/ILookupResult";
+import {ILookupSuccess} from "./result/ILookupSuccess";
 
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
@@ -139,4 +137,4 @@ class LookupResolver {
     }
 }
 
-export { LookupResolver };
+export {LookupResolver};

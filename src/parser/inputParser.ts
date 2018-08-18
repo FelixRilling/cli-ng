@@ -1,9 +1,13 @@
-import { logaloo } from "../logaloo/logaloo";
+import {logaloo} from "../logaloo/logaloo";
 
 /**
  * Manages parsing input strings into a pathUsed list.
  */
 class InputParser {
+    private readonly logger = logaloo.getLogger(InputParser);
+    private readonly legalQuotes: string[];
+    private readonly pattern: RegExp;
+
     /**
      * Creates an {@link InputParser}.
      *
@@ -12,13 +16,6 @@ class InputParser {
     constructor(legalQuotes: string[] = ["\""]) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
-    }
-    private readonly logger = logaloo.getLogger(InputParser);
-    private readonly legalQuotes: string[];
-    private readonly pattern: RegExp;
-
-    private static escapeRegexCharacter(str: string): string {
-        return `\\Q${str}\\E`;
     }
 
     /**
@@ -30,8 +27,7 @@ class InputParser {
     public parse(input: string): string[] {
         this.logger.debug("Parsing input '{}'", input);
 
-        // @ts-ignore Can be converted to array, despite what TS says.
-        return Array.from(input.match(this.pattern));
+        return Array.from(<ArrayLike<string>>input.match(this.pattern));
     }
 
     private generateMatcher(): RegExp {
@@ -39,7 +35,7 @@ class InputParser {
 
         this.logger.debug("Creating matcher.");
         const matchItems = this.legalQuotes
-            .map(InputParser.escapeRegexCharacter)
+            .map((str: string): string => `\\Q${str}\\E`)
             .map(quote => `${quote}(.+?)${quote}`);
 
         matchItems.push(matchBase);
@@ -60,4 +56,4 @@ class InputParser {
     }
 }
 
-export { InputParser };
+export {InputParser};

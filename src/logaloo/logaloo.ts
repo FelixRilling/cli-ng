@@ -65,4 +65,4 @@ const logaloo = {
     getLogger: (name: any) => new Logger("name" in name ? name.name : name)
 };
 
-export { logaloo, Levels, Logger };
+export {logaloo, Levels, Logger};

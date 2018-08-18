@@ -3,7 +3,7 @@ import { ICommand } from "./command/ICommand";
 import { LookupResolver } from "./lookup/lookupResolver";
 import { ILookupResult } from "./lookup/result/ILookupResult";
 import { InputParser } from "./parser/inputParser";
-declare type commandPath = string[];
+import { commandPath } from "./command/commandPath";
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
@@ -51,4 +51,4 @@ declare class Clingy {
      */
     updateAliases(): void;
 }
-export { Clingy, commandPath };
+export { Clingy };

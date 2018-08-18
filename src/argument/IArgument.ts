@@ -4,4 +4,4 @@ interface IArgument {
     defaultValue: string;
 }
 
-export {IArgument};
+export { IArgument };

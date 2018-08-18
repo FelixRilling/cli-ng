@@ -1,6 +1,6 @@
-import {logaloo} from "../logaloo/logaloo";
-import {IArgument} from "./IArgument";
-import {resolvedArgumentMap} from "./resolvedArgumentMap";
+import { logaloo } from "../logaloo/logaloo";
+import { IArgument } from "./IArgument";
+import { resolvedArgumentMap } from "./resolvedArgumentMap";
 
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
@@ -55,4 +55,4 @@ class ArgumentMatcher {
     }
 }
 
-export {ArgumentMatcher};
+export { ArgumentMatcher };

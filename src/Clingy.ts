@@ -1,10 +1,10 @@
 import {CommandMap} from "./command/commandMap";
+import {commandPath} from "./command/commandPath";
 import {ICommand} from "./command/ICommand";
 import {logaloo} from "./logaloo/logaloo";
-import {LookupResolver} from "./lookup/lookupResolver";
+import {LookupResolver} from "./lookup/LookupResolver";
 import {ILookupResult} from "./lookup/result/ILookupResult";
-import {InputParser} from "./parser/inputParser";
-import {commandPath} from "./command/commandPath";
+import {InputParser} from "./parser/InputParser";
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.

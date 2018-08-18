@@ -42,33 +42,34 @@ var Levels;
 })(Levels || (Levels = {}));
 // tslint:disable-next-line
 let level = Levels.INFO;
+const stdout = console;
 class Logger {
     constructor(name) {
         this.name = name;
     }
     error(...args) {
         if (level >= Levels.ERROR) {
-            console.error(this.getPrefix("ERROR"), ...args);
+            stdout.error(this.getPrefix("ERROR"), ...args);
         }
     }
     warn(...args) {
         if (level >= Levels.WARN) {
-            console.warn(this.getPrefix("WARN"), ...args);
+            stdout.warn(this.getPrefix("WARN"), ...args);
         }
     }
     info(...args) {
         if (level >= Levels.INFO) {
-            console.info(this.getPrefix("INFO"), ...args);
+            stdout.info(this.getPrefix("INFO"), ...args);
         }
     }
     debug(...args) {
         if (level >= Levels.DEBUG) {
-            console.log(this.getPrefix("DEBUG"), ...args);
+            stdout.log(this.getPrefix("DEBUG"), ...args);
         }
     }
     trace(...args) {
         if (level >= Levels.TRACE) {
-            console.log(this.getPrefix("TRACE"), ...args);
+            stdout.log(this.getPrefix("TRACE"), ...args);
         }
     }
     getPrefix(messageLevel) {
@@ -225,7 +226,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ["\""]) {
+    constructor(legalQuotes = ['"']) {
         this.logger = logaloo.getLogger(InputParser);
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();

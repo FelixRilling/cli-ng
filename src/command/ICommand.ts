@@ -1,5 +1,5 @@
-import {IArgument} from "../argument/IArgument";
-import {Clingy} from "../clingy";
+import { IArgument } from "../argument/IArgument";
+import { Clingy } from "../Clingy";
 
 interface ICommand {
     alias: string[];
@@ -9,4 +9,4 @@ interface ICommand {
     sub: Clingy | null;
 }
 
-export {ICommand};
+export { ICommand };

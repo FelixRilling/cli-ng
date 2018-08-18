@@ -8,6 +8,7 @@ enum Levels {
 
 // tslint:disable-next-line
 let level: Levels = Levels.INFO;
+const stdout = console;
 
 class Logger {
     private readonly name: string;
@@ -18,31 +19,31 @@ class Logger {
 
     public error(...args: any[]) {
         if (level >= Levels.ERROR) {
-            console.error(this.getPrefix("ERROR"), ...args);
+            stdout.error(this.getPrefix("ERROR"), ...args);
         }
     }
 
     public warn(...args: any[]) {
         if (level >= Levels.WARN) {
-            console.warn(this.getPrefix("WARN"), ...args);
+            stdout.warn(this.getPrefix("WARN"), ...args);
         }
     }
 
     public info(...args: any[]) {
         if (level >= Levels.INFO) {
-            console.info(this.getPrefix("INFO"), ...args);
+            stdout.info(this.getPrefix("INFO"), ...args);
         }
     }
 
     public debug(...args: any[]) {
         if (level >= Levels.DEBUG) {
-            console.log(this.getPrefix("DEBUG"), ...args);
+            stdout.log(this.getPrefix("DEBUG"), ...args);
         }
     }
 
     public trace(...args: any[]) {
         if (level >= Levels.TRACE) {
-            console.log(this.getPrefix("TRACE"), ...args);
+            stdout.log(this.getPrefix("TRACE"), ...args);
         }
     }
 
@@ -65,4 +66,4 @@ const logaloo = {
     getLogger: (name: any) => new Logger("name" in name ? name.name : name)
 };
 
-export {logaloo, Levels, Logger};
+export { logaloo, Levels, Logger };

@@ -1,4 +1,4 @@
-import {ICommand} from "./ICommand";
+import { ICommand } from "./ICommand";
 
 /**
  * Map containing {@link ICommand}s.
@@ -35,4 +35,4 @@ class CommandMap extends Map<string, ICommand> {
     }
 }
 
-export {CommandMap};
+export { CommandMap };

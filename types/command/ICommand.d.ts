@@ -1,5 +1,5 @@
 import { IArgument } from "../argument/IArgument";
-import { Clingy } from "../clingy";
+import { Clingy } from "../Clingy";
 interface ICommand {
     alias: string[];
     fn: (...args: any[]) => void;

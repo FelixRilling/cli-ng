@@ -23,12 +23,13 @@ var Clingy = (function () {
          * @return The value for the key, ignoring case.
          */
         getIgnoreCase(key) {
+            let result = null;
             this.forEach((value, k) => {
                 if (key.toLowerCase() === k.toLowerCase()) {
-                    return value;
+                    result = value;
                 }
             });
-            return null;
+            return result;
         }
     }
 
@@ -42,33 +43,34 @@ var Clingy = (function () {
     })(Levels || (Levels = {}));
     // tslint:disable-next-line
     let level = Levels.INFO;
+    const stdout = console;
     class Logger {
         constructor(name) {
             this.name = name;
         }
         error(...args) {
             if (level >= Levels.ERROR) {
-                console.error(this.getPrefix("ERROR"), ...args);
+                stdout.error(this.getPrefix("ERROR"), ...args);
             }
         }
         warn(...args) {
             if (level >= Levels.WARN) {
-                console.warn(this.getPrefix("WARN"), ...args);
+                stdout.warn(this.getPrefix("WARN"), ...args);
             }
         }
         info(...args) {
             if (level >= Levels.INFO) {
-                console.info(this.getPrefix("INFO"), ...args);
+                stdout.info(this.getPrefix("INFO"), ...args);
             }
         }
         debug(...args) {
             if (level >= Levels.DEBUG) {
-                console.log(this.getPrefix("DEBUG"), ...args);
+                stdout.log(this.getPrefix("DEBUG"), ...args);
             }
         }
         trace(...args) {
             if (level >= Levels.TRACE) {
-                console.log(this.getPrefix("TRACE"), ...args);
+                stdout.log(this.getPrefix("TRACE"), ...args);
             }
         }
         getPrefix(messageLevel) {
@@ -286,6 +288,13 @@ var Clingy = (function () {
         }
     }
 
+    /**
+     * Gets similar keys of a key based on their string distance.
+     *
+     * @param mapAliased Map to use for lookup.
+     * @param name       Key to use.
+     * @return List of similar keys.
+     */
     const getSimilar = (mapAliased, name) => strSimilar(name, Array.from(mapAliased.keys()), false);
 
     /**
@@ -382,13 +391,10 @@ var Clingy = (function () {
          *
          * @param legalQuotes List of quotes to use when parsing strings.
          */
-        constructor(legalQuotes = ["\""]) {
+        constructor(legalQuotes = ['"']) {
             this.logger = logaloo.getLogger(InputParser);
             this.legalQuotes = legalQuotes;
             this.pattern = this.generateMatcher();
-        }
-        static escapeRegexCharacter(str) {
-            return `\\Q${str}\\E`;
         }
         /**
          * Parses an input string.
@@ -398,14 +404,13 @@ var Clingy = (function () {
          */
         parse(input) {
             this.logger.debug("Parsing input '{}'", input);
-            // @ts-ignore Can be converted to array, despite what TS says.
             return Array.from(input.match(this.pattern));
         }
         generateMatcher() {
             const matchBase = "(\\S+)";
             this.logger.debug("Creating matcher.");
             const matchItems = this.legalQuotes
-                .map(InputParser.escapeRegexCharacter)
+                .map((str) => `\\Q${str}\\E`)
                 .map(quote => `${quote}(.+?)${quote}`);
             matchItems.push(matchBase);
             let result;

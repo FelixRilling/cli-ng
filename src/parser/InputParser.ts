@@ -1,4 +1,4 @@
-import {logaloo} from "../logaloo/logaloo";
+import { logaloo } from "../logaloo/logaloo";
 
 /**
  * Manages parsing input strings into a pathUsed list.
@@ -13,7 +13,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes: string[] = ["\""]) {
+    constructor(legalQuotes: string[] = ['"']) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
@@ -56,4 +56,4 @@ class InputParser {
     }
 }
 
-export {InputParser};
+export { InputParser };

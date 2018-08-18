@@ -1,6 +1,6 @@
-import {logaloo} from "../logaloo/logaloo";
-import {IArgument} from "./IArgument";
-import {resolvedArgumentMap} from "./resolvedArgumentMap";
+import { logaloo } from "../logaloo/logaloo";
+import { IArgument } from "./IArgument";
+import { resolvedArgumentMap } from "./resolvedArgumentMap";
 
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
@@ -20,39 +20,44 @@ class ArgumentMatcher {
         this.result = new Map();
 
         const logger = logaloo.getLogger(ArgumentMatcher);
-        logger.debug("Matching arguments {} with {}", expected, provided);
+        logger.debug(`Matching arguments ${expected} with ${provided}`);
 
         expected.forEach((expectedArg, i) => {
             if (i < provided.length) {
+                const providedArg = provided[i];
+
                 logger.trace(
-                    "Found matching argument for {}, adding to result: {}",
-                    expectedArg.name,
-                    provided[i]
+                    `Found matching argument for ${
+                        expectedArg.name
+                    }, adding to result: ${providedArg}`
                 );
-                this.result.set(expectedArg.name, provided[i]);
-            } else if (!expectedArg.required && expectedArg.defaultValue != null) {
+                this.result.set(expectedArg.name, providedArg);
+            } else if (
+                !expectedArg.required &&
+                expectedArg.defaultValue != null
+            ) {
                 logger.trace(
-                    "No matching argument found for {}, using default: {}",
-                    expectedArg.name,
-                    expectedArg.defaultValue
+                    `No matching argument found for ${
+                        expectedArg.name
+                    }, using default: ${expectedArg.defaultValue}`
                 );
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             } else {
                 logger.trace(
-                    "No matching argument found for {}, adding to missing.",
-                    expectedArg.name
+                    `No matching argument found for ${
+                        expectedArg.name
+                    }, adding to missing.`
                 );
                 this.missing.push(expectedArg);
             }
         });
 
         logger.debug(
-            "Finished matching arguments: {} expected, {} found and {} missing.",
-            expected.length,
-            this.result.size,
-            this.missing.length
+            `Finished matching arguments: ${expected.length} expected, ${
+                this.result.size
+            } found and ${this.missing.length} missing.`
         );
     }
 }
 
-export {ArgumentMatcher};
+export { ArgumentMatcher };

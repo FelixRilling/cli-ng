@@ -41,7 +41,7 @@ var Levels;
     Levels[Levels["TRACE"] = 4] = "TRACE";
 })(Levels || (Levels = {}));
 // tslint:disable-next-line
-let level = Levels.INFO;
+let level = Levels.TRACE;
 const stdout = console;
 class Logger {
     constructor(name) {
@@ -73,7 +73,7 @@ class Logger {
         }
     }
     getPrefix(messageLevel) {
-        return `${new Date().toISOString()} ${messageLevel} ${this.name} - `;
+        return `${new Date().toISOString()} ${messageLevel} ${this.name} -`;
     }
 }
 const logaloo = {
@@ -104,22 +104,24 @@ class ArgumentMatcher {
         this.missing = [];
         this.result = new Map();
         const logger = logaloo.getLogger(ArgumentMatcher);
-        logger.debug("Matching arguments {} with {}", expected, provided);
+        logger.debug(`Matching arguments ${expected} with ${provided}`);
         expected.forEach((expectedArg, i) => {
             if (i < provided.length) {
-                logger.trace("Found matching argument for {}, adding to result: {}", expectedArg.name, provided[i]);
-                this.result.set(expectedArg.name, provided[i]);
+                const providedArg = provided[i];
+                logger.trace(`Found matching argument for ${expectedArg.name}, adding to result: ${providedArg}`);
+                this.result.set(expectedArg.name, providedArg);
             }
-            else if (!expectedArg.required && expectedArg.defaultValue != null) {
-                logger.trace("No matching argument found for {}, using default: {}", expectedArg.name, expectedArg.defaultValue);
+            else if (!expectedArg.required &&
+                expectedArg.defaultValue != null) {
+                logger.trace(`No matching argument found for ${expectedArg.name}, using default: ${expectedArg.defaultValue}`);
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             }
             else {
-                logger.trace("No matching argument found for {}, adding to missing.", expectedArg.name);
+                logger.trace(`No matching argument found for ${expectedArg.name}, adding to missing.`);
                 this.missing.push(expectedArg);
             }
         });
-        logger.debug("Finished matching arguments: {} expected, {} found and {} missing.", expected.length, this.result.size, this.missing.length);
+        logger.debug(`Finished matching arguments: ${expected.length} expected, ${this.result.size} found and ${this.missing.length} missing.`);
     }
 }
 
@@ -167,7 +169,7 @@ class LookupResolver {
         if (this.caseSensitive
             ? !mapAliased.has(currentPathFragment)
             : !mapAliased.hasIgnoreCase(currentPathFragment)) {
-            this.logger.warn("Command '{}' could not be found.", currentPathFragment);
+            this.logger.warn(`Command '${currentPathFragment}' could not be found.`);
             return {
                 successful: false,
                 pathUsed,
@@ -180,7 +182,7 @@ class LookupResolver {
         const command = ((this.caseSensitive
             ? mapAliased.get(currentPathFragment)
             : mapAliased.getIgnoreCase(currentPathFragment)));
-        this.logger.debug("Successfully looked up command: {}", currentPathFragment);
+        this.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
         let argumentsResolved;
         if (!parseArguments ||
             isNil(command.args) ||
@@ -189,10 +191,10 @@ class LookupResolver {
             argumentsResolved = new Map();
         }
         else {
-            this.logger.debug("Looking up arguments: {}", pathNew);
+            this.logger.debug(`Looking up arguments: ${pathNew}`);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
             if (argumentMatcher.missing.length > 0) {
-                this.logger.warn("Some arguments could not be found: {}", argumentMatcher.missing);
+                this.logger.warn(`Some arguments could not be found: ${argumentMatcher.missing}`);
                 return {
                     successful: false,
                     pathUsed,
@@ -202,7 +204,7 @@ class LookupResolver {
                 };
             }
             argumentsResolved = argumentMatcher.result;
-            this.logger.debug("Successfully looked up arguments: {}", argumentsResolved);
+            this.logger.debug(`Successfully looked up arguments: ${argumentsResolved}`);
         }
         const lookupSuccess = {
             successful: true,
@@ -212,7 +214,7 @@ class LookupResolver {
             command,
             args: argumentsResolved
         };
-        this.logger.debug("Returning successful lookup result: {}", lookupSuccess);
+        this.logger.debug(`Returning successful lookup result: ${lookupSuccess}`);
         return lookupSuccess;
     }
 }
@@ -306,7 +308,7 @@ class Clingy {
      * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
      */
     getPath(path) {
-        this.logger.debug("Resolving pathUsed: {}", path);
+        this.logger.debug(`Resolving pathUsed: ${path}`);
         return this.lookupResolver.resolve(this.mapAliased, path);
     }
     /**
@@ -317,7 +319,7 @@ class Clingy {
      * or {@link ILookupErrorMissingArgs}.
      */
     parse(input) {
-        this.logger.debug("Parsing input: '{}'", input);
+        this.logger.debug(`Parsing input: '${input}'`);
         return this.lookupResolver.resolve(this.mapAliased, this.inputParser.parse(input), true);
     }
     /**
@@ -330,10 +332,10 @@ class Clingy {
             this.mapAliased.set(key, value);
             value.alias.forEach(alias => {
                 if (this.mapAliased.has(alias)) {
-                    this.logger.warn("Alias '{}' conflicts with a previously defined key, will be ignored.", alias);
+                    this.logger.warn(`Alias '${alias}' conflicts with a previously defined key, will be ignored.`);
                 }
                 else {
-                    this.logger.trace("Created alias '{}' for '{}'", alias, key);
+                    this.logger.trace(`Created alias '${alias}' for '${key}'`);
                     this.mapAliased.set(alias, value);
                 }
             });

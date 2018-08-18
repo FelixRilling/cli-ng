@@ -8,7 +8,7 @@
     "settings": {
         "input": "main.ts",
         "namespace": {
-            "module": "Clingy",
+            "module": "clingy",
             "file": "clingy"
         },
         "external": [

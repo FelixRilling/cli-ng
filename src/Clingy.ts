@@ -67,7 +67,7 @@ class Clingy {
      * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
      */
     public getPath(path: commandPath): ILookupResult {
-        this.logger.debug("Resolving pathUsed: {}", path);
+        this.logger.debug(`Resolving pathUsed: ${path}`);
         return this.lookupResolver.resolve(this.mapAliased, path);
     }
 
@@ -79,7 +79,7 @@ class Clingy {
      * or {@link ILookupErrorMissingArgs}.
      */
     public parse(input: string): ILookupResult {
-        this.logger.debug("Parsing input: '{}'", input);
+        this.logger.debug(`Parsing input: '${input}'`);
         return this.lookupResolver.resolve(
             this.mapAliased,
             this.inputParser.parse(input),
@@ -100,15 +100,11 @@ class Clingy {
             value.alias.forEach(alias => {
                 if (this.mapAliased.has(alias)) {
                     this.logger.warn(
-                        "Alias '{}' conflicts with a previously defined key, will be ignored.",
-                        alias
+                        `Alias '${alias}' conflicts with a previously defined key, will be ignored.`
                     );
                 } else {
                     this.logger.trace(
-                        "Created alias '{}' for '{}'",
-                        alias,
-                        key
-                    );
+                        `Created alias '${alias}' for '${key}'`);
                     this.mapAliased.set(alias, value);
                 }
             });

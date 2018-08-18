@@ -64,8 +64,7 @@ class LookupResolver {
                 : !mapAliased.hasIgnoreCase(currentPathFragment)
         ) {
             this.logger.warn(
-                "Command '{}' could not be found.",
-                currentPathFragment
+                `Command '${currentPathFragment}' could not be found.`
             );
             return <ILookupErrorNotFound>{
                 successful: false,
@@ -82,8 +81,7 @@ class LookupResolver {
                 : mapAliased.getIgnoreCase(currentPathFragment))
         );
         this.logger.debug(
-            "Successfully looked up command: {}",
-            currentPathFragment
+            `Successfully looked up command: ${currentPathFragment}`
         );
 
         let argumentsResolved: resolvedArgumentMap;
@@ -95,13 +93,14 @@ class LookupResolver {
             this.logger.debug("No arguments defined, using empty list.");
             argumentsResolved = new Map();
         } else {
-            this.logger.debug("Looking up arguments: {}", pathNew);
+            this.logger.debug(`Looking up arguments: ${pathNew}`);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
 
             if (argumentMatcher.missing.length > 0) {
                 this.logger.warn(
-                    "Some arguments could not be found: {}",
-                    argumentMatcher.missing
+                    `Some arguments could not be found: ${
+                        argumentMatcher.missing
+                    }`
                 );
 
                 return <ILookupErrorMissingArgs>{
@@ -115,8 +114,7 @@ class LookupResolver {
 
             argumentsResolved = argumentMatcher.result;
             this.logger.debug(
-                "Successfully looked up arguments: {}",
-                argumentsResolved
+                `Successfully looked up arguments: ${argumentsResolved}`
             );
         }
 
@@ -129,8 +127,7 @@ class LookupResolver {
             args: argumentsResolved
         };
         this.logger.debug(
-            "Returning successful lookup result: {}",
-            lookupSuccess
+            `Returning successful lookup result: ${lookupSuccess}`
         );
 
         return lookupSuccess;

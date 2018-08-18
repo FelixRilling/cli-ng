@@ -7,7 +7,7 @@ enum Levels {
 }
 
 // tslint:disable-next-line
-let level: Levels = Levels.INFO;
+let level: Levels = Levels.TRACE;
 const stdout = console;
 
 class Logger {
@@ -48,7 +48,7 @@ class Logger {
     }
 
     private getPrefix(messageLevel: string): string {
-        return `${new Date().toISOString()} ${messageLevel} ${this.name} - `;
+        return `${new Date().toISOString()} ${messageLevel} ${this.name} -`;
     }
 }
 

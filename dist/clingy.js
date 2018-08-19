@@ -2,94 +2,6 @@ var clingy = (function (exports) {
     'use strict';
 
     /**
-     * Map containing {@link ICommand}s.
-     */
-    class CommandMap extends Map {
-        /**
-         * Checks if the map contains a key, ignoring case.
-         *
-         * @param key Key to check for.
-         * @return If the map contains a key, ignoring case.
-         */
-        hasIgnoreCase(key) {
-            return Array.from(this.keys())
-                .map(k => k.toLowerCase())
-                .includes(key.toLowerCase());
-        }
-        /**
-         * Returns the value for the key, ignoring case.
-         *
-         * @param key Key to check for.
-         * @return The value for the key, ignoring case.
-         */
-        getIgnoreCase(key) {
-            let result = null;
-            this.forEach((value, k) => {
-                if (key.toLowerCase() === k.toLowerCase()) {
-                    result = value;
-                }
-            });
-            return result;
-        }
-    }
-
-    var Levels;
-    (function (Levels) {
-        Levels[Levels["ERROR"] = 0] = "ERROR";
-        Levels[Levels["WARN"] = 1] = "WARN";
-        Levels[Levels["INFO"] = 2] = "INFO";
-        Levels[Levels["DEBUG"] = 3] = "DEBUG";
-        Levels[Levels["TRACE"] = 4] = "TRACE";
-    })(Levels || (Levels = {}));
-    // tslint:disable-next-line
-    let level = Levels.TRACE;
-    const stdout = console;
-    const getPrefix = (name, messageLevel) => `${new Date().toISOString()} ${messageLevel} ${name} -`;
-    class Logger {
-        constructor(name) {
-            this.name = name;
-        }
-        error(...args) {
-            if (level >= Levels.ERROR) {
-                stdout.error(getPrefix(this.name, "ERROR"), ...args);
-            }
-        }
-        warn(...args) {
-            if (level >= Levels.WARN) {
-                stdout.warn(getPrefix(this.name, "WARN"), ...args);
-            }
-        }
-        info(...args) {
-            if (level >= Levels.INFO) {
-                stdout.info(getPrefix(this.name, "INFO"), ...args);
-            }
-        }
-        debug(...args) {
-            if (level >= Levels.DEBUG) {
-                stdout.log(getPrefix(this.name, "DEBUG"), ...args);
-            }
-        }
-        trace(...args) {
-            if (level >= Levels.TRACE) {
-                stdout.log(getPrefix(this.name, "TRACE"), ...args);
-            }
-        }
-    }
-    const logaloo = {
-        /**
-         * Currently active logging level.
-         */
-        level,
-        /**
-         * Get a logger instance.
-         *
-         * @param name A string or a INameable (ex: class, function).
-         * @returns The Logger instance.
-         */
-        getLogger: (name) => new Logger("name" in name ? name.name : name)
-    };
-
-    /**
      * Checks if the value has a certain type-string.
      *
      * @function isTypeOf
@@ -112,6 +24,35 @@ var clingy = (function (exports) {
      * isTypeOf("foo", "number")
      * // => false
      */
+    const isTypeOf = (val, type) => typeof val === type;
+
+    /**
+     * Checks if the value is an instance of a target constructor.
+     *
+     * @function isInstanceOf
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @param {Class} target
+     * @returns {boolean}
+     * @example
+     * isInstanceOf({}, Object)
+     * // => true
+     *
+     * isInstanceOf([], Object)
+     * // => true
+     *
+     * isInstanceOf([], Array)
+     * // => true
+     *
+     * @example
+     * isInstanceOf({}, Array)
+     * // => false
+     *
+     * isInstanceOf([], Map)
+     * // => false
+     */
+    const isInstanceOf = (val, target) => val instanceof target;
 
     /**
      * Checks if a value is undefined or null.
@@ -136,6 +77,66 @@ var clingy = (function (exports) {
      * // => false
      */
     const isNil = (val) => val == null;
+
+    /**
+     * Checks if a value is a string.
+     *
+     * @function isString
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @returns {boolean}
+     * @example
+     * isString("foo")
+     * // => true
+     *
+     * @example
+     * isString(1)
+     * // => false
+     */
+    const isString = (val) => isTypeOf(val, "string");
+
+    /**
+     * Checks if a value is a map.
+     *
+     * @function isMap
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @returns {boolean}
+     * @example
+     * isMap(new Map())
+     * // => true
+     *
+     * @example
+     * isMap([[1, 2]])
+     * // => false
+     */
+    const isMap = (val) => isInstanceOf(val, Map);
+
+    /**
+     * Checks if a value is an object.
+     *
+     * @function isObject
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @returns {boolean}
+     * @example
+     * isObject({})
+     * // => true
+     *
+     * isObject([])
+     * // => true
+     *
+     * isObject(() => 1))
+     * // => true
+     *
+     * @example
+     * isObject(1)
+     * // => false
+     */
+    const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
 
     /**
      * Returns levenshtein string distance of two strings.
@@ -251,6 +252,130 @@ var clingy = (function (exports) {
         return returnFull
             ? result
             : result.get(Math.min(...result.keys()));
+    };
+
+    const getConstructorMap = (input) => {
+        if (isMap(input)) {
+            return Array.from(input.entries());
+        }
+        else if (isObject(input)) {
+            return Array.from(Object.entries(input));
+        }
+        return null;
+    };
+    /**
+     * Map containing {@link ICommand}s.
+     */
+    class CommandMap extends Map {
+        constructor(input) {
+            super(getConstructorMap(input));
+        }
+        /**
+         * Checks if the map contains a key, ignoring case.
+         *
+         * @param key Key to check for.
+         * @return If the map contains a key, ignoring case.
+         */
+        hasIgnoreCase(key) {
+            return Array.from(this.keys())
+                .map(k => k.toLowerCase())
+                .includes(key.toLowerCase());
+        }
+        /**
+         * Returns the value for the key, ignoring case.
+         *
+         * @param key Key to check for.
+         * @return The value for the key, ignoring case.
+         */
+        getIgnoreCase(key) {
+            let result = null;
+            this.forEach((value, k) => {
+                if (key.toLowerCase() === k.toLowerCase()) {
+                    result = value;
+                }
+            });
+            return result;
+        }
+    }
+
+    var Level;
+    (function (Level) {
+        Level[Level["ERROR"] = 0] = "ERROR";
+        Level[Level["WARN"] = 1] = "WARN";
+        Level[Level["INFO"] = 2] = "INFO";
+        Level[Level["DEBUG"] = 3] = "DEBUG";
+        Level[Level["TRACE"] = 4] = "TRACE";
+    })(Level || (Level = {}));
+    // tslint:disable-next-line
+    let level = Level.TRACE;
+    const getPrefix = (name, messageLevel) => `${new Date().toISOString()} ${messageLevel} ${name} -`;
+    class Logger {
+        constructor(name) {
+            this.name = name;
+        }
+        error(...args) {
+            if (level >= Level.ERROR) {
+                // tslint:disable-next-line
+                console.error(getPrefix(this.name, "ERROR"), ...args);
+            }
+        }
+        warn(...args) {
+            if (level >= Level.WARN) {
+                // tslint:disable-next-line
+                console.warn(getPrefix(this.name, "WARN"), ...args);
+            }
+        }
+        info(...args) {
+            if (level >= Level.INFO) {
+                // tslint:disable-next-line
+                console.info(getPrefix(this.name, "INFO"), ...args);
+            }
+        }
+        debug(...args) {
+            if (level >= Level.DEBUG) {
+                // tslint:disable-next-line
+                console.log(getPrefix(this.name, "DEBUG"), ...args);
+            }
+        }
+        trace(...args) {
+            if (level >= Level.TRACE) {
+                // tslint:disable-next-line
+                console.log(getPrefix(this.name, "TRACE"), ...args);
+            }
+        }
+    }
+    const loggerMap = new Map();
+    const logaloo = {
+        /**
+         * Currently active logging level.
+         */
+        setLevel: (newLevel) => {
+            level = newLevel;
+        },
+        /**
+         * Get a logger instance.
+         *
+         * @param nameable A string or a INameable (ex: class, function).
+         * @returns The Logger instance.
+         */
+        getLogger: (nameable) => {
+            let name;
+            if ("name" in nameable) {
+                name = nameable.name;
+            }
+            else if (isString(nameable)) {
+                name = nameable;
+            }
+            else {
+                throw new TypeError(`'${nameable}' is neither an INameable or a string.`);
+            }
+            if (loggerMap.has(name)) {
+                return loggerMap.get(name);
+            }
+            const logger = new Logger(name);
+            loggerMap.set(name, logger);
+            return logger;
+        }
     };
 
     /**
@@ -403,7 +528,7 @@ var clingy = (function (exports) {
          * @return Path list.
          */
         parse(input) {
-            this.logger.debug("Parsing input '{}'", input);
+            this.logger.debug(`Parsing input '${input}'`);
             return Array.from(input.match(this.pattern));
         }
         generateMatcher() {

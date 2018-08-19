@@ -1,4 +1,4 @@
-import { CommandMap } from "../commandMap";
+import { CommandMap } from "../CommandMap";
 /**
  * Gets similar keys of a key based on their string distance.
  *

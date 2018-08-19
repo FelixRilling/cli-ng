@@ -1,4 +1,4 @@
-import {CommandMap} from "../commandMap";
+import {CommandMap} from "../CommandMap";
 import {strSimilar} from "lightdash";
 
 /**

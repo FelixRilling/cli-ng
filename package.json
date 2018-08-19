@@ -29,7 +29,7 @@
         "fix:ts": "tslint ./src/**/*.ts --fix",
         "fix:es": "eslint ./spec/**/*.js --fix",
         "fix:prettier": "prettier ./src/**/* ./spec/**/* --write",
-        "test": "ts-node ./spec/clingyTest.spec.ts",
+        "test": "jasmine",
         "docs": "jsdoc -c jsdoc.json"
     },
     "repository": {

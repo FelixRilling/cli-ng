@@ -1,10 +1,12 @@
-import {CommandMap} from "./command/commandMap";
+import {CommandMap} from "./command/CommandMap";
 import {commandPath} from "./command/commandPath";
 import {ICommand} from "./command/ICommand";
 import {logaloo} from "./logaloo/logaloo";
 import {LookupResolver} from "./lookup/LookupResolver";
 import {ILookupResult} from "./lookup/result/ILookupResult";
 import {InputParser} from "./parser/InputParser";
+import {mapWithCommands} from "./command/mapWithCommands";
+import {IObjWithCommands} from "./command/IObjWithCommands";
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -24,7 +26,7 @@ class Clingy {
      * @param legalQuotes   List of quotes to use when parsing strings.
      */
     constructor(
-        commands: Map<string, ICommand> = new Map(),
+        commands: mapWithCommands | IObjWithCommands = new Map(),
         caseSensitive: boolean = true,
         legalQuotes: commandPath = ["\""]
     ) {

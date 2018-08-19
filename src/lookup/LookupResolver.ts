@@ -1,7 +1,7 @@
 import { isNil } from "lightdash";
 import { ArgumentMatcher } from "../argument/ArgumentMatcher";
 import { resolvedArgumentMap } from "../argument/resolvedArgumentMap";
-import { CommandMap } from "../command/commandMap";
+import { CommandMap } from "../command/CommandMap";
 import { commandPath } from "../command/commandPath";
 import { ICommand } from "../command/ICommand";
 import { getSimilar } from "../command/util/commandUtil";

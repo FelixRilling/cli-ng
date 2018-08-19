@@ -1,4 +1,4 @@
-import { CommandMap } from "../command/commandMap";
+import { CommandMap } from "../command/CommandMap";
 import { commandPath } from "../command/commandPath";
 import { ILookupResult } from "./result/ILookupResult";
 /**

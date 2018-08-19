@@ -1,9 +1,28 @@
 import { ICommand } from "./ICommand";
+import { mapWithCommands } from "./mapWithCommands";
+import { IObjWithCommands } from "./IObjWithCommands";
+import { isMap, isObject } from "lightdash";
+
+const getConstructorMap = (
+    input?: mapWithCommands | IObjWithCommands
+): ReadonlyArray<[string, ICommand]> | null => {
+    if (isMap(input)) {
+        return Array.from((<mapWithCommands>input).entries());
+    } else if (isObject(input)) {
+        return Array.from(Object.entries(<object>input));
+    }
+
+    return null;
+};
 
 /**
  * Map containing {@link ICommand}s.
  */
 class CommandMap extends Map<string, ICommand> {
+    constructor(input?: mapWithCommands | IObjWithCommands) {
+        super(getConstructorMap(input));
+    }
+
     /**
      * Checks if the map contains a key, ignoring case.
      *

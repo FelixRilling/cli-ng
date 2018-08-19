@@ -1,8 +1,11 @@
 import { ICommand } from "./ICommand";
+import { mapWithCommands } from "./mapWithCommands";
+import { IObjWithCommands } from "./IObjWithCommands";
 /**
  * Map containing {@link ICommand}s.
  */
 declare class CommandMap extends Map<string, ICommand> {
+    constructor(input?: mapWithCommands | IObjWithCommands);
     /**
      * Checks if the map contains a key, ignoring case.
      *

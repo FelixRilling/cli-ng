@@ -25,7 +25,7 @@ class InputParser {
      * @return Path list.
      */
     public parse(input: string): string[] {
-        this.logger.debug("Parsing input '{}'", input);
+        this.logger.debug(`Parsing input '${input}'`);
 
         return Array.from(<ArrayLike<string>>input.match(this.pattern));
     }

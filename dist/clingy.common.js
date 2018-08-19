@@ -4,10 +4,22 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var lightdash = require('lightdash');
 
+const getConstructorMap = (input) => {
+    if (lightdash.isMap(input)) {
+        return Array.from(input.entries());
+    }
+    else if (lightdash.isObject(input)) {
+        return Array.from(Object.entries(input));
+    }
+    return null;
+};
 /**
  * Map containing {@link ICommand}s.
  */
 class CommandMap extends Map {
+    constructor(input) {
+        super(getConstructorMap(input));
+    }
     /**
      * Checks if the map contains a key, ignoring case.
      *
@@ -36,60 +48,84 @@ class CommandMap extends Map {
     }
 }
 
-var Levels;
-(function (Levels) {
-    Levels[Levels["ERROR"] = 0] = "ERROR";
-    Levels[Levels["WARN"] = 1] = "WARN";
-    Levels[Levels["INFO"] = 2] = "INFO";
-    Levels[Levels["DEBUG"] = 3] = "DEBUG";
-    Levels[Levels["TRACE"] = 4] = "TRACE";
-})(Levels || (Levels = {}));
+var Level;
+(function (Level) {
+    Level[Level["ERROR"] = 0] = "ERROR";
+    Level[Level["WARN"] = 1] = "WARN";
+    Level[Level["INFO"] = 2] = "INFO";
+    Level[Level["DEBUG"] = 3] = "DEBUG";
+    Level[Level["TRACE"] = 4] = "TRACE";
+})(Level || (Level = {}));
 // tslint:disable-next-line
-let level = Levels.TRACE;
-const stdout = console;
+let level = Level.TRACE;
 const getPrefix = (name, messageLevel) => `${new Date().toISOString()} ${messageLevel} ${name} -`;
 class Logger {
     constructor(name) {
         this.name = name;
     }
     error(...args) {
-        if (level >= Levels.ERROR) {
-            stdout.error(getPrefix(this.name, "ERROR"), ...args);
+        if (level >= Level.ERROR) {
+            // tslint:disable-next-line
+            console.error(getPrefix(this.name, "ERROR"), ...args);
         }
     }
     warn(...args) {
-        if (level >= Levels.WARN) {
-            stdout.warn(getPrefix(this.name, "WARN"), ...args);
+        if (level >= Level.WARN) {
+            // tslint:disable-next-line
+            console.warn(getPrefix(this.name, "WARN"), ...args);
         }
     }
     info(...args) {
-        if (level >= Levels.INFO) {
-            stdout.info(getPrefix(this.name, "INFO"), ...args);
+        if (level >= Level.INFO) {
+            // tslint:disable-next-line
+            console.info(getPrefix(this.name, "INFO"), ...args);
         }
     }
     debug(...args) {
-        if (level >= Levels.DEBUG) {
-            stdout.log(getPrefix(this.name, "DEBUG"), ...args);
+        if (level >= Level.DEBUG) {
+            // tslint:disable-next-line
+            console.log(getPrefix(this.name, "DEBUG"), ...args);
         }
     }
     trace(...args) {
-        if (level >= Levels.TRACE) {
-            stdout.log(getPrefix(this.name, "TRACE"), ...args);
+        if (level >= Level.TRACE) {
+            // tslint:disable-next-line
+            console.log(getPrefix(this.name, "TRACE"), ...args);
         }
     }
 }
+const loggerMap = new Map();
 const logaloo = {
     /**
      * Currently active logging level.
      */
-    level,
+    setLevel: (newLevel) => {
+        level = newLevel;
+    },
     /**
      * Get a logger instance.
      *
-     * @param name A string or a INameable (ex: class, function).
+     * @param nameable A string or a INameable (ex: class, function).
      * @returns The Logger instance.
      */
-    getLogger: (name) => new Logger("name" in name ? name.name : name)
+    getLogger: (nameable) => {
+        let name;
+        if ("name" in nameable) {
+            name = nameable.name;
+        }
+        else if (lightdash.isString(nameable)) {
+            name = nameable;
+        }
+        else {
+            throw new TypeError(`'${nameable}' is neither an INameable or a string.`);
+        }
+        if (loggerMap.has(name)) {
+            return loggerMap.get(name);
+        }
+        const logger = new Logger(name);
+        loggerMap.set(name, logger);
+        return logger;
+    }
 };
 
 /**
@@ -242,7 +278,7 @@ class InputParser {
      * @return Path list.
      */
     parse(input) {
-        this.logger.debug("Parsing input '{}'", input);
+        this.logger.debug(`Parsing input '${input}'`);
         return Array.from(input.match(this.pattern));
     }
     generateMatcher() {

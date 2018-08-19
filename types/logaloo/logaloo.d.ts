@@ -1,4 +1,4 @@
-declare enum Levels {
+declare enum Level {
     ERROR = 0,
     WARN = 1,
     INFO = 2,
@@ -18,13 +18,13 @@ declare const logaloo: {
     /**
      * Currently active logging level.
      */
-    level: Levels;
+    setLevel: (newLevel: Level) => void;
     /**
      * Get a logger instance.
      *
-     * @param name A string or a INameable (ex: class, function).
+     * @param nameable A string or a INameable (ex: class, function).
      * @returns The Logger instance.
      */
-    getLogger: (name: any) => Logger;
+    getLogger: (nameable: any) => Logger;
 };
-export { logaloo, Levels, Logger };
+export { logaloo, Level, Logger };

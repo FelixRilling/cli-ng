@@ -10,9 +10,9 @@ import {InputParser} from "./parser/InputParser";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    public readonly logger = logaloo.getLogger(Clingy);
-    public readonly lookupResolver: LookupResolver;
-    public readonly inputParser: InputParser;
+    readonly logger = logaloo.getLogger(Clingy);
+    readonly lookupResolver: LookupResolver;
+    readonly inputParser: InputParser;
     public readonly map: CommandMap;
     public readonly mapAliased: CommandMap;
 
@@ -24,13 +24,13 @@ class Clingy {
      * @param legalQuotes   List of quotes to use when parsing strings.
      */
     constructor(
-        commands: CommandMap = new CommandMap(),
+        commands: Map<string, ICommand> = new Map(),
         caseSensitive: boolean = true,
         legalQuotes: commandPath = ["\""]
     ) {
         this.lookupResolver = new LookupResolver(caseSensitive);
         this.inputParser = new InputParser(legalQuotes);
-        this.map = commands;
+        this.map = new CommandMap(commands);
         this.mapAliased = new CommandMap();
         this.updateAliases();
     }
@@ -90,7 +90,7 @@ class Clingy {
     /**
      * @private
      */
-    public updateAliases() {
+    updateAliases() {
         this.logger.debug("Updating aliased map.");
         this.mapAliased.clear();
 

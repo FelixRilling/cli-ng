@@ -13,7 +13,6 @@ declare class Logger {
     info(...args: any[]): void;
     debug(...args: any[]): void;
     trace(...args: any[]): void;
-    private getPrefix;
 }
 declare const logaloo: {
     /**

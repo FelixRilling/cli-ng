@@ -43,37 +43,35 @@ var Levels;
 // tslint:disable-next-line
 let level = Levels.TRACE;
 const stdout = console;
+const getPrefix = (name, messageLevel) => `${new Date().toISOString()} ${messageLevel} ${name} -`;
 class Logger {
     constructor(name) {
         this.name = name;
     }
     error(...args) {
         if (level >= Levels.ERROR) {
-            stdout.error(this.getPrefix("ERROR"), ...args);
+            stdout.error(getPrefix(this.name, "ERROR"), ...args);
         }
     }
     warn(...args) {
         if (level >= Levels.WARN) {
-            stdout.warn(this.getPrefix("WARN"), ...args);
+            stdout.warn(getPrefix(this.name, "WARN"), ...args);
         }
     }
     info(...args) {
         if (level >= Levels.INFO) {
-            stdout.info(this.getPrefix("INFO"), ...args);
+            stdout.info(getPrefix(this.name, "INFO"), ...args);
         }
     }
     debug(...args) {
         if (level >= Levels.DEBUG) {
-            stdout.log(this.getPrefix("DEBUG"), ...args);
+            stdout.log(getPrefix(this.name, "DEBUG"), ...args);
         }
     }
     trace(...args) {
         if (level >= Levels.TRACE) {
-            stdout.log(this.getPrefix("TRACE"), ...args);
+            stdout.log(getPrefix(this.name, "TRACE"), ...args);
         }
-    }
-    getPrefix(messageLevel) {
-        return `${new Date().toISOString()} ${messageLevel} ${this.name} -`;
     }
 }
 const logaloo = {
@@ -273,11 +271,11 @@ class Clingy {
      * @param caseSensitive If commands names should be treated as case sensitive during lookup.
      * @param legalQuotes   List of quotes to use when parsing strings.
      */
-    constructor(commands = new CommandMap(), caseSensitive = true, legalQuotes = ["\""]) {
+    constructor(commands = new Map(), caseSensitive = true, legalQuotes = ["\""]) {
         this.logger = logaloo.getLogger(Clingy);
         this.lookupResolver = new LookupResolver(caseSensitive);
         this.inputParser = new InputParser(legalQuotes);
-        this.map = commands;
+        this.map = new CommandMap(commands);
         this.mapAliased = new CommandMap();
         this.updateAliases();
     }
@@ -344,4 +342,4 @@ class Clingy {
     }
 }
 
-export { Clingy, CommandMap };
+export { Clingy };

@@ -262,7 +262,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ['"']) {
+    constructor(legalQuotes = ["\""]) {
         this.logger = logaloo.getLogger(InputParser);
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();

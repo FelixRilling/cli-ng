@@ -1,1 +1,1 @@
-import "./Clingy.spec";
+import "./clingy/Clingy.spec";

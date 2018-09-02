@@ -1,5 +1,5 @@
-import {Clingy} from "../src/main";
-import {isInstanceOf} from "lightdash";
+import { Clingy } from "../../src/main";
+import { isInstanceOf } from "lightdash";
 
 describe("Init", () => {
     const cli = new Clingy({
@@ -18,7 +18,11 @@ describe("Init", () => {
                     alias: ["nestedMore"],
                     args: [],
                     sub: new Clingy({
-                        nested3: {fn: () => 5, alias: ["nestedEvenMore"], args: []}
+                        nested3: {
+                            fn: () => 5,
+                            alias: ["nestedEvenMore"],
+                            args: []
+                        }
                     })
                 }
             })

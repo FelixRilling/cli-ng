@@ -81,7 +81,7 @@ const logaloo = {
             name = nameable;
         } else {
             throw new TypeError(
-                `'${nameable}' is neither an INameable or a string.`
+                `'${nameable}' is neither an INameable nor a string.`
             );
         }
 

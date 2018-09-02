@@ -367,7 +367,7 @@ var clingy = (function (exports) {
                 name = nameable;
             }
             else {
-                throw new TypeError(`'${nameable}' is neither an INameable or a string.`);
+                throw new TypeError(`'${nameable}' is neither an INameable nor a string.`);
             }
             if (loggerMap.has(name)) {
                 return loggerMap.get(name);

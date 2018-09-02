@@ -117,7 +117,7 @@ const logaloo = {
             name = nameable;
         }
         else {
-            throw new TypeError(`'${nameable}' is neither an INameable or a string.`);
+            throw new TypeError(`'${nameable}' is neither an INameable nor a string.`);
         }
         if (loggerMap.has(name)) {
             return loggerMap.get(name);
@@ -266,7 +266,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ["\""]) {
+    constructor(legalQuotes = ['"']) {
         this.logger = logaloo.getLogger(InputParser);
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();

@@ -360,6 +360,7 @@ var clingy = (function (exports) {
         }
     }
 
+    // TODO make this configurable
     const logaloo = new Logaloo();
 
     /**
@@ -384,7 +385,7 @@ var clingy = (function (exports) {
                     this.result.set(expectedArg.name, providedArg);
                 }
                 else if (!expectedArg.required &&
-                    expectedArg.defaultValue != null) {
+                    !isNil(expectedArg.defaultValue)) {
                     logger.trace(`No matching argument found for ${expectedArg.name}, using default: ${expectedArg.defaultValue}`);
                     this.result.set(expectedArg.name, expectedArg.defaultValue);
                 }
@@ -431,7 +432,7 @@ var clingy = (function (exports) {
         resolve(mapAliased, path, parseArguments = false) {
             return this.resolveInternal(mapAliased, path, [], parseArguments);
         }
-        resolveInternal(mapAliased, path, pathUsed, parseArguments = false) {
+        resolveInternal(mapAliased, path, pathUsed, parseArguments) {
             if (path.length === 0) {
                 throw new Error("Path cannot be empty.");
             }
@@ -495,6 +496,7 @@ var clingy = (function (exports) {
      * Manages parsing input strings into a pathUsed list.
      */
     class InputParser {
+        // noinspection TsLint
         /**
          * Creates an {@link InputParser}.
          *
@@ -513,7 +515,7 @@ var clingy = (function (exports) {
          */
         parse(input) {
             this.logger.debug(`Parsing input '${input}'`);
-            return <path>(Array.from(input.match(this.pattern)));
+            return Array.from(input.match(this.pattern));
         }
         generateMatcher() {
             const matchBase = "(\\S+)";
@@ -524,7 +526,7 @@ var clingy = (function (exports) {
             matchItems.push(matchBase);
             let result;
             try {
-                result = new RegExp(matchItems.join("|"), "");
+                result = new RegExp(matchItems.join("|"), "g");
             }
             catch (e) {
                 this.logger.error("The parsing pattern is invalid, this should never happen.", e);
@@ -546,7 +548,7 @@ var clingy = (function (exports) {
          * @param legalQuotes   List of quotes to use when parsing strings.
          */
         constructor(commands = new Map(), caseSensitive = true, legalQuotes = ["\""]) {
-            this.loggerModule = logaloo;
+            this.loggerGroup = logaloo;
             this.logger = logaloo.getLogger(Clingy);
             this.lookupResolver = new LookupResolver(caseSensitive);
             this.inputParser = new InputParser(legalQuotes);
@@ -571,8 +573,7 @@ var clingy = (function (exports) {
          * @return If the pathUsed resolves to a command.
          */
         hasPath(path) {
-            const lookupResult = this.getPath(path);
-            return lookupResult != null && lookupResult.successful;
+            return this.getPath(path).successful;
         }
         /**
          * Resolves a pathUsed to a command.

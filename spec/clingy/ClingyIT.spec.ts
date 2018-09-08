@@ -5,6 +5,7 @@ import { ResultType } from "../../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
 import { ILookupErrorNotFound } from "../../src/lookup/result/ILookupErrorNotFound";
 import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMissingArgs";
+import { Level } from "../../src/logaloo/logaloo";
 
 /**
  * Integration tests for example {@link Clingy} usage.
@@ -37,24 +38,23 @@ describe("ClingyIT", () => {
         commandMap.set("bar", command2);
 
         clingy = new Clingy(commandMap);
+        clingy.loggerGroup.level = Level.INFO;
     });
 
     it("Asserts that lookup of commands with args works.", () => {
         const input = "foo 123";
         const lookupResult = clingy.parse(input);
 
-        console.log(lookupResult);
-
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect(lookupResult.pathDangling).toEqual(["123"]);
-        // expect(lookupResult.pathUsed).toEqual(["foo"]);
-        // expect((<ILookupSuccess>lookupResult).args).toEqual(
-        //     new Map([["val", "123"]])
-        // );
-        // expect((<ILookupSuccess>lookupResult).command).toEqual(command1);
+        expect(lookupResult.pathUsed).toEqual(["foo"]);
+        expect((<ILookupSuccess>lookupResult).args).toEqual(
+            new Map([["val", "123"]])
+        );
+        expect((<ILookupSuccess>lookupResult).command).toEqual(command1);
     });
 
-    xit("Asserts that lookup of commands without args works.", () => {
+    it("Asserts that lookup of commands without args works.", () => {
         const input = "baa 456";
         const lookupResult = clingy.parse(input);
 
@@ -65,7 +65,8 @@ describe("ClingyIT", () => {
         expect((<ILookupSuccess>lookupResult).command).toEqual(command2);
     });
 
-    xit("Asserts that lookup of missing commands works.", () => {
+    it("Asserts that lookup of missing commands works.", () => {
+        // noinspection SpellCheckingInspection
         const input = "foob";
         const lookupResult = clingy.parse(input);
 
@@ -73,10 +74,10 @@ describe("ClingyIT", () => {
         expect(lookupResult.pathDangling).toEqual([]);
         expect(lookupResult.pathUsed).toEqual([input]);
         expect((<ILookupErrorNotFound>lookupResult).missing).toEqual(input);
-        expect((<ILookupErrorNotFound>lookupResult).similar).toEqual("foo");
+        expect((<ILookupErrorNotFound>lookupResult).similar).toEqual(["foo"]);
     });
 
-    xit("Asserts that lookup of commands with missing args works.", () => {
+    it("Asserts that lookup of commands with missing args works.", () => {
         const input = "foo";
         const lookupResult = clingy.parse(input);
 

@@ -145,7 +145,7 @@ class ArgumentMatcher {
                 this.result.set(expectedArg.name, providedArg);
             }
             else if (!expectedArg.required &&
-                expectedArg.defaultValue != null) {
+                !lightdash.isNil(expectedArg.defaultValue)) {
                 logger.trace(`No matching argument found for ${expectedArg.name}, using default: ${expectedArg.defaultValue}`);
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             }
@@ -256,6 +256,7 @@ class LookupResolver {
  * Manages parsing input strings into a pathUsed list.
  */
 class InputParser {
+    // noinspection TsLint
     /**
      * Creates an {@link InputParser}.
      *
@@ -291,7 +292,6 @@ class InputParser {
             this.logger.error("The parsing pattern is invalid, this should never happen.", e);
             throw e;
         }
-        console.error(result);
         return result;
     }
 }
@@ -308,7 +308,7 @@ class Clingy {
      * @param legalQuotes   List of quotes to use when parsing strings.
      */
     constructor(commands = new Map(), caseSensitive = true, legalQuotes = ["\""]) {
-        this.loggerModule = logaloo;
+        this.loggerGroup = logaloo;
         this.logger = logaloo.getLogger(Clingy);
         this.lookupResolver = new LookupResolver(caseSensitive);
         this.inputParser = new InputParser(legalQuotes);
@@ -333,8 +333,7 @@ class Clingy {
      * @return If the pathUsed resolves to a command.
      */
     hasPath(path) {
-        const lookupResult = this.getPath(path);
-        return lookupResult != null && lookupResult.successful;
+        return this.getPath(path).successful;
     }
     /**
      * Resolves a pathUsed to a command.

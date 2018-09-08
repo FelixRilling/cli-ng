@@ -12,7 +12,7 @@ import { IObjWithCommands } from "./command/IObjWithCommands";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    readonly loggerModule = logaloo;
+    readonly loggerGroup = logaloo;
     readonly logger = logaloo.getLogger(Clingy);
     readonly lookupResolver: LookupResolver;
     readonly inputParser: InputParser;
@@ -58,9 +58,7 @@ class Clingy {
      * @return If the pathUsed resolves to a command.
      */
     public hasPath(path: commandPath): boolean {
-        const lookupResult = this.getPath(path);
-
-        return lookupResult != null && lookupResult.successful;
+        return this.getPath(path).successful;
     }
 
     /**

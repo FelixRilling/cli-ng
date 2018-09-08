@@ -1,5 +1,5 @@
-import {CommandMap} from "../CommandMap";
-import {strSimilar} from "lightdash";
+import { CommandMap } from "../CommandMap";
+import { strSimilar } from "lightdash";
 
 /**
  * Gets similar keys of a key based on their string distance.
@@ -11,4 +11,4 @@ import {strSimilar} from "lightdash";
 const getSimilar = (mapAliased: CommandMap, name: string): string[] =>
     <string[]>strSimilar(name, Array.from(mapAliased.keys()), false);
 
-export {getSimilar};
+export { getSimilar };

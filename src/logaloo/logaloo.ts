@@ -8,71 +8,74 @@ enum Level {
     TRACE = 4
 }
 
-// tslint:disable-next-line
-let level: Level = Level.TRACE;
-
-const getPrefix = (name: string, messageLevel: string): string =>
-    `${new Date().toISOString()} ${messageLevel} ${name} -`;
-
 class Logger {
     private readonly name: string;
+    private readonly instance: Logaloo;
 
-    constructor(name: string) {
+    constructor(name: string, instance: Logaloo) {
         this.name = name;
+        this.instance = instance;
     }
 
     public error(...args: any[]) {
-        if (level >= Level.ERROR) {
-            // tslint:disable-next-line
-            console.error(getPrefix(this.name, "ERROR"), ...args);
-        }
+        this.log(Level.ERROR, "ERROR", "error", args);
     }
 
     public warn(...args: any[]) {
-        if (level >= Level.WARN) {
-            // tslint:disable-next-line
-            console.warn(getPrefix(this.name, "WARN"), ...args);
-        }
+        this.log(Level.WARN, "WARN", "warn", args);
     }
 
     public info(...args: any[]) {
-        if (level >= Level.INFO) {
-            // tslint:disable-next-line
-            console.info(getPrefix(this.name, "INFO"), ...args);
-        }
+        this.log(Level.INFO, "INFO", "info", args);
     }
 
     public debug(...args: any[]) {
-        if (level >= Level.DEBUG) {
-            // tslint:disable-next-line
-            console.log(getPrefix(this.name, "DEBUG"), ...args);
-        }
+        this.log(Level.DEBUG, "DEBUG", "log", args);
     }
 
     public trace(...args: any[]) {
-        if (level >= Level.TRACE) {
-            // tslint:disable-next-line
-            console.log(getPrefix(this.name, "TRACE"), ...args);
+        this.log(Level.TRACE, "TRACE", "log", args);
+    }
+
+    private log(
+        levelValue: Level,
+        levelName: string,
+        outMethod: string,
+        args: any
+    ) {
+        if (this.instance.level >= levelValue) {
+            this.instance.stdout[outMethod](
+                `${new Date().toISOString()} ${levelName} ${this.name} -`,
+                ...args
+            );
         }
     }
 }
 
-const loggerMap = new Map<string, Logger>();
+class Logaloo {
+    public level: Level;
+    public stdout: any;
 
-const logaloo = {
+    private readonly loggerMap = new Map<string, Logger>();
+
     /**
-     * Currently active logging level.
+     * Creates a new logger module.
+     *
+     * @param level Level of this modules loggers.
+     * @param stdout output stream to use, defaults to console
      */
-    setLevel: (newLevel: Level): void => {
-        level = newLevel;
-    },
+    constructor(level: Level = Level.INFO, stdout: any = console) {
+        this.level = level;
+        this.stdout = stdout;
+    }
+
     /**
      * Get a logger instance.
      *
      * @param nameable A string or a INameable (ex: class, function).
      * @returns The Logger instance.
      */
-    getLogger: (nameable: any): Logger => {
+    public getLogger(nameable: any): Logger {
         let name: string;
 
         if ("name" in nameable) {
@@ -85,16 +88,16 @@ const logaloo = {
             );
         }
 
-        if (loggerMap.has(name)) {
-            return <Logger>loggerMap.get(name);
+        if (this.loggerMap.has(name)) {
+            return <Logger>this.loggerMap.get(name);
         }
 
-        const logger = new Logger(name);
+        const logger = new Logger(name, this);
 
-        loggerMap.set(name, logger);
+        this.loggerMap.set(name, logger);
 
         return logger;
     }
-};
+}
 
-export { logaloo, Level, Logger };
+export { Logaloo, Level, Logger };

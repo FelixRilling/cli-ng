@@ -5,7 +5,7 @@ import { CommandMap } from "../command/CommandMap";
 import { commandPath } from "../command/commandPath";
 import { ICommand } from "../command/ICommand";
 import { getSimilar } from "../command/util/commandUtil";
-import { logaloo } from "../logaloo/logaloo";
+import { logaloo } from "../logging";
 import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
 import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
 import { ILookupResult, ResultType } from "./result/ILookupResult";
@@ -48,7 +48,7 @@ class LookupResolver {
         mapAliased: CommandMap,
         path: commandPath,
         pathUsed: commandPath,
-        parseArguments: boolean = false
+        parseArguments: boolean
     ): ILookupResult {
         if (path.length === 0) {
             throw new Error("Path cannot be empty.");

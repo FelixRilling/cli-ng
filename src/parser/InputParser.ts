@@ -1,4 +1,4 @@
-import { logaloo } from "../logaloo/logaloo";
+import { logaloo } from "../logging";
 
 /**
  * Manages parsing input strings into a pathUsed list.
@@ -43,7 +43,7 @@ class InputParser {
         let result: RegExp;
 
         try {
-            result = new RegExp(matchItems.join("|"), "");
+            result = new RegExp(matchItems.join("|"), "g");
         } catch (e) {
             this.logger.error(
                 "The parsing pattern is invalid, this should never happen.",

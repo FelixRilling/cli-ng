@@ -1,4 +1,4 @@
-import { logaloo } from "../logaloo/logaloo";
+import { logaloo } from "../logging";
 import { IArgument } from "./IArgument";
 import { resolvedArgumentMap } from "./resolvedArgumentMap";
 

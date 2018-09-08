@@ -2,29 +2,22 @@ var clingy = (function (exports) {
     'use strict';
 
     /**
-     * Checks if the value has a certain type-string.
+     * Checks if a value is an array.
      *
-     * @function isTypeOf
+     * Alias of the native `Array.isArray`.
+     *
+     * @function isArray
      * @memberof Is
      * @since 1.0.0
      * @param {any} val
-     * @param {string} type
      * @returns {boolean}
      * @example
-     * isTypeOf({}, "object")
+     * isArray([1, 2, 3]);
      * // => true
      *
-     * isTypeOf([], "object")
-     * // => true
-     *
-     * isTypeOf("foo", "string")
-     * // => true
-     *
-     * @example
-     * isTypeOf("foo", "number")
+     * isArray({});
      * // => false
      */
-    const isTypeOf = (val, type) => typeof val === type;
 
     /**
      * Checks if the value is an instance of a target constructor.
@@ -36,20 +29,10 @@ var clingy = (function (exports) {
      * @param {Class} target
      * @returns {boolean}
      * @example
-     * isInstanceOf({}, Object)
-     * // => true
-     *
-     * isInstanceOf([], Object)
-     * // => true
-     *
      * isInstanceOf([], Array)
      * // => true
      *
-     * @example
      * isInstanceOf({}, Array)
-     * // => false
-     *
-     * isInstanceOf([], Map)
      * // => false
      */
     const isInstanceOf = (val, target) => val instanceof target;
@@ -69,7 +52,6 @@ var clingy = (function (exports) {
      * isNil(undefined)
      * // => true
      *
-     * @example
      * isNil(0)
      * // => false
      *
@@ -77,6 +59,24 @@ var clingy = (function (exports) {
      * // => false
      */
     const isNil = (val) => val == null;
+
+    /**
+     * Checks if the value has a certain type-string.
+     *
+     * @function isTypeOf
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @param {string} type
+     * @returns {boolean}
+     * @example
+     * isTypeOf("foo", "string")
+     * // => true
+     *
+     * isTypeOf("foo", "number")
+     * // => false
+     */
+    const isTypeOf = (val, type) => typeof val === type;
 
     /**
      * Checks if a value is a string.
@@ -90,7 +90,6 @@ var clingy = (function (exports) {
      * isString("foo")
      * // => true
      *
-     * @example
      * isString(1)
      * // => false
      */
@@ -108,7 +107,6 @@ var clingy = (function (exports) {
      * isMap(new Map())
      * // => true
      *
-     * @example
      * isMap([[1, 2]])
      * // => false
      */
@@ -132,14 +130,14 @@ var clingy = (function (exports) {
      * isObject(() => 1))
      * // => true
      *
-     * @example
      * isObject(1)
      * // => false
      */
     const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
 
+    // noinspection SpellCheckingInspection
     /**
-     * Returns levenshtein string distance of two strings.
+     * Returns Levenshtein string distance of two strings.
      *
      * @function strDistance
      * @memberof String
@@ -158,59 +156,48 @@ var clingy = (function (exports) {
      * // => 0
      */
     const strDistance = (str1, str2) => {
-        // Cache string length
-        const str1Length = str1.length;
-        const str2Length = str2.length;
-        if (str1Length === 0) {
-            // Exit early if str1 is empty
-            return str2Length;
+        if (str1.length === 0) {
+            return str2.length;
         }
-        if (str2Length === 0) {
-            // Exit early if str2 is empty
-            return str1Length;
+        else if (str2.length === 0) {
+            return str1.length;
         }
-        // Create matrix that is (str2.length+1)x(str1.length+1) fields
         const matrix = [];
-        // Increment along the first column of each row
-        for (let y = 0; y <= str2Length; y++) {
+        for (let y = 0; y <= str2.length; y++) {
             matrix[y] = [y];
         }
-        // Increment each column in the first row
-        for (let x = 0; x <= str1Length; x++) {
+        for (let x = 0; x <= str1.length; x++) {
             matrix[0][x] = x;
         }
-        // Fill matrix
-        for (let y = 1; y <= str2Length; y++) {
+        for (let y = 1; y <= str2.length; y++) {
             const matrixColumnCurrent = matrix[y];
             const matrixColumnLast = matrix[y - 1];
-            for (let x = 1; x <= str1Length; x++) {
+            for (let x = 1; x <= str1.length; x++) {
                 if (str2.charAt(y - 1) === str1.charAt(x - 1)) {
-                    // Check if letter at the position is the same
                     matrixColumnCurrent[x] = matrixColumnLast[x - 1];
                 }
                 else {
-                    // Check for substitution/insertion/deletion
                     const substitution = matrixColumnLast[x - 1] + 1;
                     const insertion = matrixColumnCurrent[x - 1] + 1;
                     const deletion = matrixColumnLast[x] + 1;
-                    // Get smallest of the three
                     matrixColumnCurrent[x] = Math.min(substitution, insertion, deletion);
                 }
             }
         }
-        // Return max value
-        return matrix[str2Length][str1Length];
+        return matrix[str2.length][str1.length];
     };
 
     /**
-     * Collects the values of an array in a Map as arrays.
+     * Collects the values of an array in a map as arrays.
+     * If the function returns a nil value, the element will be skipped,
+     * otherwise the return value will be used as key.
      *
      * @function arrCollect
      * @memberof Array
      * @since 6.1.0
      * @param {any[]} arr
-     * @param {function} fn fn(val: any, index: number, arr: any[])
-     * @returns {Map<any, any[]>} Map<val: any, arr: any[]>
+     * @param {function} fn fn(val: *, index: number, arr: any[])
+     * @returns {Map<any, any[]>} Map<val: *, arr: any[]>
      * @example
      * arrCollect([1, 2, 3, 4, 5], val => val % 2)
      * // => Map<any, any[]>{0: [2, 4], 1: [1, 3, 5]}
@@ -219,11 +206,14 @@ var clingy = (function (exports) {
         const result = new Map();
         arr.forEach((val, index) => {
             const key = fn(val, index, arr);
-            result.set(key, result.has(key) ? [...result.get(key), val] : [val]);
+            if (!isNil(key)) {
+                result.set(key, result.has(key) ? [...result.get(key), val] : [val]);
+            }
         });
         return result;
     };
 
+    // noinspection SpellCheckingInspection
     /**
      * Returns strings similar to the input based on the list given.
      *
@@ -245,10 +235,10 @@ var clingy = (function (exports) {
      * // => ["Sitten", "Bitten"]
      *
      * strSimilar("cmmit", ["init", "commit", "push"], true)
-     * // => Map<number, string[]>{"1": ["commit"], "3": ["init"], "5": ["push"]}
+     * // => Map<number, string[]>{1: ["commit"], 3: ["init"], 5: ["push"]}
      */
     const strSimilar = (str, list, returnFull = false) => {
-        const result = arrCollect(list, val => strDistance(str, val));
+        const result = arrCollect(list, (val) => strDistance(str, val));
         return returnFull
             ? result
             : result.get(Math.min(...result.keys()));
@@ -306,59 +296,51 @@ var clingy = (function (exports) {
         Level[Level["DEBUG"] = 3] = "DEBUG";
         Level[Level["TRACE"] = 4] = "TRACE";
     })(Level || (Level = {}));
-    // tslint:disable-next-line
-    let level = Level.TRACE;
-    const getPrefix = (name, messageLevel) => `${new Date().toISOString()} ${messageLevel} ${name} -`;
     class Logger {
-        constructor(name) {
+        constructor(name, instance) {
             this.name = name;
+            this.instance = instance;
         }
         error(...args) {
-            if (level >= Level.ERROR) {
-                // tslint:disable-next-line
-                console.error(getPrefix(this.name, "ERROR"), ...args);
-            }
+            this.log(Level.ERROR, "ERROR", "error", args);
         }
         warn(...args) {
-            if (level >= Level.WARN) {
-                // tslint:disable-next-line
-                console.warn(getPrefix(this.name, "WARN"), ...args);
-            }
+            this.log(Level.WARN, "WARN", "warn", args);
         }
         info(...args) {
-            if (level >= Level.INFO) {
-                // tslint:disable-next-line
-                console.info(getPrefix(this.name, "INFO"), ...args);
-            }
+            this.log(Level.INFO, "INFO", "info", args);
         }
         debug(...args) {
-            if (level >= Level.DEBUG) {
-                // tslint:disable-next-line
-                console.log(getPrefix(this.name, "DEBUG"), ...args);
-            }
+            this.log(Level.DEBUG, "DEBUG", "log", args);
         }
         trace(...args) {
-            if (level >= Level.TRACE) {
-                // tslint:disable-next-line
-                console.log(getPrefix(this.name, "TRACE"), ...args);
+            this.log(Level.TRACE, "TRACE", "log", args);
+        }
+        log(levelValue, levelName, outMethod, args) {
+            if (this.instance.level >= levelValue) {
+                this.instance.stdout[outMethod](`${new Date().toISOString()} ${levelName} ${this.name} -`, ...args);
             }
         }
     }
-    const loggerMap = new Map();
-    const logaloo = {
+    class Logaloo {
         /**
-         * Currently active logging level.
+         * Creates a new logger module.
+         *
+         * @param level Level of this modules loggers.
+         * @param stdout output stream to use, defaults to console
          */
-        setLevel: (newLevel) => {
-            level = newLevel;
-        },
+        constructor(level = Level.INFO, stdout = console) {
+            this.loggerMap = new Map();
+            this.level = level;
+            this.stdout = stdout;
+        }
         /**
          * Get a logger instance.
          *
          * @param nameable A string or a INameable (ex: class, function).
          * @returns The Logger instance.
          */
-        getLogger: (nameable) => {
+        getLogger(nameable) {
             let name;
             if ("name" in nameable) {
                 name = nameable.name;
@@ -369,14 +351,16 @@ var clingy = (function (exports) {
             else {
                 throw new TypeError(`'${nameable}' is neither an INameable nor a string.`);
             }
-            if (loggerMap.has(name)) {
-                return loggerMap.get(name);
+            if (this.loggerMap.has(name)) {
+                return this.loggerMap.get(name);
             }
-            const logger = new Logger(name);
-            loggerMap.set(name, logger);
+            const logger = new Logger(name, this);
+            this.loggerMap.set(name, logger);
             return logger;
         }
-    };
+    }
+
+    const logaloo = new Logaloo();
 
     /**
      * Orchestrates mapping of {@link IArgument}s to user-provided input.
@@ -529,7 +513,7 @@ var clingy = (function (exports) {
          */
         parse(input) {
             this.logger.debug(`Parsing input '${input}'`);
-            return Array.from(input.match(this.pattern));
+            return <path>(Array.from(input.match(this.pattern)));
         }
         generateMatcher() {
             const matchBase = "(\\S+)";
@@ -562,6 +546,7 @@ var clingy = (function (exports) {
          * @param legalQuotes   List of quotes to use when parsing strings.
          */
         constructor(commands = new Map(), caseSensitive = true, legalQuotes = ["\""]) {
+            this.loggerModule = logaloo;
             this.logger = logaloo.getLogger(Clingy);
             this.lookupResolver = new LookupResolver(caseSensitive);
             this.inputParser = new InputParser(legalQuotes);

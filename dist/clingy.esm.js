@@ -52,59 +52,51 @@ var Level;
     Level[Level["DEBUG"] = 3] = "DEBUG";
     Level[Level["TRACE"] = 4] = "TRACE";
 })(Level || (Level = {}));
-// tslint:disable-next-line
-let level = Level.TRACE;
-const getPrefix = (name, messageLevel) => `${new Date().toISOString()} ${messageLevel} ${name} -`;
 class Logger {
-    constructor(name) {
+    constructor(name, instance) {
         this.name = name;
+        this.instance = instance;
     }
     error(...args) {
-        if (level >= Level.ERROR) {
-            // tslint:disable-next-line
-            console.error(getPrefix(this.name, "ERROR"), ...args);
-        }
+        this.log(Level.ERROR, "ERROR", "error", args);
     }
     warn(...args) {
-        if (level >= Level.WARN) {
-            // tslint:disable-next-line
-            console.warn(getPrefix(this.name, "WARN"), ...args);
-        }
+        this.log(Level.WARN, "WARN", "warn", args);
     }
     info(...args) {
-        if (level >= Level.INFO) {
-            // tslint:disable-next-line
-            console.info(getPrefix(this.name, "INFO"), ...args);
-        }
+        this.log(Level.INFO, "INFO", "info", args);
     }
     debug(...args) {
-        if (level >= Level.DEBUG) {
-            // tslint:disable-next-line
-            console.log(getPrefix(this.name, "DEBUG"), ...args);
-        }
+        this.log(Level.DEBUG, "DEBUG", "log", args);
     }
     trace(...args) {
-        if (level >= Level.TRACE) {
-            // tslint:disable-next-line
-            console.log(getPrefix(this.name, "TRACE"), ...args);
+        this.log(Level.TRACE, "TRACE", "log", args);
+    }
+    log(levelValue, levelName, outMethod, args) {
+        if (this.instance.level >= levelValue) {
+            this.instance.stdout[outMethod](`${new Date().toISOString()} ${levelName} ${this.name} -`, ...args);
         }
     }
 }
-const loggerMap = new Map();
-const logaloo = {
+class Logaloo {
     /**
-     * Currently active logging level.
+     * Creates a new logger module.
+     *
+     * @param level Level of this modules loggers.
+     * @param stdout output stream to use, defaults to console
      */
-    setLevel: (newLevel) => {
-        level = newLevel;
-    },
+    constructor(level = Level.INFO, stdout = console) {
+        this.loggerMap = new Map();
+        this.level = level;
+        this.stdout = stdout;
+    }
     /**
      * Get a logger instance.
      *
      * @param nameable A string or a INameable (ex: class, function).
      * @returns The Logger instance.
      */
-    getLogger: (nameable) => {
+    getLogger(nameable) {
         let name;
         if ("name" in nameable) {
             name = nameable.name;
@@ -115,14 +107,17 @@ const logaloo = {
         else {
             throw new TypeError(`'${nameable}' is neither an INameable nor a string.`);
         }
-        if (loggerMap.has(name)) {
-            return loggerMap.get(name);
+        if (this.loggerMap.has(name)) {
+            return this.loggerMap.get(name);
         }
-        const logger = new Logger(name);
-        loggerMap.set(name, logger);
+        const logger = new Logger(name, this);
+        this.loggerMap.set(name, logger);
         return logger;
     }
-};
+}
+
+// TODO make this configurable
+const logaloo = new Logaloo();
 
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
@@ -193,7 +188,7 @@ class LookupResolver {
     resolve(mapAliased, path, parseArguments = false) {
         return this.resolveInternal(mapAliased, path, [], parseArguments);
     }
-    resolveInternal(mapAliased, path, pathUsed, parseArguments = false) {
+    resolveInternal(mapAliased, path, pathUsed, parseArguments) {
         if (path.length === 0) {
             throw new Error("Path cannot be empty.");
         }
@@ -286,12 +281,13 @@ class InputParser {
         matchItems.push(matchBase);
         let result;
         try {
-            result = new RegExp(matchItems.join("|"), "");
+            result = new RegExp(matchItems.join("|"), "g");
         }
         catch (e) {
             this.logger.error("The parsing pattern is invalid, this should never happen.", e);
             throw e;
         }
+        console.error(result);
         return result;
     }
 }
@@ -308,6 +304,7 @@ class Clingy {
      * @param legalQuotes   List of quotes to use when parsing strings.
      */
     constructor(commands = new Map(), caseSensitive = true, legalQuotes = ["\""]) {
+        this.loggerModule = logaloo;
         this.logger = logaloo.getLogger(Clingy);
         this.lookupResolver = new LookupResolver(caseSensitive);
         this.inputParser = new InputParser(legalQuotes);

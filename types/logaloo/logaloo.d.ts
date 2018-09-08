@@ -7,24 +7,32 @@ declare enum Level {
 }
 declare class Logger {
     private readonly name;
-    constructor(name: string);
+    private readonly instance;
+    constructor(name: string, instance: Logaloo);
     error(...args: any[]): void;
     warn(...args: any[]): void;
     info(...args: any[]): void;
     debug(...args: any[]): void;
     trace(...args: any[]): void;
+    private log;
 }
-declare const logaloo: {
+declare class Logaloo {
+    level: Level;
+    stdout: any;
+    private readonly loggerMap;
     /**
-     * Currently active logging level.
+     * Creates a new logger module.
+     *
+     * @param level Level of this modules loggers.
+     * @param stdout output stream to use, defaults to console
      */
-    setLevel: (newLevel: Level) => void;
+    constructor(level?: Level, stdout?: any);
     /**
      * Get a logger instance.
      *
      * @param nameable A string or a INameable (ex: class, function).
      * @returns The Logger instance.
      */
-    getLogger: (nameable: any) => Logger;
-};
-export { logaloo, Level, Logger };
+    getLogger(nameable: any): Logger;
+}
+export { Logaloo, Level, Logger };

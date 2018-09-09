@@ -6,6 +6,7 @@ import { ILookupSuccess } from "../src/lookup/result/ILookupSuccess";
 import { ILookupErrorNotFound } from "../src/lookup/result/ILookupErrorNotFound";
 import { ILookupErrorMissingArgs } from "../src/lookup/result/ILookupErrorMissingArgs";
 import { Level } from "../src/logaloo/logaloo";
+import { clingyLoggerRoot } from "../src/loggerRoot";
 
 /**
  * Integration tests for example {@link Clingy} usage.
@@ -16,9 +17,12 @@ describe("ClingyIT", () => {
     let command1: ICommand;
     let command2: ICommand;
 
+    beforeAll(() => {
+        clingyLoggerRoot.level = Level.NONE;
+    });
+
     beforeEach(() => {
         const commandMap = new Map<string, ICommand>();
-
         argument1 = {
             name: "val",
             required: true
@@ -28,17 +32,16 @@ describe("ClingyIT", () => {
             alias: ["fizz", "fuu"],
             args: [argument1]
         };
-        commandMap.set("foo", command1);
 
+        commandMap.set("foo", command1);
         command2 = {
             fn: console.log,
             alias: ["baa"],
             args: []
         };
-        commandMap.set("bar", command2);
 
+        commandMap.set("bar", command2);
         clingy = new Clingy(commandMap);
-        clingy.loggerGroup.level = Level.INFO;
     });
 
     it("Asserts that lookup of commands with args works.", () => {

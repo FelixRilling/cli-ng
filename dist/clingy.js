@@ -302,51 +302,116 @@ var clingy = (function (exports) {
         }
     }
 
-    var Level;
-    (function (Level) {
-        Level[Level["ERROR"] = 0] = "ERROR";
-        Level[Level["WARN"] = 1] = "WARN";
-        Level[Level["INFO"] = 2] = "INFO";
-        Level[Level["DEBUG"] = 3] = "DEBUG";
-        Level[Level["TRACE"] = 4] = "TRACE";
-    })(Level || (Level = {}));
+    /**
+     * Default level-list.
+     */
+    const Level = {
+        NONE: {
+            val: -1,
+            name: ""
+        },
+        ERROR: {
+            val: 0,
+            name: "ERROR"
+        },
+        WARN: {
+            val: 1,
+            name: "WARN"
+        },
+        INFO: {
+            val: 2,
+            name: "INFO"
+        },
+        DEBUG: {
+            val: 3,
+            name: "DEBUG"
+        },
+        TRACE: {
+            val: 4,
+            name: "TRACE"
+        }
+    };
+    /**
+     * Logger class.
+     */
     class Logger {
-        constructor(name, instance) {
+        /**
+         * Creates a new {@link Logger}.
+         * Should not be constructed directly, rather use {@link Logaloo.getLogger}
+         *
+         * @param root Root logger of this logger.
+         * @param name Name of the logger.
+         */
+        constructor(root, name) {
+            this.root = root;
             this.name = name;
-            this.instance = instance;
         }
-        error(...args) {
-            this.log(Level.ERROR, "ERROR", "error", args);
-        }
-        warn(...args) {
-            this.log(Level.WARN, "WARN", "warn", args);
-        }
-        info(...args) {
-            this.log(Level.INFO, "INFO", "info", args);
-        }
-        debug(...args) {
-            this.log(Level.DEBUG, "DEBUG", "log", args);
-        }
-        trace(...args) {
-            this.log(Level.TRACE, "TRACE", "log", args);
-        }
-        log(levelValue, levelName, outMethod, args) {
-            if (this.instance.level >= levelValue) {
-                this.instance.stdout[outMethod](`${new Date().toISOString()} ${levelName} ${this.name} -`, ...args);
+        /**
+         * Logs a message.
+         *
+         * @param level Level of the log.
+         * @param args arguments to be logged.
+         */
+        log(level, ...args) {
+            if (this.root.level.val >= level.val) {
+                this.root.outFn(`${new Date().toISOString()} ${level.name} ${this.name} - ${args[0]}`, ...args.slice(1));
             }
         }
+        /**
+         * Logs an error.
+         *
+         * @param args arguments to be logged.
+         */
+        error(...args) {
+            this.log(Level.ERROR, args);
+        }
+        /**
+         * Logs a warning.
+         *
+         * @param args arguments to be logged.
+         */
+        warn(...args) {
+            this.log(Level.WARN, args);
+        }
+        /**
+         * Logs an info.
+         *
+         * @param args arguments to be logged.
+         */
+        info(...args) {
+            this.log(Level.INFO, args);
+        }
+        /**
+         * Logs a debug message.
+         *
+         * @param args arguments to be logged.
+         */
+        debug(...args) {
+            this.log(Level.DEBUG, args);
+        }
+        /**
+         * Logs a trace message.
+         *
+         * @param args arguments to be logged.
+         */
+        trace(...args) {
+            this.log(Level.TRACE, args);
+        }
     }
+    /**
+     * Logger-root class.
+     */
     class Logaloo {
         /**
          * Creates a new logger module.
          *
-         * @param level Level of this modules loggers.
-         * @param stdout output stream to use, defaults to console
+         * @param level Level of this logger-root loggers.
+         * @param outFn output function to use, defaults to console.log
          */
-        constructor(level = Level.INFO, stdout = console) {
+        constructor(level = Level.INFO, outFn = console.log) {
             this.loggerMap = new Map();
             this.level = level;
-            this.stdout = stdout;
+            this.outFn = outFn;
         }
         /**
          * Get a logger instance.
@@ -368,14 +433,13 @@ var clingy = (function (exports) {
             if (this.loggerMap.has(name)) {
                 return this.loggerMap.get(name);
             }
-            const logger = new Logger(name, this);
+            const logger = new Logger(this, name);
             this.loggerMap.set(name, logger);
             return logger;
         }
     }
 
-    // TODO make this configurable
-    const logaloo = new Logaloo();
+    const clingyLoggerRoot = new Logaloo();
 
     /**
      * Orchestrates mapping of {@link IArgument}s to user-provided input.
@@ -390,7 +454,7 @@ var clingy = (function (exports) {
         constructor(expected, provided) {
             this.missing = [];
             this.result = new Map();
-            const logger = logaloo.getLogger(ArgumentMatcher);
+            const logger = clingyLoggerRoot.getLogger(ArgumentMatcher);
             logger.debug(`Matching arguments ${expected} with ${provided}`);
             expected.forEach((expectedArg, i) => {
                 if (i < provided.length) {
@@ -431,7 +495,7 @@ var clingy = (function (exports) {
          * @param caseSensitive If the lookup should honor case.
          */
         constructor(caseSensitive = true) {
-            this.logger = logaloo.getLogger(LookupResolver);
+            this.logger = clingyLoggerRoot.getLogger(LookupResolver);
             this.caseSensitive = caseSensitive;
         }
         /**
@@ -481,7 +545,7 @@ var clingy = (function (exports) {
                 this.logger.debug(`Looking up arguments: ${pathNew}`);
                 const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
                 if (argumentMatcher.missing.length > 0) {
-                    this.logger.warn(`Some arguments could not be found: ${argumentMatcher.missing}`);
+                    this.logger.warn(`Some arguments could not be found: ${argumentMatcher.missing.map(arg => arg.name)}`);
                     return {
                         successful: false,
                         pathUsed,
@@ -515,8 +579,8 @@ var clingy = (function (exports) {
          *
          * @param legalQuotes List of quotes to use when parsing strings.
          */
-        constructor(legalQuotes = ["\""]) {
-            this.logger = logaloo.getLogger(InputParser);
+        constructor(legalQuotes = ['"']) {
+            this.logger = clingyLoggerRoot.getLogger(InputParser);
             this.legalQuotes = legalQuotes;
             this.pattern = this.generateMatcher();
         }
@@ -573,8 +637,8 @@ var clingy = (function (exports) {
          * @param legalQuotes   List of quotes to use when parsing strings.
          */
         constructor(commands = new Map(), caseSensitive = true, legalQuotes = ['"']) {
-            this.loggerGroup = logaloo;
-            this.logger = logaloo.getLogger(Clingy);
+            this.loggerRoot = clingyLoggerRoot;
+            this.logger = clingyLoggerRoot.getLogger(Clingy);
             this.lookupResolver = new LookupResolver(caseSensitive);
             this.inputParser = new InputParser(legalQuotes);
             this.map = new CommandMap(commands);

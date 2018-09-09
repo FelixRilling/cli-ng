@@ -1,10 +1,17 @@
 import { InputParser } from "../../src/parser/InputParser";
 import { isRegExp } from "lightdash";
+import { clingyLoggerRoot } from "../../src/loggerRoot";
+import { Level } from "../../src/logaloo/logaloo";
 
 /**
  * Tests for {@link InputParser}.
  */
 describe("InputParser", () => {
+
+    beforeAll(() => {
+        clingyLoggerRoot.level = Level.NONE;
+    });
+
     it("Asserts that InputParser creates a matcher pattern.", () => {
         expect(isRegExp(new InputParser().pattern)).toBeTruthy();
     });
@@ -26,7 +33,8 @@ describe("InputParser", () => {
     });
 
     it("Asserts that InputParser honors quotes when splitting.", () => {
-        const inputParser = new InputParser(["\"", "'"]);
+        // noinspection TsLint
+        const inputParser = new InputParser(['"', "'"]);
 
         expect(inputParser.parse("'foo bar'")).toEqual(["foo bar"]);
         expect(inputParser.parse("foo 'bar'")).toEqual(["foo", "bar"]);

@@ -1,72 +1,160 @@
 import { isString } from "lightdash";
 
-enum Level {
-    ERROR = 0,
-    WARN = 1,
-    INFO = 2,
-    DEBUG = 3,
-    TRACE = 4
+type stdoutFn = (message?: any, ...optionalParams: any[]) => void;
+
+interface ILevel {
+    val: number;
+    name: string;
 }
 
-class Logger {
+interface ILevelList {
+    [key: string]: ILevel;
+}
+
+interface ILogger {
+    log(level: ILevel, ...args: any[]): void;
+
+    error(...args: any[]): void;
+
+    warn(...args: any[]): void;
+
+    info(...args: any[]): void;
+
+    debug(...args: any[]): void;
+
+    trace(...args: any[]): void;
+}
+
+/**
+ * Default level-list.
+ */
+const Level: ILevelList = {
+    NONE: {
+        val: -1,
+        name: ""
+    },
+    ERROR: {
+        val: 0,
+        name: "ERROR"
+    },
+    WARN: {
+        val: 1,
+        name: "WARN"
+    },
+    INFO: {
+        val: 2,
+        name: "INFO"
+    },
+    DEBUG: {
+        val: 3,
+        name: "DEBUG"
+    },
+    TRACE: {
+        val: 4,
+        name: "TRACE"
+    }
+};
+
+/**
+ * Logger class.
+ */
+class Logger implements ILogger {
+    private readonly root: Logaloo;
     private readonly name: string;
-    private readonly instance: Logaloo;
 
-    constructor(name: string, instance: Logaloo) {
+    /**
+     * Creates a new {@link Logger}.
+     * Should not be constructed directly, rather use {@link Logaloo.getLogger}
+     *
+     * @param root Root logger of this logger.
+     * @param name Name of the logger.
+     */
+    constructor(root: Logaloo, name: string) {
+        this.root = root;
         this.name = name;
-        this.instance = instance;
     }
 
-    public error(...args: any[]) {
-        this.log(Level.ERROR, "ERROR", "error", args);
-    }
-
-    public warn(...args: any[]) {
-        this.log(Level.WARN, "WARN", "warn", args);
-    }
-
-    public info(...args: any[]) {
-        this.log(Level.INFO, "INFO", "info", args);
-    }
-
-    public debug(...args: any[]) {
-        this.log(Level.DEBUG, "DEBUG", "log", args);
-    }
-
-    public trace(...args: any[]) {
-        this.log(Level.TRACE, "TRACE", "log", args);
-    }
-
-    private log(
-        levelValue: Level,
-        levelName: string,
-        outMethod: string,
-        args: any
-    ) {
-        if (this.instance.level >= levelValue) {
-            this.instance.stdout[outMethod](
-                `${new Date().toISOString()} ${levelName} ${this.name} -`,
-                ...args
+    /**
+     * Logs a message.
+     *
+     * @param level Level of the log.
+     * @param args arguments to be logged.
+     */
+    log(level: ILevel, ...args: any[]) {
+        if (this.root.level.val >= level.val) {
+            this.root.outFn(
+                `${new Date().toISOString()} ${level.name} ${this.name} - ${
+                    args[0]
+                }`,
+                ...args.slice(1)
             );
         }
     }
+
+    /**
+     * Logs an error.
+     *
+     * @param args arguments to be logged.
+     */
+    error(...args: any[]) {
+        this.log(Level.ERROR, args);
+    }
+
+    /**
+     * Logs a warning.
+     *
+     * @param args arguments to be logged.
+     */
+    warn(...args: any[]) {
+        this.log(Level.WARN, args);
+    }
+
+    /**
+     * Logs an info.
+     *
+     * @param args arguments to be logged.
+     */
+    info(...args: any[]) {
+        this.log(Level.INFO, args);
+    }
+
+    /**
+     * Logs a debug message.
+     *
+     * @param args arguments to be logged.
+     */
+    debug(...args: any[]) {
+        this.log(Level.DEBUG, args);
+    }
+
+    /**
+     * Logs a trace message.
+     *
+     * @param args arguments to be logged.
+     */
+    trace(...args: any[]) {
+        this.log(Level.TRACE, args);
+    }
 }
 
+/**
+ * Logger-root class.
+ */
 class Logaloo {
-    public level: Level;
-    public stdout: any;
+    public level: ILevel;
+    public outFn: stdoutFn;
 
-    private readonly loggerMap = new Map<string, Logger>();
+    private readonly loggerMap = new Map<string, ILogger>();
 
     /**
      * Creates a new logger module.
      *
-     * @param level Level of this modules loggers.
-     * @param stdout output stream to use, defaults to console
+     * @param level Level of this logger-root loggers.
+     * @param outFn output function to use, defaults to console.log
      */
-    constructor(level: Level = Level.INFO, stdout: any = console) {
+    constructor(level: ILevel = Level.INFO, outFn: stdoutFn = console.log) {
         this.level = level;
-        this.stdout = stdout;
+        this.outFn = outFn;
     }
 
     /**
@@ -75,7 +163,7 @@ class Logaloo {
      * @param nameable A string or a INameable (ex: class, function).
      * @returns The Logger instance.
      */
-    public getLogger(nameable: any): Logger {
+    public getLogger(nameable: any): ILogger {
         let name: string;
 
         if ("name" in nameable) {
@@ -92,12 +180,11 @@ class Logaloo {
             return <Logger>this.loggerMap.get(name);
         }
 
-        const logger = new Logger(name, this);
-
+        const logger = new Logger(this, name);
         this.loggerMap.set(name, logger);
 
         return logger;
     }
 }
 
-export { Logaloo, Level, Logger };
+export { Logaloo, Level, ILogger };

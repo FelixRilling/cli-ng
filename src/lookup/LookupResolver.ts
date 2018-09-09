@@ -5,7 +5,7 @@ import { CommandMap } from "../command/CommandMap";
 import { commandPath } from "../command/commandPath";
 import { ICommand } from "../command/ICommand";
 import { getSimilar } from "../command/util/commandUtil";
-import { logaloo } from "../logging";
+import { clingyLoggerRoot } from "../loggerRoot";
 import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
 import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
 import { ILookupResult, ResultType } from "./result/ILookupResult";
@@ -15,7 +15,7 @@ import { ILookupSuccess } from "./result/ILookupSuccess";
  * Lookup tools for resolving paths through {@link CommandMap}s.
  */
 class LookupResolver {
-    private readonly logger = logaloo.getLogger(LookupResolver);
+    private readonly logger = clingyLoggerRoot.getLogger(LookupResolver);
     private readonly caseSensitive: boolean;
 
     /**
@@ -99,8 +99,8 @@ class LookupResolver {
             if (argumentMatcher.missing.length > 0) {
                 this.logger.warn(
                     `Some arguments could not be found: ${
-                        argumentMatcher.missing
-                    }`
+                        argumentMatcher.missing.map(arg => arg.name)
+                        }`
                 );
 
                 return <ILookupErrorMissingArgs>{

@@ -1,11 +1,11 @@
-import { logaloo } from "../logging";
+import { clingyLoggerRoot } from "../loggerRoot";
 import { arrCompact } from "lightdash";
 
 /**
  * Manages parsing input strings into a path list.
  */
 class InputParser {
-    private readonly logger = logaloo.getLogger(InputParser);
+    private readonly logger = clingyLoggerRoot.getLogger(InputParser);
     public readonly legalQuotes: string[];
     public readonly pattern: RegExp;
 
@@ -14,7 +14,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes: string[] = ["\""]) {
+    constructor(legalQuotes: string[] = ['"']) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }

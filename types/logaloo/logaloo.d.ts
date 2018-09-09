@@ -1,38 +1,43 @@
-declare enum Level {
-    ERROR = 0,
-    WARN = 1,
-    INFO = 2,
-    DEBUG = 3,
-    TRACE = 4
+declare type stdoutFn = (message?: any, ...optionalParams: any[]) => void;
+interface ILevel {
+    val: number;
+    name: string;
 }
-declare class Logger {
-    private readonly name;
-    private readonly instance;
-    constructor(name: string, instance: Logaloo);
+interface ILevelList {
+    [key: string]: ILevel;
+}
+interface ILogger {
+    log(level: ILevel, ...args: any[]): void;
     error(...args: any[]): void;
     warn(...args: any[]): void;
     info(...args: any[]): void;
     debug(...args: any[]): void;
     trace(...args: any[]): void;
-    private log;
 }
+/**
+ * Default level-list.
+ */
+declare const Level: ILevelList;
+/**
+ * Logger-root class.
+ */
 declare class Logaloo {
-    level: Level;
-    stdout: any;
+    level: ILevel;
+    outFn: stdoutFn;
     private readonly loggerMap;
     /**
      * Creates a new logger module.
      *
-     * @param level Level of this modules loggers.
-     * @param stdout output stream to use, defaults to console
+     * @param level Level of this logger-root loggers.
+     * @param outFn output function to use, defaults to console.log
      */
-    constructor(level?: Level, stdout?: any);
+    constructor(level?: ILevel, outFn?: stdoutFn);
     /**
      * Get a logger instance.
      *
      * @param nameable A string or a INameable (ex: class, function).
      * @returns The Logger instance.
      */
-    getLogger(nameable: any): Logger;
+    getLogger(nameable: any): ILogger;
 }
-export { Logaloo, Level, Logger };
+export { Logaloo, Level, ILogger };

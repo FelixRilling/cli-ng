@@ -1,4 +1,4 @@
-import { logaloo } from "../logging";
+import { clingyLoggerRoot } from "../loggerRoot";
 import { IArgument } from "./IArgument";
 import { resolvedArgumentMap } from "./resolvedArgumentMap";
 import { isNil } from "lightdash";
@@ -20,7 +20,7 @@ class ArgumentMatcher {
         this.missing = [];
         this.result = new Map();
 
-        const logger = logaloo.getLogger(ArgumentMatcher);
+        const logger = clingyLoggerRoot.getLogger(ArgumentMatcher);
         logger.debug(`Matching arguments ${expected} with ${provided}`);
 
         expected.forEach((expectedArg, i) => {

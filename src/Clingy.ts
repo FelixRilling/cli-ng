@@ -1,7 +1,7 @@
 import { CommandMap } from "./command/CommandMap";
 import { commandPath } from "./command/commandPath";
 import { ICommand } from "./command/ICommand";
-import { logaloo } from "./logging";
+import { clingyLoggerRoot } from "./loggerRoot";
 import { LookupResolver } from "./lookup/LookupResolver";
 import { ILookupResult } from "./lookup/result/ILookupResult";
 import { InputParser } from "./parser/InputParser";
@@ -12,8 +12,8 @@ import { IObjWithCommands } from "./command/IObjWithCommands";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    public readonly loggerGroup = logaloo;
-    public readonly logger = logaloo.getLogger(Clingy);
+    public readonly loggerRoot = clingyLoggerRoot;
+    public readonly logger = clingyLoggerRoot.getLogger(Clingy);
     public readonly lookupResolver: LookupResolver;
     public readonly inputParser: InputParser;
     public readonly map: CommandMap;

@@ -1,6 +1,8 @@
 import { Clingy } from "../src/Clingy";
 import { ICommand } from "../src/command/ICommand";
 import { CommandMap } from "../src/command/CommandMap";
+import { clingyLoggerRoot } from "../src/loggerRoot";
+import { Level } from "../src/logaloo/logaloo";
 
 const createCommand = (): ICommand => {
     return {
@@ -14,6 +16,10 @@ const createCommand = (): ICommand => {
  * Tests for {@link Clingy}.
  */
 describe("Clingy", () => {
+
+    beforeAll(() => {
+        clingyLoggerRoot.level = Level.NONE;
+    });
 
     it("Asserts that Clingy constructs with a CommandMap.", () => {
         const commandName = "foo";

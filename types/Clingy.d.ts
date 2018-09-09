@@ -10,8 +10,8 @@ import { IObjWithCommands } from "./command/IObjWithCommands";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 declare class Clingy {
-    readonly loggerGroup: import("src/logaloo/logaloo").Logaloo;
-    readonly logger: import("src/logaloo/logaloo").Logger;
+    readonly loggerRoot: import("src/logaloo/logaloo").Logaloo;
+    readonly logger: import("src/logaloo/logaloo").ILogger;
     readonly lookupResolver: LookupResolver;
     readonly inputParser: InputParser;
     readonly map: CommandMap;

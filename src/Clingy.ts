@@ -19,6 +19,7 @@ class Clingy {
     public readonly map: CommandMap;
     public readonly mapAliased: CommandMap;
 
+    // noinspection TsLint
     /**
      * Creates a new {@link Clingy} instance.
      *

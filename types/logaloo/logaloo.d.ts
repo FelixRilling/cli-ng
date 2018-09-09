@@ -1,7 +1,7 @@
 declare type stdoutFn = (message?: any, ...optionalParams: any[]) => void;
 interface ILevel {
     val: number;
-    name: string;
+    name?: string;
 }
 interface ILevelList {
     [key: string]: ILevel;
@@ -35,7 +35,7 @@ declare class Logaloo {
     /**
      * Get a logger instance.
      *
-     * @param nameable A string or a INameable (ex: class, function).
+     * @param nameable A string or an INameable (ex: class, function).
      * @returns The Logger instance.
      */
     getLogger(nameable: any): ILogger;

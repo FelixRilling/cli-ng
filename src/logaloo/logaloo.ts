@@ -4,7 +4,7 @@ type stdoutFn = (message?: any, ...optionalParams: any[]) => void;
 
 interface ILevel {
     val: number;
-    name: string;
+    name?: string;
 }
 
 interface ILevelList {
@@ -30,8 +30,7 @@ interface ILogger {
  */
 const Level: ILevelList = {
     NONE: {
-        val: -1,
-        name: ""
+        val: -1
     },
     ERROR: {
         val: 0,
@@ -85,7 +84,7 @@ class Logger implements ILogger {
             this.root.outFn(
                 `${new Date().toISOString()} ${level.name} ${this.name} - ${
                     args[0]
-                }`,
+                    }`,
                 ...args.slice(1)
             );
         }
@@ -160,7 +159,7 @@ class Logaloo {
     /**
      * Get a logger instance.
      *
-     * @param nameable A string or a INameable (ex: class, function).
+     * @param nameable A string or an INameable (ex: class, function).
      * @returns The Logger instance.
      */
     public getLogger(nameable: any): ILogger {

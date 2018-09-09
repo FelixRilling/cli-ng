@@ -9,6 +9,7 @@ class InputParser {
     public readonly legalQuotes: string[];
     public readonly pattern: RegExp;
 
+    // noinspection TsLint
     /**
      * Creates an {@link InputParser}.
      *

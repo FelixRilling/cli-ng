@@ -53,8 +53,7 @@ class CommandMap extends Map {
  */
 const Level = {
     NONE: {
-        val: -1,
-        name: ""
+        val: -1
     },
     ERROR: {
         val: 0,
@@ -162,7 +161,7 @@ class Logaloo {
     /**
      * Get a logger instance.
      *
-     * @param nameable A string or a INameable (ex: class, function).
+     * @param nameable A string or an INameable (ex: class, function).
      * @returns The Logger instance.
      */
     getLogger(nameable) {
@@ -320,6 +319,7 @@ class LookupResolver {
  * Manages parsing input strings into a path list.
  */
 class InputParser {
+    // noinspection TsLint
     /**
      * Creates an {@link InputParser}.
      *
@@ -375,6 +375,7 @@ class InputParser {
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
+    // noinspection TsLint
     /**
      * Creates a new {@link Clingy} instance.
      *

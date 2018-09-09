@@ -1,3 +1,3 @@
-import {Clingy} from "./Clingy";
+import { Clingy } from "./Clingy";
 
-export {Clingy};
+export { Clingy };

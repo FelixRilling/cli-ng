@@ -1,6 +1,6 @@
-import {ILookupResult, ResultType} from "./ILookupResult";
-import {ICommand} from "../../command/ICommand";
-import {resolvedArgumentMap} from "../../argument/resolvedArgumentMap";
+import { ILookupResult, ResultType } from "./ILookupResult";
+import { ICommand } from "../../command/ICommand";
+import { resolvedArgumentMap } from "../../argument/resolvedArgumentMap";
 
 interface ILookupSuccess extends ILookupResult {
     type: ResultType.SUCCESS;
@@ -8,4 +8,4 @@ interface ILookupSuccess extends ILookupResult {
     args: resolvedArgumentMap;
 }
 
-export {ILookupSuccess};
+export { ILookupSuccess };

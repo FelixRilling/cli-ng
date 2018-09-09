@@ -1,10 +1,10 @@
 /**
- * Manages parsing input strings into a pathUsed list.
+ * Manages parsing input strings into a path list.
  */
 declare class InputParser {
     private readonly logger;
-    private readonly legalQuotes;
-    private readonly pattern;
+    readonly legalQuotes: string[];
+    readonly pattern: RegExp;
     /**
      * Creates an {@link InputParser}.
      *

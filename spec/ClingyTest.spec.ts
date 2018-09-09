@@ -1,6 +1,6 @@
-import { Clingy } from "../../src/Clingy";
-import { ICommand } from "../../src/command/ICommand";
-import { CommandMap } from "../../src/command/CommandMap";
+import { Clingy } from "../src/Clingy";
+import { ICommand } from "../src/command/ICommand";
+import { CommandMap } from "../src/command/CommandMap";
 
 const createCommand = (): ICommand => {
     return {
@@ -94,5 +94,4 @@ describe("Clingy", () => {
         expect(clingy.getCommand(commandName2)).toBe(command2);
         expect(clingy.getCommand(commandAlias1)).toBe(command1);
     });
-
 });

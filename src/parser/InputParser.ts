@@ -1,20 +1,20 @@
 import { logaloo } from "../logging";
+import { arrCompact } from "lightdash";
 
 /**
- * Manages parsing input strings into a pathUsed list.
+ * Manages parsing input strings into a path list.
  */
 class InputParser {
     private readonly logger = logaloo.getLogger(InputParser);
-    private readonly legalQuotes: string[];
-    private readonly pattern: RegExp;
+    public readonly legalQuotes: string[];
+    public readonly pattern: RegExp;
 
-    // noinspection TsLint
     /**
      * Creates an {@link InputParser}.
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes: string[] = ['"']) {
+    constructor(legalQuotes: string[] = ["\""]) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
@@ -27,16 +27,29 @@ class InputParser {
      */
     public parse(input: string): string[] {
         this.logger.debug(`Parsing input '${input}'`);
+        const result = [];
+        const pattern = new RegExp(this.pattern);
+        let match;
 
-        return Array.from(<ArrayLike<string>>input.match(this.pattern));
+        // noinspection AssignmentResultUsedJS
+        while ((match = pattern.exec(input))) {
+            this.logger.trace(`Found match '${match}'`);
+            const groups = arrCompact(match.slice(1));
+
+            if (groups.length > 0) {
+                this.logger.trace(`Found group '${groups[0]}'`);
+                result.push(groups[0]);
+            }
+        }
+
+        return result;
     }
 
     private generateMatcher(): RegExp {
-        const matchBase = "(\\S+)";
-
         this.logger.debug("Creating matcher.");
+        const matchBase = "(\\S+)";
         const matchItems = this.legalQuotes
-            .map((str: string): string => `\\Q${str}\\E`)
+            .map((str: string): string => `\\${str}`)
             .map(quote => `${quote}(.+?)${quote}`);
 
         matchItems.push(matchBase);

@@ -188,6 +188,20 @@ var clingy = (function (exports) {
     };
 
     /**
+     * Returns an array with every falsey value removed out.
+     *
+     * @function arrCompact
+     * @memberof Array
+     * @since 1.0.0
+     * @param {any[]} arr
+     * @returns {any[]}
+     * @example
+     * arrCompact([1, "", "", 2, 3, null, 4, undefined, 5, ""])
+     * // => [1, 2, 3, 4, 5]
+     */
+    const arrCompact = (arr) => arr.filter(val => val);
+
+    /**
      * Collects the values of an array in a map as arrays.
      * If the function returns a nil value, the element will be skipped,
      * otherwise the return value will be used as key.
@@ -493,16 +507,15 @@ var clingy = (function (exports) {
     }
 
     /**
-     * Manages parsing input strings into a pathUsed list.
+     * Manages parsing input strings into a path list.
      */
     class InputParser {
-        // noinspection TsLint
         /**
          * Creates an {@link InputParser}.
          *
          * @param legalQuotes List of quotes to use when parsing strings.
          */
-        constructor(legalQuotes = ['"']) {
+        constructor(legalQuotes = ["\""]) {
             this.logger = logaloo.getLogger(InputParser);
             this.legalQuotes = legalQuotes;
             this.pattern = this.generateMatcher();
@@ -515,13 +528,25 @@ var clingy = (function (exports) {
          */
         parse(input) {
             this.logger.debug(`Parsing input '${input}'`);
-            return Array.from(input.match(this.pattern));
+            const result = [];
+            const pattern = new RegExp(this.pattern);
+            let match;
+            // noinspection AssignmentResultUsedJS
+            while ((match = pattern.exec(input))) {
+                this.logger.trace(`Found match '${match}'`);
+                const groups = arrCompact(match.slice(1));
+                if (groups.length > 0) {
+                    this.logger.trace(`Found group '${groups[0]}'`);
+                    result.push(groups[0]);
+                }
+            }
+            return result;
         }
         generateMatcher() {
-            const matchBase = "(\\S+)";
             this.logger.debug("Creating matcher.");
+            const matchBase = "(\\S+)";
             const matchItems = this.legalQuotes
-                .map((str) => `\\Q${str}\\E`)
+                .map((str) => `\\${str}`)
                 .map(quote => `${quote}(.+?)${quote}`);
             matchItems.push(matchBase);
             let result;
@@ -547,7 +572,7 @@ var clingy = (function (exports) {
          * @param caseSensitive If commands names should be treated as case sensitive during lookup.
          * @param legalQuotes   List of quotes to use when parsing strings.
          */
-        constructor(commands = new Map(), caseSensitive = true, legalQuotes = ["\""]) {
+        constructor(commands = new Map(), caseSensitive = true, legalQuotes = ['"']) {
             this.loggerGroup = logaloo;
             this.logger = logaloo.getLogger(Clingy);
             this.lookupResolver = new LookupResolver(caseSensitive);

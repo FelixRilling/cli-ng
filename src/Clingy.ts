@@ -12,10 +12,10 @@ import { IObjWithCommands } from "./command/IObjWithCommands";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    readonly loggerGroup = logaloo;
-    readonly logger = logaloo.getLogger(Clingy);
-    readonly lookupResolver: LookupResolver;
-    readonly inputParser: InputParser;
+    public readonly loggerGroup = logaloo;
+    public readonly logger = logaloo.getLogger(Clingy);
+    public readonly lookupResolver: LookupResolver;
+    public readonly inputParser: InputParser;
     public readonly map: CommandMap;
     public readonly mapAliased: CommandMap;
 
@@ -29,7 +29,7 @@ class Clingy {
     constructor(
         commands: mapWithCommands | IObjWithCommands = new Map(),
         caseSensitive: boolean = true,
-        legalQuotes: commandPath = ["\""]
+        legalQuotes: commandPath = ['"']
     ) {
         this.lookupResolver = new LookupResolver(caseSensitive);
         this.inputParser = new InputParser(legalQuotes);
@@ -104,8 +104,7 @@ class Clingy {
                         `Alias '${alias}' conflicts with a previously defined key, will be ignored.`
                     );
                 } else {
-                    this.logger.trace(
-                        `Created alias '${alias}' for '${key}'`);
+                    this.logger.trace(`Created alias '${alias}' for '${key}'`);
                     this.mapAliased.set(alias, value);
                 }
             });

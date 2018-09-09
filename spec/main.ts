@@ -1,2 +1,4 @@
-import "./clingy/ClingyTest.spec";
-import "./clingy/ClingyIT.spec";
+import "./ClingyTest.spec";
+import "./ClingyIT.spec";
+
+import "./parser/InputParser.spec";

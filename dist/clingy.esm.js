@@ -1,4 +1,4 @@
-import { isMap, isObject, isString, isNil, strSimilar } from 'lightdash';
+import { isMap, isObject, isString, isNil, strSimilar, arrCompact } from 'lightdash';
 
 const getConstructorMap = (input) => {
     if (isMap(input)) {
@@ -249,16 +249,15 @@ class LookupResolver {
 }
 
 /**
- * Manages parsing input strings into a pathUsed list.
+ * Manages parsing input strings into a path list.
  */
 class InputParser {
-    // noinspection TsLint
     /**
      * Creates an {@link InputParser}.
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ['"']) {
+    constructor(legalQuotes = ["\""]) {
         this.logger = logaloo.getLogger(InputParser);
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
@@ -271,13 +270,25 @@ class InputParser {
      */
     parse(input) {
         this.logger.debug(`Parsing input '${input}'`);
-        return Array.from(input.match(this.pattern));
+        const result = [];
+        const pattern = new RegExp(this.pattern);
+        let match;
+        // noinspection AssignmentResultUsedJS
+        while ((match = pattern.exec(input))) {
+            this.logger.trace(`Found match '${match}'`);
+            const groups = arrCompact(match.slice(1));
+            if (groups.length > 0) {
+                this.logger.trace(`Found group '${groups[0]}'`);
+                result.push(groups[0]);
+            }
+        }
+        return result;
     }
     generateMatcher() {
-        const matchBase = "(\\S+)";
         this.logger.debug("Creating matcher.");
+        const matchBase = "(\\S+)";
         const matchItems = this.legalQuotes
-            .map((str) => `\\Q${str}\\E`)
+            .map((str) => `\\${str}`)
             .map(quote => `${quote}(.+?)${quote}`);
         matchItems.push(matchBase);
         let result;
@@ -303,7 +314,7 @@ class Clingy {
      * @param caseSensitive If commands names should be treated as case sensitive during lookup.
      * @param legalQuotes   List of quotes to use when parsing strings.
      */
-    constructor(commands = new Map(), caseSensitive = true, legalQuotes = ["\""]) {
+    constructor(commands = new Map(), caseSensitive = true, legalQuotes = ['"']) {
         this.loggerGroup = logaloo;
         this.logger = logaloo.getLogger(Clingy);
         this.lookupResolver = new LookupResolver(caseSensitive);

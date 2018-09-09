@@ -1,4 +1,4 @@
-import {ILookupResult, ResultType} from "./ILookupResult";
+import { ILookupResult, ResultType } from "./ILookupResult";
 
 interface ILookupErrorNotFound extends ILookupResult {
     type: ResultType.ERROR_NOT_FOUND;
@@ -6,4 +6,4 @@ interface ILookupErrorNotFound extends ILookupResult {
     similar: string[];
 }
 
-export {ILookupErrorNotFound};
+export { ILookupErrorNotFound };

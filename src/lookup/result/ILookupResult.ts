@@ -1,7 +1,9 @@
-import {commandPath} from "../../command/commandPath";
+import { commandPath } from "../../command/commandPath";
 
 const enum ResultType {
-    SUCCESS, ERROR_NOT_FOUND, ERROR_MISSING_ARGUMENT
+    SUCCESS,
+    ERROR_NOT_FOUND,
+    ERROR_MISSING_ARGUMENT
 }
 
 interface ILookupResult {
@@ -11,4 +13,4 @@ interface ILookupResult {
     type: ResultType;
 }
 
-export {ResultType, ILookupResult};
+export { ResultType, ILookupResult };

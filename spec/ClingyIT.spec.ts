@@ -1,11 +1,11 @@
-import { IArgument } from "../../src/argument/IArgument";
-import { Clingy } from "../../src/Clingy";
-import { ICommand } from "../../src/command/ICommand";
-import { ResultType } from "../../src/lookup/result/ILookupResult";
-import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
-import { ILookupErrorNotFound } from "../../src/lookup/result/ILookupErrorNotFound";
-import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMissingArgs";
-import { Level } from "../../src/logaloo/logaloo";
+import { IArgument } from "../src/argument/IArgument";
+import { Clingy } from "../src/Clingy";
+import { ICommand } from "../src/command/ICommand";
+import { ResultType } from "../src/lookup/result/ILookupResult";
+import { ILookupSuccess } from "../src/lookup/result/ILookupSuccess";
+import { ILookupErrorNotFound } from "../src/lookup/result/ILookupErrorNotFound";
+import { ILookupErrorMissingArgs } from "../src/lookup/result/ILookupErrorMissingArgs";
+import { Level } from "../src/logaloo/logaloo";
 
 /**
  * Integration tests for example {@link Clingy} usage.

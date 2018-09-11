@@ -16,7 +16,6 @@ const createCommand = (): ICommand => {
  * Tests for {@link Clingy}.
  */
 describe("Clingy", () => {
-
     beforeAll(() => {
         clingyLoggerRoot.level = Level.NONE;
     });

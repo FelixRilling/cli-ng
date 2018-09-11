@@ -84,7 +84,7 @@ class LookupResolver {
             `Successfully looked up command: ${currentPathFragment}`
         );
 
-        if (pathNew.length > 1 && !isNil(command.sub)) {
+        if (pathNew.length > 0 && !isNil(command.sub)) {
             this.logger.debug(
                 `Resolving sub-commands: ${command.sub} ${pathNew}`
             );

@@ -7,7 +7,6 @@ import { Level } from "../../src/logaloo/logaloo";
  * Tests for {@link ArgumentMatcher}.
  */
 describe("ArgumentMatcher", () => {
-
     beforeAll(() => {
         clingyLoggerRoot.level = Level.NONE;
     });
@@ -32,7 +31,11 @@ describe("ArgumentMatcher", () => {
     it("Asserts that ArgumentMatcher falls back for optional arguments.", () => {
         const value = "bar";
         const expected = "foo";
-        const expectedArg: IArgument = { name: expected, required: false, defaultValue: value };
+        const expectedArg: IArgument = {
+            name: expected,
+            required: false,
+            defaultValue: value
+        };
         const argumentMatcher = new ArgumentMatcher([expectedArg], []);
 
         expect(argumentMatcher.result).toEqual(new Map([[expected, value]]));
@@ -46,5 +49,5 @@ describe("ArgumentMatcher", () => {
 
         expect(argumentMatcher.result).toEqual(new Map());
         expect(argumentMatcher.missing).toEqual([expectedArg]);
-    })
+    });
 });

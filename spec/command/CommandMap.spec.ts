@@ -7,7 +7,6 @@ import { Level } from "../../src/logaloo/logaloo";
  * Tests for {@link CommandMap}.
  */
 describe("CommandMap", () => {
-
     beforeAll(() => {
         clingyLoggerRoot.level = Level.NONE;
     });

@@ -7,7 +7,6 @@ import { Level } from "../../src/logaloo/logaloo";
  * Tests for {@link InputParser}.
  */
 describe("InputParser", () => {
-
     beforeAll(() => {
         clingyLoggerRoot.level = Level.NONE;
     });

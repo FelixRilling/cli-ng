@@ -1,10 +1,16 @@
 import { ArgumentMatcher } from "../../src/argument/ArgumentMatcher";
 import { IArgument } from "../../src/argument/IArgument";
+import { clingyLoggerRoot } from "../../src/loggerRoot";
+import { Level } from "../../src/logaloo/logaloo";
 
 /**
  * Tests for {@link ArgumentMatcher}.
  */
 describe("ArgumentMatcher", () => {
+
+    beforeAll(() => {
+        clingyLoggerRoot.level = Level.NONE;
+    });
 
     it("Asserts that ArgumentMatcher works with an empty list.", () => {
         const argumentMatcher = new ArgumentMatcher([], []);

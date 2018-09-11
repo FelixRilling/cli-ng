@@ -41,6 +41,10 @@ class LookupResolver {
         path: commandPath,
         parseArguments: boolean = false
     ): ILookupResult {
+        if (path.length === 0) {
+            throw new Error("Path cannot be empty.");
+        }
+
         return this.resolveInternal(mapAliased, path, [], parseArguments);
     }
 
@@ -50,10 +54,6 @@ class LookupResolver {
         pathUsed: commandPath,
         parseArguments: boolean
     ): ILookupResult {
-        if (path.length === 0) {
-            throw new Error("Path cannot be empty.");
-        }
-
         const currentPathFragment = path[0];
         const pathNew = path.slice(1);
         pathUsed.push(currentPathFragment);
@@ -83,6 +83,13 @@ class LookupResolver {
         this.logger.debug(
             `Successfully looked up command: ${currentPathFragment}`
         );
+
+        if (pathNew.length > 1 && !isNil(command.sub)) {
+            this.logger.debug(
+                `Resolving sub-commands: ${command.sub} ${pathNew}`
+            );
+            return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
+        }
 
         let argumentsResolved: resolvedArgumentMap;
         if (

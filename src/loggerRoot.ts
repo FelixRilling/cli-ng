@@ -1,4 +1,4 @@
-import { Logaloo } from "./logaloo/logaloo";
+import { Logaloo } from "./logaloo/main";
 
 const clingyLoggerRoot = new Logaloo();
 

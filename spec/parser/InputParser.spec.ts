@@ -1,7 +1,7 @@
 import { InputParser } from "../../src/parser/InputParser";
 import { isRegExp } from "lightdash";
 import { clingyLoggerRoot } from "../../src/loggerRoot";
-import { Level } from "../../src/logaloo/logaloo";
+import { Level } from "../../src/logaloo/main";
 
 /**
  * Tests for {@link InputParser}.

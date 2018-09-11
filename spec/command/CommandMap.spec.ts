@@ -1,7 +1,7 @@
 import { CommandMap } from "../../src/command/CommandMap";
 import { ICommand } from "../../src/command/ICommand";
 import { clingyLoggerRoot } from "../../src/loggerRoot";
-import { Level } from "../../src/logaloo/logaloo";
+import { Level } from "../../src/logaloo/main";
 
 /**
  * Tests for {@link CommandMap}.

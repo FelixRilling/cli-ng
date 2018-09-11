@@ -1,4 +1,4 @@
-import { isMap, isObject, isString, isNil, strSimilar, arrCompact } from 'lightdash';
+import { arrCompact, isMap, isNil, isObject, isString, strSimilar } from "lightdash";
 
 const getConstructorMap = (input) => {
     if (isMap(input)) {
@@ -72,6 +72,7 @@ const Level = {
         name: "TRACE"
     }
 };
+
 /**
  * Logger class.
  */
@@ -139,6 +140,7 @@ class Logger {
         this.log(Level.TRACE, args);
     }
 }
+
 /**
  * Logger-root class.
  */
@@ -249,12 +251,13 @@ class LookupResolver {
      * or {@link ILookupErrorMissingArgs}.
      */
     resolve(mapAliased, path, parseArguments = false) {
-        return this.resolveInternal(mapAliased, path, [], parseArguments);
-    }
-    resolveInternal(mapAliased, path, pathUsed, parseArguments) {
         if (path.length === 0) {
             throw new Error("Path cannot be empty.");
         }
+        return this.resolveInternal(mapAliased, path, [], parseArguments);
+    }
+
+    resolveInternal(mapAliased, path, pathUsed, parseArguments) {
         const currentPathFragment = path[0];
         const pathNew = path.slice(1);
         pathUsed.push(currentPathFragment);
@@ -275,6 +278,10 @@ class LookupResolver {
             ? mapAliased.get(currentPathFragment)
             : mapAliased.getIgnoreCase(currentPathFragment)));
         this.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
+        if (pathNew.length > 0 && !isNil(command.sub)) {
+            this.logger.debug(`Resolving sub-commands: ${command.sub} ${pathNew}`);
+            return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
+        }
         let argumentsResolved;
         if (!parseArguments ||
             isNil(command.args) ||

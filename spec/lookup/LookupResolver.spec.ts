@@ -7,7 +7,7 @@ import { ICommand } from "../../src/command/ICommand";
 import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMissingArgs";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
 import { clingyLoggerRoot } from "../../src/loggerRoot";
-import { Level } from "../../src/logaloo/logaloo";
+import { Level } from "../../src/logaloo/main";
 import { Clingy } from "../../src/Clingy";
 
 /**

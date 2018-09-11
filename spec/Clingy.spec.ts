@@ -2,7 +2,7 @@ import { Clingy } from "../src/Clingy";
 import { ICommand } from "../src/command/ICommand";
 import { CommandMap } from "../src/command/CommandMap";
 import { clingyLoggerRoot } from "../src/loggerRoot";
-import { Level } from "../src/logaloo/logaloo";
+import { Level } from "../src/logaloo/main";
 
 const createCommand = (): ICommand => {
     return {

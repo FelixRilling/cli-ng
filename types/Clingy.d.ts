@@ -6,12 +6,13 @@ import { ILookupResult } from "./lookup/result/ILookupResult";
 import { InputParser } from "./parser/InputParser";
 import { mapWithCommands } from "./command/mapWithCommands";
 import { IObjWithCommands } from "./command/IObjWithCommands";
+
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 declare class Clingy {
-    readonly loggerRoot: import("src/logaloo/logaloo").Logaloo;
-    readonly logger: import("src/logaloo/logaloo").ILogger;
+    readonly loggerRoot: import("src/logaloo/Logaloo").Logaloo;
+    readonly logger: import("src/logaloo/logger/ILogger").ILogger;
     readonly lookupResolver: LookupResolver;
     readonly inputParser: InputParser;
     readonly map: CommandMap;

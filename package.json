@@ -48,7 +48,7 @@
     },
     "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
     "dependencies": {
-        "lightdash": "^9.0.2"
+        "lightdash": "^9.0.3"
     },
     "devDependencies": {
         "@types/jasmine": "^2.8.8",

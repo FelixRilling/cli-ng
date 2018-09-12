@@ -256,7 +256,6 @@ class LookupResolver {
         }
         return this.resolveInternal(mapAliased, path, [], parseArguments);
     }
-
     resolveInternal(mapAliased, path, pathUsed, parseArguments) {
         const currentPathFragment = path[0];
         const pathNew = path.slice(1);
@@ -378,19 +377,17 @@ class InputParser {
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    // noinspection TsLint
     /**
      * Creates a new {@link Clingy} instance.
      *
      * @param commands      Map of commands to create the instance with.
-     * @param caseSensitive If commands names should be treated as case sensitive during lookup.
-     * @param legalQuotes   List of quotes to use when parsing strings.
+     * @param options       Option object.
      */
-    constructor(commands = new Map(), caseSensitive = true, legalQuotes = ['"']) {
+    constructor(commands = {}, options = {}) {
         this.loggerRoot = clingyLoggerRoot;
         this.logger = clingyLoggerRoot.getLogger(Clingy);
-        this.lookupResolver = new LookupResolver(caseSensitive);
-        this.inputParser = new InputParser(legalQuotes);
+        this.lookupResolver = new LookupResolver(options.caseSensitive);
+        this.inputParser = new InputParser(options.legalQuotes);
         this.map = new CommandMap(commands);
         this.mapAliased = new CommandMap();
         this.updateAliases();

@@ -6,6 +6,7 @@ import { ILookupResult } from "./lookup/result/ILookupResult";
 import { InputParser } from "./parser/InputParser";
 import { mapWithCommands } from "./command/mapWithCommands";
 import { IObjWithCommands } from "./command/IObjWithCommands";
+import { IClingyOptions } from "./IClingyOptions";
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -21,10 +22,9 @@ declare class Clingy {
      * Creates a new {@link Clingy} instance.
      *
      * @param commands      Map of commands to create the instance with.
-     * @param caseSensitive If commands names should be treated as case sensitive during lookup.
-     * @param legalQuotes   List of quotes to use when parsing strings.
+     * @param options       Option object.
      */
-    constructor(commands?: mapWithCommands | IObjWithCommands, caseSensitive?: boolean, legalQuotes?: commandPath);
+    constructor(commands?: mapWithCommands | IObjWithCommands, options?: IClingyOptions);
     setCommand(key: string, command: ICommand): void;
     getCommand(key: string): ICommand | undefined;
     hasCommand(key: string): boolean;

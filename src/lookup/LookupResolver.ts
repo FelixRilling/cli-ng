@@ -88,7 +88,12 @@ class LookupResolver {
             this.logger.debug(
                 `Resolving sub-commands: ${command.sub} ${pathNew}`
             );
-            return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
+            return this.resolveInternal(
+                command.sub.mapAliased,
+                pathNew,
+                pathUsed,
+                parseArguments
+            );
         }
 
         let argumentsResolved: resolvedArgumentMap;
@@ -105,9 +110,9 @@ class LookupResolver {
 
             if (argumentMatcher.missing.length > 0) {
                 this.logger.warn(
-                    `Some arguments could not be found: ${
-                        argumentMatcher.missing.map(arg => arg.name)
-                        }`
+                    `Some arguments could not be found: ${argumentMatcher.missing.map(
+                        arg => arg.name
+                    )}`
                 );
 
                 return <ILookupErrorMissingArgs>{

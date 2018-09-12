@@ -1,4 +1,4 @@
-import { arrCompact, isMap, isNil, isObject, isString, strSimilar } from "lightdash";
+import { isMap, isObject, isString, isNil, strSimilar, arrCompact } from 'lightdash';
 
 const getConstructorMap = (input) => {
     if (isMap(input)) {

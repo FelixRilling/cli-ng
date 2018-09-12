@@ -7,7 +7,6 @@ import { InputParser } from "./parser/InputParser";
 import { mapWithCommands } from "./command/mapWithCommands";
 import { IObjWithCommands } from "./command/IObjWithCommands";
 import { IClingyOptions } from "./IClingyOptions";
-
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */

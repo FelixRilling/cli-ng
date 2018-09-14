@@ -1,7 +1,7 @@
 import { ArgumentMatcher } from "../../src/argument/ArgumentMatcher";
 import { IArgument } from "../../src/argument/IArgument";
 import { clingyLoggerRoot } from "../../src/loggerRoot";
-import { Level } from "../../src/logaloo/main";
+import { Level } from "logby";
 
 /**
  * Tests for {@link ArgumentMatcher}.

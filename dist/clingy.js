@@ -79,23 +79,6 @@ var clingy = (function (exports) {
     const isTypeOf = (val, type) => typeof val === type;
 
     /**
-     * Checks if a value is a string.
-     *
-     * @function isString
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
-     * @example
-     * isString("foo")
-     * // => true
-     *
-     * isString(1)
-     * // => false
-     */
-    const isString = (val) => isTypeOf(val, "string");
-
-    /**
      * Checks if a value is a map.
      *
      * @function isMap
@@ -332,12 +315,65 @@ var clingy = (function (exports) {
     };
 
     /**
+     * Checks if a value is an array.
+     *
+     * Alias of the native `Array.isArray`.
+     *
+     * @function isArray
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @returns {boolean}
+     * @example
+     * isArray([1, 2, 3]);
+     * // => true
+     *
+     * isArray({});
+     * // => false
+     */
+
+    /**
+     * Checks if the value has a certain type-string.
+     *
+     * @function isTypeOf
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @param {string} type
+     * @returns {boolean}
+     * @example
+     * isTypeOf("foo", "string")
+     * // => true
+     *
+     * isTypeOf("foo", "number")
+     * // => false
+     */
+    const isTypeOf$1 = (val, type) => typeof val === type;
+
+    /**
+     * Checks if a value is a string.
+     *
+     * @function isString
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @returns {boolean}
+     * @example
+     * isString("foo")
+     * // => true
+     *
+     * isString(1)
+     * // => false
+     */
+    const isString$1 = (val) => isTypeOf$1(val, "string");
+
+    /**
      * Logger class.
      */
     class Logger {
         /**
          * Creates a new {@link Logger}.
-         * Should not be constructed directly, rather use {@link Logaloo.getLogger}
+         * Should not be constructed directly, rather use {@link Logby.getLogger}
          *
          * @param root Root logger of this logger.
          * @param name Name of the logger.
@@ -354,7 +390,7 @@ var clingy = (function (exports) {
          */
         log(level, ...args) {
             if (this.root.level.val >= level.val) {
-                this.root.outFn(`${new Date().toISOString()} ${level.name} ${this.name} - ${args[0]}`, ...args.slice(1));
+                this.root.appenderQueue.forEach(fn => fn(level, this.name, args));
             }
         }
         /**
@@ -399,20 +435,21 @@ var clingy = (function (exports) {
         }
     }
 
+    const defaultAppenderFn = (level, name, args) => console.log(`${new Date().toISOString()} ${level.name} ${name} - ${args[0]}`, ...args.slice(1));
+
     /**
      * Logger-root class.
      */
-    class Logaloo {
+    class Logby {
         /**
          * Creates a new logger module.
          *
          * @param level Level of this logger-root loggers.
-         * @param outFn output function to use, defaults to console.log
          */
-        constructor(level = Level.INFO, outFn = console.log) {
+        constructor(level = Level.INFO) {
             this.loggerMap = new Map();
             this.level = level;
-            this.outFn = outFn;
+            this.appenderQueue = [defaultAppenderFn];
         }
         /**
          * Get a logger instance.
@@ -425,7 +462,7 @@ var clingy = (function (exports) {
             if ("name" in nameable) {
                 name = nameable.name;
             }
-            else if (isString(nameable)) {
+            else if (isString$1(nameable)) {
                 name = nameable;
             }
             else {
@@ -440,7 +477,7 @@ var clingy = (function (exports) {
         }
     }
 
-    const clingyLoggerRoot = new Logaloo();
+    const clingyLoggerRoot = new Logby();
 
     /**
      * Orchestrates mapping of {@link IArgument}s to user-provided input.

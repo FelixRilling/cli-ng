@@ -5,7 +5,7 @@ import { ResultType } from "../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../src/lookup/result/ILookupSuccess";
 import { ILookupErrorNotFound } from "../src/lookup/result/ILookupErrorNotFound";
 import { ILookupErrorMissingArgs } from "../src/lookup/result/ILookupErrorMissingArgs";
-import { Level } from "../src/logaloo/main";
+import { Level } from "logby";
 import { clingyLoggerRoot } from "../src/loggerRoot";
 
 /**

@@ -1,3 +1,3 @@
-import { Logaloo } from "./logaloo/main";
-declare const clingyLoggerRoot: Logaloo;
+import { Logby } from "logby";
+declare const clingyLoggerRoot: Logby;
 export { clingyLoggerRoot };

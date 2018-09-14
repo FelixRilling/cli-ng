@@ -1,5 +1,5 @@
-import { Logaloo } from "./logaloo/main";
+import { Logby } from "logby";
 
-const clingyLoggerRoot = new Logaloo();
+const clingyLoggerRoot = new Logby();
 
 export { clingyLoggerRoot };

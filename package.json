@@ -11,7 +11,8 @@
             "file": "clingy"
         },
         "external": [
-            "lightdash"
+            "lightdash",
+            "logby"
         ]
     },
     "scripts": {
@@ -48,7 +49,8 @@
     },
     "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
     "dependencies": {
-        "lightdash": "^9.0.3"
+        "lightdash": "^9.0.3",
+        "logby": "^1.0.0"
     },
     "devDependencies": {
         "@types/jasmine": "^2.8.8",

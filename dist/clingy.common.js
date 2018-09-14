@@ -3,6 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var lightdash = require('lightdash');
+var logby = require('logby');
 
 const getConstructorMap = (input) => {
     if (lightdash.isMap(input)) {
@@ -48,145 +49,7 @@ class CommandMap extends Map {
     }
 }
 
-/**
- * Default level-list.
- */
-const Level = {
-    NONE: {
-        val: -1
-    },
-    ERROR: {
-        val: 0,
-        name: "ERROR"
-    },
-    WARN: {
-        val: 1,
-        name: "WARN"
-    },
-    INFO: {
-        val: 2,
-        name: "INFO"
-    },
-    DEBUG: {
-        val: 3,
-        name: "DEBUG"
-    },
-    TRACE: {
-        val: 4,
-        name: "TRACE"
-    }
-};
-
-/**
- * Logger class.
- */
-class Logger {
-    /**
-     * Creates a new {@link Logger}.
-     * Should not be constructed directly, rather use {@link Logaloo.getLogger}
-     *
-     * @param root Root logger of this logger.
-     * @param name Name of the logger.
-     */
-    constructor(root, name) {
-        this.root = root;
-        this.name = name;
-    }
-    /**
-     * Logs a message.
-     *
-     * @param level Level of the log.
-     * @param args arguments to be logged.
-     */
-    log(level, ...args) {
-        if (this.root.level.val >= level.val) {
-            this.root.outFn(`${new Date().toISOString()} ${level.name} ${this.name} - ${args[0]}`, ...args.slice(1));
-        }
-    }
-    /**
-     * Logs an error.
-     *
-     * @param args arguments to be logged.
-     */
-    error(...args) {
-        this.log(Level.ERROR, args);
-    }
-    /**
-     * Logs a warning.
-     *
-     * @param args arguments to be logged.
-     */
-    warn(...args) {
-        this.log(Level.WARN, args);
-    }
-    /**
-     * Logs an info.
-     *
-     * @param args arguments to be logged.
-     */
-    info(...args) {
-        this.log(Level.INFO, args);
-    }
-    /**
-     * Logs a debug message.
-     *
-     * @param args arguments to be logged.
-     */
-    debug(...args) {
-        this.log(Level.DEBUG, args);
-    }
-    /**
-     * Logs a trace message.
-     *
-     * @param args arguments to be logged.
-     */
-    trace(...args) {
-        this.log(Level.TRACE, args);
-    }
-}
-
-/**
- * Logger-root class.
- */
-class Logaloo {
-    /**
-     * Creates a new logger module.
-     *
-     * @param level Level of this logger-root loggers.
-     * @param outFn output function to use, defaults to console.log
-     */
-    constructor(level = Level.INFO, outFn = console.log) {
-        this.loggerMap = new Map();
-        this.level = level;
-        this.outFn = outFn;
-    }
-    /**
-     * Get a logger instance.
-     *
-     * @param nameable A string or an INameable (ex: class, function).
-     * @returns The Logger instance.
-     */
-    getLogger(nameable) {
-        let name;
-        if ("name" in nameable) {
-            name = nameable.name;
-        }
-        else if (lightdash.isString(nameable)) {
-            name = nameable;
-        }
-        else {
-            throw new TypeError(`'${nameable}' is neither an INameable nor a string.`);
-        }
-        if (this.loggerMap.has(name)) {
-            return this.loggerMap.get(name);
-        }
-        const logger = new Logger(this, name);
-        this.loggerMap.set(name, logger);
-        return logger;
-    }
-}
-
-const clingyLoggerRoot = new Logaloo();
+const clingyLoggerRoot = new logby.Logby();
 
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.

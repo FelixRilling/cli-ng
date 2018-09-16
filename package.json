@@ -1,6 +1,6 @@
 {
     "name": "cli-ngy",
-    "version": "10.0.0-1",
+    "version": "10.0.0-2",
     "description": "A module to parse cli-input text and commands with support for nested commands and did-you-mean feature",
     "main": "dist/clingy.common.js",
     "module": "dist/clingy.esm.js",

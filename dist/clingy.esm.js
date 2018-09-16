@@ -60,27 +60,27 @@ class ArgumentMatcher {
     constructor(expected, provided) {
         this.missing = [];
         this.result = new Map();
-        const logger = clingyLoggerRoot.getLogger(ArgumentMatcher);
-        logger.debug(`Matching arguments ${expected} with ${provided}`);
+        ArgumentMatcher.logger.debug(`Matching arguments ${expected} with ${provided}`);
         expected.forEach((expectedArg, i) => {
             if (i < provided.length) {
                 const providedArg = provided[i];
-                logger.trace(`Found matching argument for ${expectedArg.name}, adding to result: ${providedArg}`);
+                ArgumentMatcher.logger.trace(`Found matching argument for ${expectedArg.name}, adding to result: ${providedArg}`);
                 this.result.set(expectedArg.name, providedArg);
             }
             else if (!expectedArg.required &&
                 !isNil(expectedArg.defaultValue)) {
-                logger.trace(`No matching argument found for ${expectedArg.name}, using default: ${expectedArg.defaultValue}`);
+                ArgumentMatcher.logger.trace(`No matching argument found for ${expectedArg.name}, using default: ${expectedArg.defaultValue}`);
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             }
             else {
-                logger.trace(`No matching argument found for ${expectedArg.name}, adding to missing.`);
+                ArgumentMatcher.logger.trace(`No matching argument found for ${expectedArg.name}, adding to missing.`);
                 this.missing.push(expectedArg);
             }
         });
-        logger.debug(`Finished matching arguments: ${expected.length} expected, ${this.result.size} found and ${this.missing.length} missing.`);
+        ArgumentMatcher.logger.debug(`Finished matching arguments: ${expected.length} expected, ${this.result.size} found and ${this.missing.length} missing.`);
     }
 }
+ArgumentMatcher.logger = clingyLoggerRoot.getLogger(ArgumentMatcher);
 
 /**
  * Gets similar keys of a key based on their string distance.
@@ -101,7 +101,6 @@ class LookupResolver {
      * @param caseSensitive If the lookup should honor case.
      */
     constructor(caseSensitive = true) {
-        this.logger = clingyLoggerRoot.getLogger(LookupResolver);
         this.caseSensitive = caseSensitive;
     }
     /**
@@ -126,7 +125,7 @@ class LookupResolver {
         if (this.caseSensitive
             ? !mapAliased.has(currentPathFragment)
             : !mapAliased.hasIgnoreCase(currentPathFragment)) {
-            this.logger.warn(`Command '${currentPathFragment}' could not be found.`);
+            LookupResolver.logger.warn(`Command '${currentPathFragment}' could not be found.`);
             return {
                 successful: false,
                 pathUsed,
@@ -139,23 +138,23 @@ class LookupResolver {
         const command = ((this.caseSensitive
             ? mapAliased.get(currentPathFragment)
             : mapAliased.getIgnoreCase(currentPathFragment)));
-        this.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
+        LookupResolver.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
         if (pathNew.length > 0 && !isNil(command.sub)) {
-            this.logger.debug(`Resolving sub-commands: ${command.sub} ${pathNew}`);
+            LookupResolver.logger.debug(`Resolving sub-commands: ${command.sub} ${pathNew}`);
             return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
         }
         let argumentsResolved;
         if (!parseArguments ||
             isNil(command.args) ||
             command.args.length === 0) {
-            this.logger.debug("No arguments defined, using empty list.");
+            LookupResolver.logger.debug("No arguments defined, using empty list.");
             argumentsResolved = new Map();
         }
         else {
-            this.logger.debug(`Looking up arguments: ${pathNew}`);
+            LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
             if (argumentMatcher.missing.length > 0) {
-                this.logger.warn(`Some arguments could not be found: ${argumentMatcher.missing.map(arg => arg.name)}`);
+                LookupResolver.logger.warn(`Some arguments could not be found: ${argumentMatcher.missing.map(arg => arg.name)}`);
                 return {
                     successful: false,
                     pathUsed,
@@ -165,7 +164,7 @@ class LookupResolver {
                 };
             }
             argumentsResolved = argumentMatcher.result;
-            this.logger.debug(`Successfully looked up arguments: ${argumentsResolved}`);
+            LookupResolver.logger.debug(`Successfully looked up arguments: ${argumentsResolved}`);
         }
         const lookupSuccess = {
             successful: true,
@@ -175,10 +174,11 @@ class LookupResolver {
             command,
             args: argumentsResolved
         };
-        this.logger.debug(`Returning successful lookup result: ${lookupSuccess}`);
+        LookupResolver.logger.debug(`Returning successful lookup result: ${lookupSuccess}`);
         return lookupSuccess;
     }
 }
+LookupResolver.logger = clingyLoggerRoot.getLogger(LookupResolver);
 
 /**
  * Manages parsing input strings into a path list.
@@ -191,7 +191,6 @@ class InputParser {
      * @param legalQuotes List of quotes to use when parsing strings.
      */
     constructor(legalQuotes = ['"']) {
-        this.logger = clingyLoggerRoot.getLogger(InputParser);
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
@@ -202,23 +201,23 @@ class InputParser {
      * @return Path list.
      */
     parse(input) {
-        this.logger.debug(`Parsing input '${input}'`);
+        InputParser.logger.debug(`Parsing input '${input}'`);
         const result = [];
         const pattern = new RegExp(this.pattern);
         let match;
         // noinspection AssignmentResultUsedJS
         while ((match = pattern.exec(input))) {
-            this.logger.trace(`Found match '${match}'`);
+            InputParser.logger.trace(`Found match '${match}'`);
             const groups = arrCompact(match.slice(1));
             if (groups.length > 0) {
-                this.logger.trace(`Found group '${groups[0]}'`);
+                InputParser.logger.trace(`Found group '${groups[0]}'`);
                 result.push(groups[0]);
             }
         }
         return result;
     }
     generateMatcher() {
-        this.logger.debug("Creating matcher.");
+        InputParser.logger.debug("Creating matcher.");
         const matchBase = "(\\S+)";
         const matchItems = this.legalQuotes
             .map((str) => `\\${str}`)
@@ -229,12 +228,13 @@ class InputParser {
             result = new RegExp(matchItems.join("|"), "g");
         }
         catch (e) {
-            this.logger.error("The parsing pattern is invalid, this should never happen.", e);
+            InputParser.logger.error("The parsing pattern is invalid, this should never happen.", e);
             throw e;
         }
         return result;
     }
 }
+InputParser.logger = clingyLoggerRoot.getLogger(InputParser);
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -247,8 +247,6 @@ class Clingy {
      * @param options       Option object.
      */
     constructor(commands = {}, options = {}) {
-        this.loggerRoot = clingyLoggerRoot;
-        this.logger = clingyLoggerRoot.getLogger(Clingy);
         this.lookupResolver = new LookupResolver(options.caseSensitive);
         this.inputParser = new InputParser(options.legalQuotes);
         this.map = new CommandMap(commands);
@@ -281,7 +279,7 @@ class Clingy {
      * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
      */
     getPath(path) {
-        this.logger.debug(`Resolving pathUsed: ${path}`);
+        Clingy.logger.debug(`Resolving pathUsed: ${path}`);
         return this.lookupResolver.resolve(this.mapAliased, path);
     }
     /**
@@ -292,29 +290,31 @@ class Clingy {
      * or {@link ILookupErrorMissingArgs}.
      */
     parse(input) {
-        this.logger.debug(`Parsing input: '${input}'`);
+        Clingy.logger.debug(`Parsing input: '${input}'`);
         return this.lookupResolver.resolve(this.mapAliased, this.inputParser.parse(input), true);
     }
     /**
      * @private
      */
     updateAliases() {
-        this.logger.debug("Updating aliased map.");
+        Clingy.logger.debug("Updating aliased map.");
         this.mapAliased.clear();
         this.map.forEach((value, key) => {
             this.mapAliased.set(key, value);
             value.alias.forEach(alias => {
                 if (this.mapAliased.has(alias)) {
-                    this.logger.warn(`Alias '${alias}' conflicts with a previously defined key, will be ignored.`);
+                    Clingy.logger.warn(`Alias '${alias}' conflicts with a previously defined key, will be ignored.`);
                 }
                 else {
-                    this.logger.trace(`Created alias '${alias}' for '${key}'`);
+                    Clingy.logger.trace(`Created alias '${alias}' for '${key}'`);
                     this.mapAliased.set(alias, value);
                 }
             });
         });
-        this.logger.debug("Done updating aliased map.");
+        Clingy.logger.debug("Done updating aliased map.");
     }
 }
+Clingy.loggerRoot = clingyLoggerRoot;
+Clingy.logger = clingyLoggerRoot.getLogger(Clingy);
 
 export { Clingy };

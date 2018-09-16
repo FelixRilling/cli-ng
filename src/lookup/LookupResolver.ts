@@ -15,7 +15,8 @@ import { ILookupSuccess } from "./result/ILookupSuccess";
  * Lookup tools for resolving paths through {@link CommandMap}s.
  */
 class LookupResolver {
-    private readonly logger = clingyLoggerRoot.getLogger(LookupResolver);
+    private static readonly logger = clingyLoggerRoot.getLogger(LookupResolver);
+
     private readonly caseSensitive: boolean;
 
     /**
@@ -63,7 +64,7 @@ class LookupResolver {
                 ? !mapAliased.has(currentPathFragment)
                 : !mapAliased.hasIgnoreCase(currentPathFragment)
         ) {
-            this.logger.warn(
+            LookupResolver.logger.warn(
                 `Command '${currentPathFragment}' could not be found.`
             );
             return <ILookupErrorNotFound>{
@@ -80,12 +81,12 @@ class LookupResolver {
                 ? mapAliased.get(currentPathFragment)
                 : mapAliased.getIgnoreCase(currentPathFragment))
         );
-        this.logger.debug(
+        LookupResolver.logger.debug(
             `Successfully looked up command: ${currentPathFragment}`
         );
 
         if (pathNew.length > 0 && !isNil(command.sub)) {
-            this.logger.debug(
+            LookupResolver.logger.debug(
                 `Resolving sub-commands: ${command.sub} ${pathNew}`
             );
             return this.resolveInternal(
@@ -102,14 +103,16 @@ class LookupResolver {
             isNil(command.args) ||
             command.args.length === 0
         ) {
-            this.logger.debug("No arguments defined, using empty list.");
+            LookupResolver.logger.debug(
+                "No arguments defined, using empty list."
+            );
             argumentsResolved = new Map();
         } else {
-            this.logger.debug(`Looking up arguments: ${pathNew}`);
+            LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
 
             if (argumentMatcher.missing.length > 0) {
-                this.logger.warn(
+                LookupResolver.logger.warn(
                     `Some arguments could not be found: ${argumentMatcher.missing.map(
                         arg => arg.name
                     )}`
@@ -125,7 +128,7 @@ class LookupResolver {
             }
 
             argumentsResolved = argumentMatcher.result;
-            this.logger.debug(
+            LookupResolver.logger.debug(
                 `Successfully looked up arguments: ${argumentsResolved}`
             );
         }
@@ -138,7 +141,7 @@ class LookupResolver {
             command,
             args: argumentsResolved
         };
-        this.logger.debug(
+        LookupResolver.logger.debug(
             `Returning successful lookup result: ${lookupSuccess}`
         );
 

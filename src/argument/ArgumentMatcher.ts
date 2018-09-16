@@ -2,11 +2,16 @@ import { clingyLoggerRoot } from "../loggerRoot";
 import { IArgument } from "./IArgument";
 import { resolvedArgumentMap } from "./resolvedArgumentMap";
 import { isNil } from "lightdash";
+import { ILogger } from "logby";
 
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
  */
 class ArgumentMatcher {
+    private static readonly logger: ILogger = clingyLoggerRoot.getLogger(
+        ArgumentMatcher
+    );
+
     public readonly missing: IArgument[];
     public readonly result: resolvedArgumentMap;
 
@@ -20,14 +25,15 @@ class ArgumentMatcher {
         this.missing = [];
         this.result = new Map<string, string>();
 
-        const logger = clingyLoggerRoot.getLogger(ArgumentMatcher);
-        logger.debug(`Matching arguments ${expected} with ${provided}`);
+        ArgumentMatcher.logger.debug(
+            `Matching arguments ${expected} with ${provided}`
+        );
 
         expected.forEach((expectedArg, i) => {
             if (i < provided.length) {
                 const providedArg = provided[i];
 
-                logger.trace(
+                ArgumentMatcher.logger.trace(
                     `Found matching argument for ${
                         expectedArg.name
                     }, adding to result: ${providedArg}`
@@ -37,14 +43,14 @@ class ArgumentMatcher {
                 !expectedArg.required &&
                 !isNil(expectedArg.defaultValue)
             ) {
-                logger.trace(
+                ArgumentMatcher.logger.trace(
                     `No matching argument found for ${
                         expectedArg.name
                     }, using default: ${expectedArg.defaultValue}`
                 );
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             } else {
-                logger.trace(
+                ArgumentMatcher.logger.trace(
                     `No matching argument found for ${
                         expectedArg.name
                     }, adding to missing.`
@@ -53,7 +59,7 @@ class ArgumentMatcher {
             }
         });
 
-        logger.debug(
+        ArgumentMatcher.logger.debug(
             `Finished matching arguments: ${expected.length} expected, ${
                 this.result.size
             } found and ${this.missing.length} missing.`

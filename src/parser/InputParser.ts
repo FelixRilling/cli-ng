@@ -5,7 +5,8 @@ import { arrCompact } from "lightdash";
  * Manages parsing input strings into a path list.
  */
 class InputParser {
-    private readonly logger = clingyLoggerRoot.getLogger(InputParser);
+    private static readonly logger = clingyLoggerRoot.getLogger(InputParser);
+
     public readonly legalQuotes: string[];
     public readonly pattern: RegExp;
 
@@ -27,18 +28,18 @@ class InputParser {
      * @return Path list.
      */
     public parse(input: string): string[] {
-        this.logger.debug(`Parsing input '${input}'`);
+        InputParser.logger.debug(`Parsing input '${input}'`);
         const result = [];
         const pattern = new RegExp(this.pattern);
         let match;
 
         // noinspection AssignmentResultUsedJS
         while ((match = pattern.exec(input))) {
-            this.logger.trace(`Found match '${match}'`);
+            InputParser.logger.trace(`Found match '${match}'`);
             const groups = arrCompact(match.slice(1));
 
             if (groups.length > 0) {
-                this.logger.trace(`Found group '${groups[0]}'`);
+                InputParser.logger.trace(`Found group '${groups[0]}'`);
                 result.push(groups[0]);
             }
         }
@@ -47,7 +48,7 @@ class InputParser {
     }
 
     private generateMatcher(): RegExp {
-        this.logger.debug("Creating matcher.");
+        InputParser.logger.debug("Creating matcher.");
         const matchBase = "(\\S+)";
         const matchItems = this.legalQuotes
             .map((str: string): string => `\\${str}`)
@@ -60,7 +61,7 @@ class InputParser {
         try {
             result = new RegExp(matchItems.join("|"), "g");
         } catch (e) {
-            this.logger.error(
+            InputParser.logger.error(
                 "The parsing pattern is invalid, this should never happen.",
                 e
             );

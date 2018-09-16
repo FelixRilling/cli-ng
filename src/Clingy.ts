@@ -13,8 +13,9 @@ import { IClingyOptions } from "./IClingyOptions";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    public readonly loggerRoot = clingyLoggerRoot;
-    public readonly logger = clingyLoggerRoot.getLogger(Clingy);
+    public static readonly loggerRoot = clingyLoggerRoot;
+    private static readonly logger = clingyLoggerRoot.getLogger(Clingy);
+
     public readonly lookupResolver: LookupResolver;
     public readonly inputParser: InputParser;
     public readonly map: CommandMap;
@@ -67,7 +68,7 @@ class Clingy {
      * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
      */
     public getPath(path: commandPath): ILookupResult {
-        this.logger.debug(`Resolving pathUsed: ${path}`);
+        Clingy.logger.debug(`Resolving pathUsed: ${path}`);
         return this.lookupResolver.resolve(this.mapAliased, path);
     }
 
@@ -79,7 +80,7 @@ class Clingy {
      * or {@link ILookupErrorMissingArgs}.
      */
     public parse(input: string): ILookupResult {
-        this.logger.debug(`Parsing input: '${input}'`);
+        Clingy.logger.debug(`Parsing input: '${input}'`);
         return this.lookupResolver.resolve(
             this.mapAliased,
             this.inputParser.parse(input),
@@ -91,7 +92,7 @@ class Clingy {
      * @private
      */
     updateAliases() {
-        this.logger.debug("Updating aliased map.");
+        Clingy.logger.debug("Updating aliased map.");
         this.mapAliased.clear();
 
         this.map.forEach((value, key) => {
@@ -99,17 +100,19 @@ class Clingy {
 
             value.alias.forEach(alias => {
                 if (this.mapAliased.has(alias)) {
-                    this.logger.warn(
+                    Clingy.logger.warn(
                         `Alias '${alias}' conflicts with a previously defined key, will be ignored.`
                     );
                 } else {
-                    this.logger.trace(`Created alias '${alias}' for '${key}'`);
+                    Clingy.logger.trace(
+                        `Created alias '${alias}' for '${key}'`
+                    );
                     this.mapAliased.set(alias, value);
                 }
             });
         });
 
-        this.logger.debug("Done updating aliased map.");
+        Clingy.logger.debug("Done updating aliased map.");
     }
 }
 

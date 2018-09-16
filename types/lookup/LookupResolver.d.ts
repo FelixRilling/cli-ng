@@ -5,7 +5,7 @@ import { ILookupResult } from "./result/ILookupResult";
  * Lookup tools for resolving paths through {@link CommandMap}s.
  */
 declare class LookupResolver {
-    private readonly logger;
+    private static readonly logger;
     private readonly caseSensitive;
     /**
      * Creates a new {@link LookupResolver}.

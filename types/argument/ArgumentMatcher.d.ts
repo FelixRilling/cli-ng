@@ -4,6 +4,7 @@ import { resolvedArgumentMap } from "./resolvedArgumentMap";
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
  */
 declare class ArgumentMatcher {
+    private static readonly logger;
     readonly missing: IArgument[];
     readonly result: resolvedArgumentMap;
     /**

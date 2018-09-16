@@ -2,7 +2,7 @@
  * Manages parsing input strings into a path list.
  */
 declare class InputParser {
-    private readonly logger;
+    private static readonly logger;
     readonly legalQuotes: string[];
     readonly pattern: RegExp;
     /**

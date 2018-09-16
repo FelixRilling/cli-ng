@@ -11,8 +11,8 @@ import { IClingyOptions } from "./IClingyOptions";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 declare class Clingy {
-    readonly loggerRoot: import("logby/types/Logby").Logby;
-    readonly logger: import("logby/types/logger/ILogger").ILogger;
+    static readonly loggerRoot: import("logby/types/Logby").Logby;
+    private static readonly logger;
     readonly lookupResolver: LookupResolver;
     readonly inputParser: InputParser;
     readonly map: CommandMap;

@@ -1,11 +1,10 @@
-import { InputParser } from "../../src/parser/InputParser";
 import { isRegExp } from "lightdash";
+import { InputParser } from "../../src/parser/InputParser";
 
 /**
  * Tests for {@link InputParser}.
  */
 describe("InputParser", () => {
-
     it("Asserts that InputParser creates a matcher pattern.", () => {
         expect(isRegExp(new InputParser().pattern)).toBeTruthy();
     });
@@ -28,7 +27,7 @@ describe("InputParser", () => {
 
     it("Asserts that InputParser honors quotes when splitting.", () => {
         // noinspection TsLint
-        const inputParser = new InputParser(['"', "'"]);
+        const inputParser = new InputParser(["\"", "'"]);
 
         expect(inputParser.parse("'foo bar'")).toEqual(["foo bar"]);
         expect(inputParser.parse("foo 'bar'")).toEqual(["foo", "bar"]);

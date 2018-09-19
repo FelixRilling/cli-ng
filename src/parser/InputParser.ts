@@ -1,5 +1,5 @@
-import { clingyLoggerRoot } from "../loggerRoot";
 import { arrCompact } from "lightdash";
+import { clingyLoggerRoot } from "../loggerRoot";
 
 /**
  * Manages parsing input strings into a path list.
@@ -16,7 +16,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes: string[] = ['"']) {
+    constructor(legalQuotes: string[] = ["\""]) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }

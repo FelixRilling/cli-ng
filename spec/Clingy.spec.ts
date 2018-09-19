@@ -1,6 +1,6 @@
 import { Clingy } from "../src/Clingy";
-import { ICommand } from "../src/command/ICommand";
 import { CommandMap } from "../src/command/CommandMap";
+import { ICommand } from "../src/command/ICommand";
 
 const createCommand = (): ICommand => {
     return {

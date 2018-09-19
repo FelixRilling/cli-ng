@@ -5,7 +5,6 @@ import { ICommand } from "../../src/command/ICommand";
  * Tests for {@link CommandMap}.
  */
 describe("CommandMap", () => {
-
     it("Asserts that CommandMap#hasIgnoreCase checks keys.", () => {
         const commandMap = new CommandMap();
         const command: ICommand = {

@@ -1,13 +1,13 @@
 import { CommandMap } from "./command/CommandMap";
 import { commandPath } from "./command/commandPath";
 import { ICommand } from "./command/ICommand";
+import { IObjWithCommands } from "./command/IObjWithCommands";
+import { mapWithCommands } from "./command/mapWithCommands";
+import { IClingyOptions } from "./IClingyOptions";
 import { clingyLoggerRoot } from "./loggerRoot";
 import { LookupResolver } from "./lookup/LookupResolver";
 import { ILookupResult } from "./lookup/result/ILookupResult";
 import { InputParser } from "./parser/InputParser";
-import { mapWithCommands } from "./command/mapWithCommands";
-import { IObjWithCommands } from "./command/IObjWithCommands";
-import { IClingyOptions } from "./IClingyOptions";
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -91,7 +91,7 @@ class Clingy {
     /**
      * @private
      */
-    updateAliases() {
+    public updateAliases() {
         Clingy.logger.debug("Updating aliased map.");
         this.mapAliased.clear();
 

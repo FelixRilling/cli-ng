@@ -5,7 +5,6 @@ import { IArgument } from "../../src/argument/IArgument";
  * Tests for {@link ArgumentMatcher}.
  */
 describe("ArgumentMatcher", () => {
-
     it("Asserts that ArgumentMatcher works with an empty list.", () => {
         const argumentMatcher = new ArgumentMatcher([], []);
 

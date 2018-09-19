@@ -1,7 +1,7 @@
-import { ICommand } from "./ICommand";
-import { mapWithCommands } from "./mapWithCommands";
-import { IObjWithCommands } from "./IObjWithCommands";
 import { isMap, isObject } from "lightdash";
+import { ICommand } from "./ICommand";
+import { IObjWithCommands } from "./IObjWithCommands";
+import { mapWithCommands } from "./mapWithCommands";
 
 const getConstructorMap = (
     input?: mapWithCommands | IObjWithCommands

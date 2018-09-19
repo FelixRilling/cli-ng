@@ -194,7 +194,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ['"']) {
+    constructor(legalQuotes = ["\""]) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }

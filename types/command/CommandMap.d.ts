@@ -1,6 +1,6 @@
 import { ICommand } from "./ICommand";
-import { mapWithCommands } from "./mapWithCommands";
 import { IObjWithCommands } from "./IObjWithCommands";
+import { mapWithCommands } from "./mapWithCommands";
 /**
  * Map containing {@link ICommand}s.
  */

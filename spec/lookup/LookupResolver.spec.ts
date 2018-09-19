@@ -1,12 +1,16 @@
-import { CommandMap } from "../../src/command/CommandMap";
-import { LookupResolver } from "../../src/lookup/LookupResolver";
-import { ResultType } from "../../src/lookup/result/ILookupResult";
-import { ILookupErrorNotFound } from "../../src/lookup/result/ILookupErrorNotFound";
 import { IArgument } from "../../src/argument/IArgument";
-import { ICommand } from "../../src/command/ICommand";
-import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMissingArgs";
-import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
 import { Clingy } from "../../src/Clingy";
+import { CommandMap } from "../../src/command/CommandMap";
+import { ICommand } from "../../src/command/ICommand";
+import { LookupResolver } from "../../src/lookup/LookupResolver";
+import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMissingArgs";
+import { ILookupErrorNotFound } from "../../src/lookup/result/ILookupErrorNotFound";
+import { ResultType } from "../../src/lookup/result/ILookupResult";
+import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
+
+// noinspection TsLint
+const noopFn = () => {
+};
 
 /**
  * Tests for {@link LookupResolver}.
@@ -35,7 +39,7 @@ describe("LookupResolver", () => {
         const commandName = "foo";
         const argument: IArgument = { name: "bar", required: true };
         const command: ICommand = {
-            fn: () => {},
+            fn: noopFn,
             alias: [],
             args: [argument]
         };
@@ -58,7 +62,7 @@ describe("LookupResolver", () => {
     it("Asserts that LookupResolver#resolve returns the Command.", () => {
         const commandName = "foo";
         const command: ICommand = {
-            fn: () => {},
+            fn: noopFn,
             alias: [],
             args: []
         };
@@ -78,7 +82,7 @@ describe("LookupResolver", () => {
         const commandName = "foo";
         const commandNames = ["foo", "bar", "fizz"];
         const command: ICommand = {
-            fn: () => {},
+            fn: noopFn,
             alias: [],
             args: []
         };
@@ -98,7 +102,7 @@ describe("LookupResolver", () => {
     it("Asserts that LookupResolver#resolve honors caseSensitive.", () => {
         const commandName = "foo";
         const command: ICommand = {
-            fn: () => {},
+            fn: noopFn,
             alias: [],
             args: []
         };
@@ -120,11 +124,10 @@ describe("LookupResolver", () => {
             command
         );
     });
-
     it("Asserts that LookupResolver#resolve resolves sub-commands.", () => {
         const commandName2 = "bar";
         const command2: ICommand = {
-            fn: () => {},
+            fn: noopFn,
             alias: [],
             args: []
         };
@@ -134,7 +137,7 @@ describe("LookupResolver", () => {
 
         const commandName1 = "foo";
         const command1: ICommand = {
-            fn: () => {},
+            fn: noopFn,
             alias: [],
             args: [],
             sub: clingy
@@ -155,7 +158,7 @@ describe("LookupResolver", () => {
         const argumentName = "baa";
         const argument: IArgument = { name: argumentName, required: true };
         const command2: ICommand = {
-            fn: () => {},
+            fn: noopFn,
             alias: [],
             args: [argument]
         };
@@ -165,7 +168,7 @@ describe("LookupResolver", () => {
 
         const commandName1 = "foo";
         const command1: ICommand = {
-            fn: () => {},
+            fn: noopFn,
             alias: [],
             args: [],
             sub: clingy

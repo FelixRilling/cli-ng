@@ -1,3 +1,4 @@
 import { Clingy } from "./Clingy";
+import { clingyLoggerRoot } from "./loggerRoot";
 
-export { Clingy };
+export { Clingy, clingyLoggerRoot };

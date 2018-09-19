@@ -314,7 +314,6 @@ class Clingy {
         Clingy.logger.debug("Done updating aliased map.");
     }
 }
-Clingy.loggerRoot = clingyLoggerRoot;
 Clingy.logger = clingyLoggerRoot.getLogger(Clingy);
 
-export { Clingy };
+export { Clingy, clingyLoggerRoot };

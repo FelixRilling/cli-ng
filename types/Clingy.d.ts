@@ -11,7 +11,6 @@ import { InputParser } from "./parser/InputParser";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 declare class Clingy {
-    static readonly loggerRoot: import("logby/types/Logby").Logby;
     private static readonly logger;
     readonly lookupResolver: LookupResolver;
     readonly inputParser: InputParser;

@@ -13,7 +13,6 @@ import { InputParser } from "./parser/InputParser";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    public static readonly loggerRoot = clingyLoggerRoot;
     private static readonly logger = clingyLoggerRoot.getLogger(Clingy);
 
     public readonly lookupResolver: LookupResolver;

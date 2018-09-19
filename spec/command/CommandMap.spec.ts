@@ -1,15 +1,10 @@
 import { CommandMap } from "../../src/command/CommandMap";
 import { ICommand } from "../../src/command/ICommand";
-import { clingyLoggerRoot } from "../../src/loggerRoot";
-import { Level } from "logby";
 
 /**
  * Tests for {@link CommandMap}.
  */
 describe("CommandMap", () => {
-    beforeAll(() => {
-        clingyLoggerRoot.level = Level.NONE;
-    });
 
     it("Asserts that CommandMap#hasIgnoreCase checks keys.", () => {
         const commandMap = new CommandMap();

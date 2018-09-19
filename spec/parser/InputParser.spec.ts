@@ -1,15 +1,10 @@
 import { InputParser } from "../../src/parser/InputParser";
 import { isRegExp } from "lightdash";
-import { clingyLoggerRoot } from "../../src/loggerRoot";
-import { Level } from "logby";
 
 /**
  * Tests for {@link InputParser}.
  */
 describe("InputParser", () => {
-    beforeAll(() => {
-        clingyLoggerRoot.level = Level.NONE;
-    });
 
     it("Asserts that InputParser creates a matcher pattern.", () => {
         expect(isRegExp(new InputParser().pattern)).toBeTruthy();

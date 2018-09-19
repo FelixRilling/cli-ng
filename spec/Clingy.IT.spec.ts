@@ -5,8 +5,6 @@ import { ResultType } from "../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../src/lookup/result/ILookupSuccess";
 import { ILookupErrorNotFound } from "../src/lookup/result/ILookupErrorNotFound";
 import { ILookupErrorMissingArgs } from "../src/lookup/result/ILookupErrorMissingArgs";
-import { Level } from "logby";
-import { clingyLoggerRoot } from "../src/loggerRoot";
 
 /**
  * Integration tests for example {@link Clingy} usage.
@@ -16,10 +14,6 @@ describe("ClingyIT", () => {
     let argument1: IArgument;
     let command1: ICommand;
     let command2: ICommand;
-
-    beforeAll(() => {
-        clingyLoggerRoot.level = Level.NONE;
-    });
 
     beforeEach(() => {
         const commandMap = new Map<string, ICommand>();

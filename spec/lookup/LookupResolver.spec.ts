@@ -6,17 +6,12 @@ import { IArgument } from "../../src/argument/IArgument";
 import { ICommand } from "../../src/command/ICommand";
 import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMissingArgs";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
-import { clingyLoggerRoot } from "../../src/loggerRoot";
-import { Level } from "logby";
 import { Clingy } from "../../src/Clingy";
 
 /**
  * Tests for {@link LookupResolver}.
  */
 describe("LookupResolver", () => {
-    beforeAll(() => {
-        clingyLoggerRoot.level = Level.NONE;
-    });
 
     it("Asserts that LookupResolver#resolve throws an Error for an empty path.", () => {
         expect(() => {

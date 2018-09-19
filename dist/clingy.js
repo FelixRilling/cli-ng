@@ -38,6 +38,24 @@ var clingy = (function (exports) {
     const isInstanceOf = (val, target) => val instanceof target;
 
     /**
+     * Checks if the value has a certain type-string.
+     *
+     * @function isTypeOf
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @param {string} type
+     * @returns {boolean}
+     * @example
+     * isTypeOf("foo", "string")
+     * // => true
+     *
+     * isTypeOf("foo", "number")
+     * // => false
+     */
+    const isTypeOf = (val, type) => typeof val === type;
+
+    /**
      * Checks if a value is undefined or null.
      *
      * @function isNil
@@ -59,24 +77,6 @@ var clingy = (function (exports) {
      * // => false
      */
     const isNil = (val) => val == null;
-
-    /**
-     * Checks if the value has a certain type-string.
-     *
-     * @function isTypeOf
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @param {string} type
-     * @returns {boolean}
-     * @example
-     * isTypeOf("foo", "string")
-     * // => true
-     *
-     * isTypeOf("foo", "number")
-     * // => false
-     */
-    const isTypeOf = (val, type) => typeof val === type;
 
     /**
      * Checks if a value is a map.
@@ -236,9 +236,7 @@ var clingy = (function (exports) {
      */
     const strSimilar = (str, list, returnFull = false) => {
         const result = arrCollect(list, (val) => strDistance(str, val));
-        return returnFull
-            ? result
-            : result.get(Math.min(...result.keys()));
+        return returnFull ? result : result.get(Math.min(...result.keys()));
     };
 
     const getConstructorMap = (input) => {
@@ -285,32 +283,33 @@ var clingy = (function (exports) {
         }
     }
 
+    // noinspection TsLint
     /**
      * Default level-list.
      */
-    const Level = {
+    const Levels = {
         NONE: {
             val: -1
         },
         ERROR: {
-            val: 0,
-            name: "ERROR"
+            name: "ERROR",
+            val: 0
         },
         WARN: {
-            val: 1,
-            name: "WARN"
+            name: "WARN",
+            val: 1
         },
         INFO: {
-            val: 2,
-            name: "INFO"
+            name: "INFO",
+            val: 2
         },
         DEBUG: {
-            val: 3,
-            name: "DEBUG"
+            name: "DEBUG",
+            val: 3
         },
         TRACE: {
-            val: 4,
-            name: "TRACE"
+            name: "TRACE",
+            val: 4
         }
     };
 
@@ -331,6 +330,24 @@ var clingy = (function (exports) {
      * isArray({});
      * // => false
      */
+
+    /**
+     * Checks if the value has a certain type-string.
+     *
+     * @function isTypeOf
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val
+     * @param {string} type
+     * @returns {boolean}
+     * @example
+     * isTypeOf("foo", "string")
+     * // => true
+     *
+     * isTypeOf("foo", "number")
+     * // => false
+     */
+    const isTypeOf$1 = (val, type) => typeof val === type;
 
     /**
      * Checks if a value is undefined or null.
@@ -354,24 +371,6 @@ var clingy = (function (exports) {
      * // => false
      */
     const isNil$1 = (val) => val == null;
-
-    /**
-     * Checks if the value has a certain type-string.
-     *
-     * @function isTypeOf
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @param {string} type
-     * @returns {boolean}
-     * @example
-     * isTypeOf("foo", "string")
-     * // => true
-     *
-     * isTypeOf("foo", "number")
-     * // => false
-     */
-    const isTypeOf$1 = (val, type) => typeof val === type;
 
     /**
      * Checks if a value is a string.
@@ -413,12 +412,14 @@ var clingy = (function (exports) {
      */
     const isObject$1 = (val) => !isNil$1(val) && (isTypeOf$1(val, "object") || isTypeOf$1(val, "function"));
 
+    const defaultAppenderFn = (level, name, args) => console.log(`${new Date().toISOString()} ${level.name} ${name}`, ...args);
+
     /**
-     * Logger class.
+     * Default {@link ILogger} class.
      */
-    class Logger {
+    class DefaultLogger {
         /**
-         * Creates a new {@link Logger}.
+         * Creates a new {@link DefaultLogger}.
          * Should not be constructed directly, rather use {@link Logby.getLogger}
          *
          * @param root Root logger of this logger.
@@ -431,7 +432,7 @@ var clingy = (function (exports) {
         /**
          * Logs a message.
          *
-         * @param level Level of the log.
+         * @param level Levels of the log.
          * @param args arguments to be logged.
          */
         log(level, ...args) {
@@ -445,7 +446,7 @@ var clingy = (function (exports) {
          * @param args arguments to be logged.
          */
         error(...args) {
-            this.log(Level.ERROR, args);
+            this.log(Levels.ERROR, ...args);
         }
         /**
          * Logs a warning.
@@ -453,7 +454,7 @@ var clingy = (function (exports) {
          * @param args arguments to be logged.
          */
         warn(...args) {
-            this.log(Level.WARN, args);
+            this.log(Levels.WARN, ...args);
         }
         /**
          * Logs an info.
@@ -461,7 +462,7 @@ var clingy = (function (exports) {
          * @param args arguments to be logged.
          */
         info(...args) {
-            this.log(Level.INFO, args);
+            this.log(Levels.INFO, ...args);
         }
         /**
          * Logs a debug message.
@@ -469,7 +470,7 @@ var clingy = (function (exports) {
          * @param args arguments to be logged.
          */
         debug(...args) {
-            this.log(Level.DEBUG, args);
+            this.log(Levels.DEBUG, ...args);
         }
         /**
          * Logs a trace message.
@@ -477,22 +478,20 @@ var clingy = (function (exports) {
          * @param args arguments to be logged.
          */
         trace(...args) {
-            this.log(Level.TRACE, args);
+            this.log(Levels.TRACE, ...args);
         }
     }
 
-    const defaultAppenderFn = (level, name, args) => console.log(`${new Date().toISOString()} ${level.name} ${name}`, ...args);
-
     /**
-     * Logger-root class.
+     * DefaultLogger-root class.
      */
     class Logby {
         /**
          * Creates a new logger module.
          *
-         * @param level Level of this logger-root loggers.
+         * @param level Levels of this logger-root loggers.
          */
-        constructor(level = Level.INFO) {
+        constructor(level = Levels.INFO) {
             this.loggerMap = new Map();
             this.level = level;
             this.appenderQueue = [defaultAppenderFn];
@@ -501,7 +500,7 @@ var clingy = (function (exports) {
          * Get a logger instance.
          *
          * @param nameable A string or an INameable (ex: class, function).
-         * @returns The Logger instance.
+         * @returns The DefaultLogger instance.
          */
         getLogger(nameable) {
             let name;
@@ -517,7 +516,7 @@ var clingy = (function (exports) {
             if (this.loggerMap.has(name)) {
                 return this.loggerMap.get(name);
             }
-            const logger = new Logger(this, name);
+            const logger = new DefaultLogger(this, name);
             this.loggerMap.set(name, logger);
             return logger;
         }

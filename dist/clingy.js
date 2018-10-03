@@ -283,9 +283,10 @@ var clingy = (function (exports) {
         }
     }
 
-    // noinspection TsLint
     /**
      * Default level-list.
+     *
+     * @public
      */
     const Levels = {
         NONE: {
@@ -412,10 +413,36 @@ var clingy = (function (exports) {
      */
     const isObject$1 = (val) => !isNil$1(val) && (isTypeOf$1(val, "object") || isTypeOf$1(val, "function"));
 
-    const defaultAppenderFn = (level, name, args) => console.log(`${new Date().toISOString()} ${level.name} ${name}`, ...args);
+    /**
+     * The default appender-fn, doing the actual logging.
+     *
+     * @private
+     * @param level Level of the entry to log.
+     * @param name Name of the logger instance.
+     * @param args Arguments to log.
+     */
+    const defaultAppenderFn = (level, name, args) => {
+        const meta = `${new Date().toISOString()} ${level.name} ${name}`;
+        let loggerFn = console.log;
+        if (level === Levels.ERROR) {
+            // tslint:disable-next-line
+            loggerFn = console.error;
+        }
+        else if (level === Levels.WARN) {
+            // tslint:disable-next-line
+            loggerFn = console.warn;
+        }
+        else if (level === Levels.INFO) {
+            // tslint:disable-next-line
+            loggerFn = console.info;
+        }
+        loggerFn(meta, ...args);
+    };
 
     /**
      * Default {@link ILogger} class.
+     *
+     * @private
      */
     class DefaultLogger {
         /**
@@ -483,7 +510,9 @@ var clingy = (function (exports) {
     }
 
     /**
-     * DefaultLogger-root class.
+     * Logger-root class.
+     *
+     * @public
      */
     class Logby {
         /**
@@ -497,10 +526,10 @@ var clingy = (function (exports) {
             this.appenderQueue = [defaultAppenderFn];
         }
         /**
-         * Get a logger instance.
+         * Get and/or creates a logger instance.
          *
          * @param nameable A string or an INameable (ex: class, function).
-         * @returns The DefaultLogger instance.
+         * @returns The logger instance.
          */
         getLogger(nameable) {
             let name;

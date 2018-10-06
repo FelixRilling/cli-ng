@@ -3,6 +3,8 @@ import { commandPath } from "../command/commandPath";
 import { ILookupResult } from "./result/ILookupResult";
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
+ *
+ * @private
  */
 declare class LookupResolver {
     private static readonly logger;

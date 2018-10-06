@@ -1,5 +1,7 @@
 /**
  * Manages parsing input strings into a path list.
+ *
+ * @private
  */
 declare class InputParser {
     private static readonly logger;

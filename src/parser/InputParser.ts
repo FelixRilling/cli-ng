@@ -3,6 +3,8 @@ import { clingyLogby } from "../logger";
 
 /**
  * Manages parsing input strings into a path list.
+ *
+ * @private
  */
 class InputParser {
     private static readonly logger = clingyLogby.getLogger(InputParser);

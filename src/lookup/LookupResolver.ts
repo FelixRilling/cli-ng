@@ -14,6 +14,8 @@ import { ILookupSuccess } from "./result/ILookupSuccess";
 
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
+ *
+ * @private
  */
 class LookupResolver {
     private static readonly logger = clingyLogby.getLogger(LookupResolver);

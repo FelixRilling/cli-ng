@@ -22,6 +22,26 @@ class CommandMap extends Map {
         super(getConstructorMap(input));
     }
     /**
+     * Creates a new instance with {@link Clingy} options to inherit.
+     *
+     * @param commands Command input to use.
+     * @param options Options for the Clingy instance.
+     */
+    static createWithOptions(commands, options) {
+        if (lightdash.isMap(commands)) {
+            commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
+        }
+        else if (lightdash.isObjectPlain(commands)) {
+            lightdash.forEachEntry(commands, (key, val) => CommandMap.createWithOptionsHelper(val, options));
+        }
+        return new CommandMap(commands);
+    }
+    static createWithOptionsHelper(command, options) {
+        if (lightdash.isObjectPlain(command.sub) || lightdash.isMap(command.sub)) {
+            command.sub = new Clingy(CommandMap.createWithOptions(command.sub, options), options);
+        }
+    }
+    /**
      * Checks if the map contains a key, ignoring case.
      *
      * @param key Key to check for.
@@ -53,6 +73,8 @@ const clingyLogby = new logby.Logby();
 
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
+ *
+ * @private
  */
 class ArgumentMatcher {
     /**
@@ -89,6 +111,7 @@ ArgumentMatcher.logger = clingyLogby.getLogger(ArgumentMatcher);
 /**
  * Gets similar keys of a key based on their string distance.
  *
+ * @private
  * @param mapAliased Map to use for lookup.
  * @param name       Key to use.
  * @return List of similar keys.
@@ -97,6 +120,8 @@ const getSimilar = (mapAliased, name) => lightdash.strSimilar(name, Array.from(m
 
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
+ *
+ * @private
  */
 class LookupResolver {
     /**
@@ -143,7 +168,7 @@ class LookupResolver {
             ? mapAliased.get(currentPathFragment)
             : mapAliased.getIgnoreCase(currentPathFragment)));
         LookupResolver.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
-        if (pathNew.length > 0 && !lightdash.isNil(command.sub)) {
+        if (pathNew.length > 0 && lightdash.isInstanceOf(command.sub, Clingy)) {
             LookupResolver.logger.debug(`Resolving sub-commands: ${command.sub} ${pathNew}`);
             return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
         }
@@ -186,6 +211,8 @@ LookupResolver.logger = clingyLogby.getLogger(LookupResolver);
 
 /**
  * Manages parsing input strings into a path list.
+ *
+ * @private
  */
 class InputParser {
     // noinspection TsLint
@@ -194,7 +221,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ["\""]) {
+    constructor(legalQuotes = ['"']) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
@@ -253,7 +280,7 @@ class Clingy {
     constructor(commands = {}, options = {}) {
         this.lookupResolver = new LookupResolver(options.caseSensitive);
         this.inputParser = new InputParser(options.legalQuotes);
-        this.map = new CommandMap(commands);
+        this.map = CommandMap.createWithOptions(commands, options);
         this.mapAliased = new CommandMap();
         this.updateAliases();
     }

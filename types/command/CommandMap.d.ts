@@ -1,3 +1,4 @@
+import { IClingyOptions } from "../IClingyOptions";
 import { ICommand } from "./ICommand";
 import { IObjWithCommands } from "./IObjWithCommands";
 import { mapWithCommands } from "./mapWithCommands";
@@ -6,6 +7,14 @@ import { mapWithCommands } from "./mapWithCommands";
  */
 declare class CommandMap extends Map<string, ICommand> {
     constructor(input?: mapWithCommands | IObjWithCommands);
+    /**
+     * Creates a new instance with {@link Clingy} options to inherit.
+     *
+     * @param commands Command input to use.
+     * @param options Options for the Clingy instance.
+     */
+    static createWithOptions(commands: mapWithCommands | IObjWithCommands, options: IClingyOptions): CommandMap;
+    private static createWithOptionsHelper;
     /**
      * Checks if the map contains a key, ignoring case.
      *

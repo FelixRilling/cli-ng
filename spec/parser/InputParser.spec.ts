@@ -27,7 +27,7 @@ describe("InputParser", () => {
 
     it("Asserts that InputParser honors quotes when splitting.", () => {
         // noinspection TsLint
-        const inputParser = new InputParser(["\"", "'"]);
+        const inputParser = new InputParser(['"', "'"]);
 
         expect(inputParser.parse("'foo bar'")).toEqual(["foo bar"]);
         expect(inputParser.parse("foo 'bar'")).toEqual(["foo", "bar"]);

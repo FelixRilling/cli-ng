@@ -1,4 +1,6 @@
-import { isMap, isObject } from "lightdash";
+import { forEachEntry, isMap, isObject, isObjectPlain } from "lightdash";
+import { Clingy } from "../Clingy";
+import { IClingyOptions } from "../IClingyOptions";
 import { ICommand } from "./ICommand";
 import { IObjWithCommands } from "./IObjWithCommands";
 import { mapWithCommands } from "./mapWithCommands";
@@ -23,6 +25,43 @@ class CommandMap extends Map<string, ICommand> {
         super(getConstructorMap(input));
     }
 
+    /**
+     * Creates a new instance with {@link Clingy} options to inherit.
+     *
+     * @param commands Command input to use.
+     * @param options Options for the Clingy instance.
+     */
+    public static createWithOptions(
+        commands: mapWithCommands | IObjWithCommands,
+        options: IClingyOptions
+    ): CommandMap {
+        if (isMap(commands)) {
+            commands.forEach(val =>
+                CommandMap.createWithOptionsHelper(val, options)
+            );
+        } else if (isObjectPlain(commands)) {
+            forEachEntry(commands, (key, val) =>
+                CommandMap.createWithOptionsHelper(val, options)
+            );
+        }
+
+        return new CommandMap(commands);
+    }
+
+    private static createWithOptionsHelper(
+        command: ICommand,
+        options: IClingyOptions
+    ) {
+        if (isObjectPlain(command.sub) || isMap(command.sub)) {
+            command.sub = new Clingy(
+                CommandMap.createWithOptions(
+                    <mapWithCommands>command.sub,
+                    options
+                ),
+                options
+            );
+        }
+    }
     /**
      * Checks if the map contains a key, ignoring case.
      *

@@ -9,14 +9,12 @@ import { ResultType } from "../../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
 
 // noinspection TsLint
-const noopFn = () => {
-};
+const noopFn = () => {};
 
 /**
  * Tests for {@link LookupResolver}.
  */
 describe("LookupResolver", () => {
-
     it("Asserts that LookupResolver#resolve throws an Error for an empty path.", () => {
         expect(() => {
             new LookupResolver().resolve(new CommandMap(), []);

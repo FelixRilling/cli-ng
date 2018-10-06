@@ -1,6 +1,7 @@
-import { isNil } from "lightdash";
+import { isInstanceOf, isNil } from "lightdash";
 import { ArgumentMatcher } from "../argument/ArgumentMatcher";
 import { resolvedArgumentMap } from "../argument/resolvedArgumentMap";
+import { Clingy } from "../Clingy";
 import { CommandMap } from "../command/CommandMap";
 import { commandPath } from "../command/commandPath";
 import { ICommand } from "../command/ICommand";
@@ -85,12 +86,12 @@ class LookupResolver {
             `Successfully looked up command: ${currentPathFragment}`
         );
 
-        if (pathNew.length > 0 && !isNil(command.sub)) {
+        if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
             LookupResolver.logger.debug(
                 `Resolving sub-commands: ${command.sub} ${pathNew}`
             );
             return this.resolveInternal(
-                command.sub.mapAliased,
+                (<Clingy>command.sub).mapAliased,
                 pathNew,
                 pathUsed,
                 parseArguments

@@ -25,7 +25,7 @@ describe("Clingy", () => {
         expect(clingy.getCommand(commandName)).toBe(command);
     });
 
-    it("Asserts that Clingy constructs with sub-commands.", () => {
+    it("Asserts that Clingy constructs with sub-commands as Clingy instances.", () => {
         const commandName2 = "foo";
         const command2: ICommand = createCommand();
         const commandMap2 = new CommandMap();
@@ -35,6 +35,45 @@ describe("Clingy", () => {
         const commandName1 = "foo";
         const command1 = createCommand();
         command1.sub = clingy2;
+        const commandMap1 = new CommandMap();
+        commandMap1.set(commandName1, command1);
+
+        const clingy1 = new Clingy(commandMap1);
+
+        const mapEntry = <ICommand>clingy1.getCommand(commandName1);
+        expect(mapEntry).toBe(command1);
+        expect((<Clingy>mapEntry.sub).getCommand(commandName2)).toBe(command2);
+    });
+
+    it("Asserts that Clingy constructs with sub-commands as Maps.", () => {
+        const commandName2 = "foo";
+        const command2: ICommand = createCommand();
+        const map2 = new Map();
+        map2.set(commandName2, command2);
+
+        const commandName1 = "foo";
+        const command1 = createCommand();
+        command1.sub = map2;
+        const commandMap1 = new CommandMap();
+        commandMap1.set(commandName1, command1);
+
+        const clingy1 = new Clingy(commandMap1);
+
+        const mapEntry = <ICommand>clingy1.getCommand(commandName1);
+        expect(mapEntry).toBe(command1);
+        expect((<Clingy>mapEntry.sub).getCommand(commandName2)).toBe(command2);
+    });
+
+    it("Asserts that Clingy constructs with sub-commands as Objects.", () => {
+        const commandName2 = "foo";
+        const command2: ICommand = createCommand();
+        const obj2 = {
+            [commandName2]: command2
+        };
+
+        const commandName1 = "foo";
+        const command1 = createCommand();
+        command1.sub = obj2;
         const commandMap1 = new CommandMap();
         commandMap1.set(commandName1, command1);
 

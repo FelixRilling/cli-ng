@@ -32,7 +32,7 @@ class Clingy {
     ) {
         this.lookupResolver = new LookupResolver(options.caseSensitive);
         this.inputParser = new InputParser(options.legalQuotes);
-        this.map = new CommandMap(commands);
+        this.map = CommandMap.createWithOptions(commands, options);
         this.mapAliased = new CommandMap();
         this.updateAliases();
     }

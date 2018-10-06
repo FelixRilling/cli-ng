@@ -314,6 +314,32 @@ var clingy = (function (exports) {
         }
     };
 
+    const DEFAULT_APPENDER_NAME = "defaultAppender";
+    /**
+     * The default appender-fn, doing the actual logging.
+     *
+     * @private
+     * @param level Level of the entry to log.
+     * @param name Name of the logger instance.
+     * @param args Arguments to log.
+     */
+    const defaultAppenderFn = (level, name, args) => {
+        let loggerFn = console.log;
+        if (level === Levels.ERROR) {
+            // tslint:disable-next-line
+            loggerFn = console.error;
+        }
+        else if (level === Levels.WARN) {
+            // tslint:disable-next-line
+            loggerFn = console.warn;
+        }
+        else if (level === Levels.INFO) {
+            // tslint:disable-next-line
+            loggerFn = console.info;
+        }
+        loggerFn(`${new Date().toISOString()} ${level.name} ${name}`, ...args);
+    };
+
     /**
      * Checks if a value is an array.
      *
@@ -414,32 +440,6 @@ var clingy = (function (exports) {
     const isObject$1 = (val) => !isNil$1(val) && (isTypeOf$1(val, "object") || isTypeOf$1(val, "function"));
 
     /**
-     * The default appender-fn, doing the actual logging.
-     *
-     * @private
-     * @param level Level of the entry to log.
-     * @param name Name of the logger instance.
-     * @param args Arguments to log.
-     */
-    const defaultAppenderFn = (level, name, args) => {
-        const meta = `${new Date().toISOString()} ${level.name} ${name}`;
-        let loggerFn = console.log;
-        if (level === Levels.ERROR) {
-            // tslint:disable-next-line
-            loggerFn = console.error;
-        }
-        else if (level === Levels.WARN) {
-            // tslint:disable-next-line
-            loggerFn = console.warn;
-        }
-        else if (level === Levels.INFO) {
-            // tslint:disable-next-line
-            loggerFn = console.info;
-        }
-        loggerFn(meta, ...args);
-    };
-
-    /**
      * Default {@link ILogger} class.
      *
      * @private
@@ -463,8 +463,8 @@ var clingy = (function (exports) {
          * @param args arguments to be logged.
          */
         log(level, ...args) {
-            if (this.root.level.val >= level.val) {
-                this.root.appenderQueue.forEach(fn => fn(level, this.name, args));
+            if (this.root.getLevel().val >= level.val) {
+                this.root.getAppenders().forEach(fn => fn(level, this.name, args));
             }
         }
         /**
@@ -510,20 +510,18 @@ var clingy = (function (exports) {
     }
 
     /**
-     * Logger-root class.
+     * Logby class.
      *
      * @public
      */
     class Logby {
         /**
-         * Creates a new logger module.
-         *
-         * @param level Levels of this logger-root loggers.
+         * Creates a new Logby instance.
          */
-        constructor(level = Levels.INFO) {
-            this.loggerMap = new Map();
-            this.level = level;
-            this.appenderQueue = [defaultAppenderFn];
+        constructor() {
+            this.loggers = new Map();
+            this.appenders = new Map([[DEFAULT_APPENDER_NAME, defaultAppenderFn]]);
+            this.level = Levels.INFO;
         }
         /**
          * Get and/or creates a logger instance.
@@ -542,16 +540,57 @@ var clingy = (function (exports) {
             else {
                 throw new TypeError(`'${nameable}' is neither an INameable nor a string.`);
             }
-            if (this.loggerMap.has(name)) {
-                return this.loggerMap.get(name);
+            if (this.loggers.has(name)) {
+                return this.loggers.get(name);
             }
             const logger = new DefaultLogger(this, name);
-            this.loggerMap.set(name, logger);
+            this.loggers.set(name, logger);
             return logger;
+        }
+        /**
+         * Get the active log level.
+         *
+         * @return The active log level.
+         */
+        getLevel() {
+            return this.level;
+        }
+        /**
+         * Set the active log level.
+         *
+         * @param level Level to set.
+         */
+        setLevel(level) {
+            this.level = level;
+        }
+        /**
+         * Attaches an appender to the instance.
+         *
+         * @param name Name of the appender.
+         * @param fn Appender function.
+         */
+        attachAppender(name, fn) {
+            this.appenders.set(name, fn);
+        }
+        /**
+         * Detaches an appender.
+         *
+         * @param name Name of the appender.
+         */
+        detachAppender(name) {
+            this.appenders.delete(name);
+        }
+        /**
+         * Get all active appenders.
+         *
+         * @return All active appenders.
+         */
+        getAppenders() {
+            return this.appenders;
         }
     }
 
-    const clingyLoggerRoot = new Logby();
+    const clingyLogby = new Logby();
 
     /**
      * Orchestrates mapping of {@link IArgument}s to user-provided input.
@@ -586,7 +625,7 @@ var clingy = (function (exports) {
             ArgumentMatcher.logger.debug(`Finished matching arguments: ${expected.length} expected, ${this.result.size} found and ${this.missing.length} missing.`);
         }
     }
-    ArgumentMatcher.logger = clingyLoggerRoot.getLogger(ArgumentMatcher);
+    ArgumentMatcher.logger = clingyLogby.getLogger(ArgumentMatcher);
 
     /**
      * Gets similar keys of a key based on their string distance.
@@ -684,7 +723,7 @@ var clingy = (function (exports) {
             return lookupSuccess;
         }
     }
-    LookupResolver.logger = clingyLoggerRoot.getLogger(LookupResolver);
+    LookupResolver.logger = clingyLogby.getLogger(LookupResolver);
 
     /**
      * Manages parsing input strings into a path list.
@@ -740,7 +779,7 @@ var clingy = (function (exports) {
             return result;
         }
     }
-    InputParser.logger = clingyLoggerRoot.getLogger(InputParser);
+    InputParser.logger = clingyLogby.getLogger(InputParser);
 
     /**
      * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -820,10 +859,10 @@ var clingy = (function (exports) {
             Clingy.logger.debug("Done updating aliased map.");
         }
     }
-    Clingy.logger = clingyLoggerRoot.getLogger(Clingy);
+    Clingy.logger = clingyLogby.getLogger(Clingy);
 
     exports.Clingy = Clingy;
-    exports.clingyLoggerRoot = clingyLoggerRoot;
+    exports.clingyLogby = clingyLogby;
 
     return exports;
 

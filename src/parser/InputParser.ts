@@ -1,11 +1,11 @@
 import { arrCompact } from "lightdash";
-import { clingyLoggerRoot } from "../loggerRoot";
+import { clingyLogby } from "../logger";
 
 /**
  * Manages parsing input strings into a path list.
  */
 class InputParser {
-    private static readonly logger = clingyLoggerRoot.getLogger(InputParser);
+    private static readonly logger = clingyLogby.getLogger(InputParser);
 
     public readonly legalQuotes: string[];
     public readonly pattern: RegExp;

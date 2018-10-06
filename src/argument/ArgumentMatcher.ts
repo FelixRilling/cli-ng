@@ -1,6 +1,6 @@
 import { isNil } from "lightdash";
 import { ILogger } from "logby";
-import { clingyLoggerRoot } from "../loggerRoot";
+import { clingyLogby } from "../logger";
 import { IArgument } from "./IArgument";
 import { resolvedArgumentMap } from "./resolvedArgumentMap";
 
@@ -8,7 +8,7 @@ import { resolvedArgumentMap } from "./resolvedArgumentMap";
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
  */
 class ArgumentMatcher {
-    private static readonly logger: ILogger = clingyLoggerRoot.getLogger(
+    private static readonly logger: ILogger = clingyLogby.getLogger(
         ArgumentMatcher
     );
 

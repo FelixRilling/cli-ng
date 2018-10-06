@@ -5,7 +5,7 @@ import { CommandMap } from "../command/CommandMap";
 import { commandPath } from "../command/commandPath";
 import { ICommand } from "../command/ICommand";
 import { getSimilar } from "../command/util/commandUtil";
-import { clingyLoggerRoot } from "../loggerRoot";
+import { clingyLogby } from "../logger";
 import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
 import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
 import { ILookupResult, ResultType } from "./result/ILookupResult";
@@ -15,7 +15,7 @@ import { ILookupSuccess } from "./result/ILookupSuccess";
  * Lookup tools for resolving paths through {@link CommandMap}s.
  */
 class LookupResolver {
-    private static readonly logger = clingyLoggerRoot.getLogger(LookupResolver);
+    private static readonly logger = clingyLogby.getLogger(LookupResolver);
 
     private readonly caseSensitive: boolean;
 

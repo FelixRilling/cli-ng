@@ -4,7 +4,7 @@ import { ICommand } from "./command/ICommand";
 import { IObjWithCommands } from "./command/IObjWithCommands";
 import { mapWithCommands } from "./command/mapWithCommands";
 import { IClingyOptions } from "./IClingyOptions";
-import { clingyLoggerRoot } from "./loggerRoot";
+import { clingyLogby } from "./logger";
 import { LookupResolver } from "./lookup/LookupResolver";
 import { ILookupResult } from "./lookup/result/ILookupResult";
 import { InputParser } from "./parser/InputParser";
@@ -13,7 +13,7 @@ import { InputParser } from "./parser/InputParser";
  * Core {@link Clingy} class, entry point for creation of a new instance.
  */
 class Clingy {
-    private static readonly logger = clingyLoggerRoot.getLogger(Clingy);
+    private static readonly logger = clingyLogby.getLogger(Clingy);
 
     public readonly lookupResolver: LookupResolver;
     public readonly inputParser: InputParser;

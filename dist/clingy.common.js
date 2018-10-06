@@ -49,7 +49,7 @@ class CommandMap extends Map {
     }
 }
 
-const clingyLoggerRoot = new logby.Logby();
+const clingyLogby = new logby.Logby();
 
 /**
  * Orchestrates mapping of {@link IArgument}s to user-provided input.
@@ -84,7 +84,7 @@ class ArgumentMatcher {
         ArgumentMatcher.logger.debug(`Finished matching arguments: ${expected.length} expected, ${this.result.size} found and ${this.missing.length} missing.`);
     }
 }
-ArgumentMatcher.logger = clingyLoggerRoot.getLogger(ArgumentMatcher);
+ArgumentMatcher.logger = clingyLogby.getLogger(ArgumentMatcher);
 
 /**
  * Gets similar keys of a key based on their string distance.
@@ -182,7 +182,7 @@ class LookupResolver {
         return lookupSuccess;
     }
 }
-LookupResolver.logger = clingyLoggerRoot.getLogger(LookupResolver);
+LookupResolver.logger = clingyLogby.getLogger(LookupResolver);
 
 /**
  * Manages parsing input strings into a path list.
@@ -238,7 +238,7 @@ class InputParser {
         return result;
     }
 }
-InputParser.logger = clingyLoggerRoot.getLogger(InputParser);
+InputParser.logger = clingyLogby.getLogger(InputParser);
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -318,7 +318,7 @@ class Clingy {
         Clingy.logger.debug("Done updating aliased map.");
     }
 }
-Clingy.logger = clingyLoggerRoot.getLogger(Clingy);
+Clingy.logger = clingyLogby.getLogger(Clingy);
 
 exports.Clingy = Clingy;
-exports.clingyLoggerRoot = clingyLoggerRoot;
+exports.clingyLogby = clingyLogby;

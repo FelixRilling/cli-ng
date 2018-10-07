@@ -673,7 +673,7 @@ var clingy = (function (exports) {
         constructor(expected, provided) {
             this.missing = [];
             this.result = new Map();
-            ArgumentMatcher.logger.debug(`Matching arguments ${expected} with ${provided}`);
+            ArgumentMatcher.logger.debug("Matching arguments:", expected, provided);
             expected.forEach((expectedArg, i) => {
                 if (i < provided.length) {
                     const providedArg = provided[i];
@@ -756,21 +756,21 @@ var clingy = (function (exports) {
                 : mapAliased.getIgnoreCase(currentPathFragment)));
             LookupResolver.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
             if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
-                LookupResolver.logger.debug(`Resolving sub-commands: ${command.sub} ${pathNew}`);
+                LookupResolver.logger.debug("Resolving sub-commands:", command.sub, pathNew);
                 return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
             }
             let argumentsResolved;
             if (!parseArguments ||
                 isNil(command.args) ||
                 command.args.length === 0) {
-                LookupResolver.logger.debug("No arguments defined, using empty list.");
+                LookupResolver.logger.debug("No arguments defined, using empty array.");
                 argumentsResolved = new Map();
             }
             else {
                 LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
                 const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
                 if (argumentMatcher.missing.length > 0) {
-                    LookupResolver.logger.warn(`Some arguments could not be found: ${argumentMatcher.missing.map(arg => arg.name)}`);
+                    LookupResolver.logger.warn("Some arguments could not be found:", argumentMatcher.missing);
                     return {
                         successful: false,
                         pathUsed,
@@ -780,7 +780,7 @@ var clingy = (function (exports) {
                     };
                 }
                 argumentsResolved = argumentMatcher.result;
-                LookupResolver.logger.debug(`Successfully looked up arguments: ${argumentsResolved}`);
+                LookupResolver.logger.debug("Successfully looked up arguments:", argumentsResolved);
             }
             const lookupSuccess = {
                 successful: true,
@@ -790,7 +790,7 @@ var clingy = (function (exports) {
                 command,
                 args: argumentsResolved
             };
-            LookupResolver.logger.debug(`Returning successful lookup result: ${lookupSuccess}`);
+            LookupResolver.logger.debug("Returning successful lookup result:", lookupSuccess);
             return lookupSuccess;
         }
     }

@@ -90,7 +90,7 @@ class LookupResolver {
 
         if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
             LookupResolver.logger.debug(
-                `Resolving sub-commands: ${command.sub} ${pathNew}`
+                "Resolving sub-commands:", command.sub, pathNew
             );
             return this.resolveInternal(
                 (<Clingy>command.sub).mapAliased,
@@ -107,7 +107,7 @@ class LookupResolver {
             command.args.length === 0
         ) {
             LookupResolver.logger.debug(
-                "No arguments defined, using empty list."
+                "No arguments defined, using empty array."
             );
             argumentsResolved = new Map();
         } else {
@@ -116,9 +116,7 @@ class LookupResolver {
 
             if (argumentMatcher.missing.length > 0) {
                 LookupResolver.logger.warn(
-                    `Some arguments could not be found: ${argumentMatcher.missing.map(
-                        arg => arg.name
-                    )}`
+                    "Some arguments could not be found:", argumentMatcher.missing
                 );
 
                 return <ILookupErrorMissingArgs>{
@@ -132,7 +130,7 @@ class LookupResolver {
 
             argumentsResolved = argumentMatcher.result;
             LookupResolver.logger.debug(
-                `Successfully looked up arguments: ${argumentsResolved}`
+                "Successfully looked up arguments:", argumentsResolved
             );
         }
 
@@ -145,7 +143,7 @@ class LookupResolver {
             args: argumentsResolved
         };
         LookupResolver.logger.debug(
-            `Returning successful lookup result: ${lookupSuccess}`
+            "Returning successful lookup result:", lookupSuccess
         );
 
         return lookupSuccess;

@@ -55,29 +55,106 @@
 <h2>Introduction</h2><p>TypeScript counterpart of <a href="https://github.com/FelixRilling/cli-ngy4j">cli-ngy4j</a>.</p>
 <p><strong><a href="https://felixrilling.github.io/cli-ngy/">Docs</a></strong></p>
 <h2>Usage</h2><pre class="prettyprint source lang-shell"><code>npm install cli-ngy</code></pre><h3>Simple Command</h3><p>Init a new instance with a &quot;hello&quot; command:</p>
-<pre class="prettyprint source lang-typescript"><code>import {Clingy} from &quot;cli-ngy&quot;;
+<pre class="prettyprint source lang-typescript"><code>import { Clingy, ILookupSuccess } from &quot;cli-ngy&quot;;
 
-// new Clingy(commands, [options])
 const cli = new Clingy({
     hello: {
         fn: () => console.log(&quot;Hello World!&quot;), // Command function
         alias: [&quot;helloworld&quot;, &quot;hi&quot;], // Array of aliases
         args: [] // Array of argument objects
+    },
+    lorem: {
+        fn: () => null,
+        alias: [],
+        args: []
     }
 });
 
 // Then parse your input:
 const result = cli.parse(&quot;hello&quot;);
+console.log(result.successful); // => true
+console.log(result.type); // => ResultType.SUCCESS
+(&lt;ILookupSuccess>result).command.fn(); // logs &quot;Hello World!&quot;
 
-result.command.fn(); // logs &quot;Hello World!&quot;</code></pre><p>The same result would be achieved by <code>cli.parse(&quot;hi&quot;);</code> as well, as we registered it as alias.</p>
-<p>If we try looking up a non-existent command, we will get an error object:</p>
-<pre class="prettyprint source lang-typescript"><code>const error = cli.parse(&quot;foo&quot;);
+// Non-existent command.
+const error = cli.parse(&quot;foo&quot;);
+console.log(error.successful); // => false
+console.log(error.type); // => ResultType.ERROR_NOT_FOUND</code></pre><h3>Command with arguments</h3><p>Commands can take any number of required or optional arguments:</p>
+<pre class="prettyprint source lang-typescript"><code>import { Clingy, ILookupSuccess } from &quot;cli-ngy&quot;;
 
-// Returns :
-console.log(error.success); // => false
-console.log(error.type) // => ResultType.ERROR_NOT_FOUND</code></pre><h3>Command with arguments</h3><p><strong><em>TODO</em></strong> </p>
-<h3>Nested commands</h3><p><strong><em>TODO</em></strong> </p>
-<h3>Options</h3><p><strong><em>TODO</em></strong> </p></article>
+const cli = new Clingy({
+    foo: {
+        fn: (args) => console.log(args.get(&quot;bar&quot;)),
+        alias: [],
+        args: [{
+            name: &quot;bar&quot;,
+            required: true
+        }]
+    }
+});
+
+const result = cli.parse(&quot;foo lorem&quot;);
+(&lt;ILookupSuccess>result).command.fn(); // logs &quot;lorem&quot;
+
+const error = cli.parse(&quot;foo&quot;);
+console.log(error.successful); // => false
+console.log(error.type); // => ResultType.ERROR_MISSING_ARGUMENT</code></pre><p>With optional arguments:</p>
+<pre class="prettyprint source lang-typescript"><code>import { Clingy, ILookupSuccess } from &quot;cli-ngy&quot;;
+
+const cli = new Clingy({
+    fizz: {
+        fn: (args) => console.log(args.get(&quot;buzz&quot;)),
+        alias: [],
+        args: [{
+            name: &quot;buzz&quot;,
+            required: false,
+            defaultValue: &quot;123&quot;
+        }]
+    }
+});
+
+const result1 = cli.parse(&quot;fizz lorem&quot;);
+(&lt;ILookupSuccess>result1).command.fn(); // logs &quot;lorem&quot;
+
+const result2 = cli.parse(&quot;fizz&quot;);
+(&lt;ILookupSuccess>result2).command.fn(); // logs &quot;123&quot;</code></pre><h3>Nested commands</h3><p>Commands can be nested with sub-commands:</p>
+<pre class="prettyprint source lang-typescript"><code>import { Clingy, ILookupSuccess } from &quot;cli-ngy&quot;;
+
+const cli = new Clingy({
+    fizz: {
+        fn: () => console.log(123),
+        alias: [],
+        args: [],
+        sub: {
+            bar: {
+                fn: () => console.log(456),
+                alias: [],
+                args: []
+            },
+            buzz: {
+                fn: () => console.log(789),
+                alias: [],
+                args: []
+            }
+        }
+    }
+});
+
+const result1 = cli.parse(&quot;fizz&quot;);
+(&lt;ILookupSuccess>result1).command.fn(); // logs &quot;123&quot;
+
+const result2 = cli.parse(&quot;fizz bar&quot;);
+(&lt;ILookupSuccess>result2).command.fn(); // logs &quot;456&quot;
+
+const result3 = cli.parse(&quot;fizz buzz bazz&quot;);
+(&lt;ILookupSuccess>result3).command.fn(); // logs &quot;789&quot;
+</code></pre><h3>Options</h3><p>The clingy constructor can be used with options:</p>
+<pre class="prettyprint source lang-typescript"><code>import { Clingy } from &quot;cli-ngy&quot;;
+
+const cli = new Clingy({}, {
+    caseSensitive: true, // If command names should be case sensitive. Default: true
+    legalQuotes: [&quot;\&quot;&quot;] // Array of characters to allow for quotes. Default: [&quot;\&quot;&quot;]
+});</code></pre></article>
     </section>
 
 
@@ -92,7 +169,7 @@ console.log(error.type) // => ResultType.ERROR_NOT_FOUND</code></pre><h3>Command
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Oct 06 2018 20:59:40 GMT+0200 (Central European Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 07 2018 09:34:02 GMT+0200 (Central European Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

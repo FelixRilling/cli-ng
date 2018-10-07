@@ -9,7 +9,8 @@ import { ResultType } from "../../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
 
 // noinspection TsLint
-const noopFn = () => {};
+const noopFn = () => {
+};
 
 /**
  * Tests for {@link LookupResolver}.
@@ -76,9 +77,30 @@ describe("LookupResolver", () => {
         expect(lookupResult.pathDangling).toEqual([]);
     });
 
+    it("Asserts that LookupResolver#resolve returns a resolved arguments map.", () => {
+        const commandName = "foo";
+        const argumentName = "lorem";
+        const argumentVal = "bar";
+        const argument: IArgument = { name: argumentName, required: true };
+        const command: ICommand = {
+            fn: noopFn,
+            alias: [],
+            args: [argument]
+        };
+        const commandMap = new CommandMap();
+        commandMap.set(commandName, command);
+        const lookupResult = new LookupResolver().resolve(
+            commandMap, [commandName, argumentVal, "fizz"], true
+        );
+
+        expect(lookupResult.type).toBe(ResultType.SUCCESS);
+        expect((<ILookupSuccess>lookupResult).command).toBe(command);
+        expect((<ILookupSuccess>lookupResult).args).toEqual(new Map([[argumentName, argumentVal]]));
+    });
+
     it("Asserts that LookupResolver#resolve returns dangling path elements.", () => {
         const commandName = "foo";
-        const commandNames = ["foo", "bar", "fizz"];
+        const commandNames = [commandName, "bar", "fizz"];
         const command: ICommand = {
             fn: noopFn,
             alias: [],

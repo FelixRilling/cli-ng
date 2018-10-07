@@ -285,41 +285,14 @@ var clingy = (function (exports) {
         return returnFull ? result : result.get(Math.min(...result.keys()));
     };
 
-    const getConstructorMap = (input) => {
-        if (isMap(input)) {
-            return Array.from(input.entries());
-        }
-        else if (isObject(input)) {
-            return Array.from(Object.entries(input));
-        }
-        return null;
-    };
     /**
      * Map containing {@link ICommand}s.
+     *
+     * @private
      */
     class CommandMap extends Map {
         constructor(input) {
-            super(getConstructorMap(input));
-        }
-        /**
-         * Creates a new instance with {@link Clingy} options to inherit.
-         *
-         * @param commands Command input to use.
-         * @param options Options for the Clingy instance.
-         */
-        static createWithOptions(commands, options) {
-            if (isMap(commands)) {
-                commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
-            }
-            else if (isObjectPlain(commands)) {
-                forEachEntry(commands, (key, val) => CommandMap.createWithOptionsHelper(val, options));
-            }
-            return new CommandMap(commands);
-        }
-        static createWithOptionsHelper(command, options) {
-            if (isObjectPlain(command.sub) || isMap(command.sub)) {
-                command.sub = new Clingy(CommandMap.createWithOptions(command.sub, options), options);
-            }
+            super(CommandMap.getConstructorMap(input));
         }
         /**
          * Checks if the map contains a key, ignoring case.
@@ -346,6 +319,35 @@ var clingy = (function (exports) {
                 }
             });
             return result;
+        }
+        /**
+         * Creates a new instance with {@link Clingy} options to inherit.
+         *
+         * @param commands Command input to use.
+         * @param options Options for the Clingy instance.
+         */
+        static createWithOptions(commands, options) {
+            if (isMap(commands)) {
+                commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
+            }
+            else if (isObjectPlain(commands)) {
+                forEachEntry(commands, (key, val) => CommandMap.createWithOptionsHelper(val, options));
+            }
+            return new CommandMap(commands);
+        }
+        static createWithOptionsHelper(command, options) {
+            if (isObjectPlain(command.sub) || isMap(command.sub)) {
+                command.sub = new Clingy(CommandMap.createWithOptions(command.sub, options), options);
+            }
+        }
+        static getConstructorMap(input) {
+            if (isMap(input)) {
+                return Array.from(input.entries());
+            }
+            else if (isObject(input)) {
+                return Array.from(Object.entries(input));
+            }
+            return null;
         }
     }
 
@@ -871,13 +873,29 @@ var clingy = (function (exports) {
             this.mapAliased = new CommandMap();
             this.updateAliases();
         }
+        /**
+         * Sets a command on this instance.
+         *
+         * @param key Key of the command.
+         * @param command The command.
+         */
         setCommand(key, command) {
             this.map.set(key, command);
             this.updateAliases();
         }
+        /**
+         * Gets a command from this instance.
+         *
+         * @param key Key of the command.
+         */
         getCommand(key) {
             return this.mapAliased.get(key);
         }
+        /**
+         * Checks if a command on this instance exists for this key.
+         *
+         * @param key Key of the command.
+         */
         hasCommand(key) {
             return this.mapAliased.has(key);
         }

@@ -37,15 +37,31 @@ class Clingy {
         this.updateAliases();
     }
 
+    /**
+     * Sets a command on this instance.
+     *
+     * @param key Key of the command.
+     * @param command The command.
+     */
     public setCommand(key: string, command: ICommand): void {
         this.map.set(key, command);
         this.updateAliases();
     }
 
+    /**
+     * Gets a command from this instance.
+     *
+     * @param key Key of the command.
+     */
     public getCommand(key: string): ICommand | undefined {
         return this.mapAliased.get(key);
     }
 
+    /**
+     * Checks if a command on this instance exists for this key.
+     *
+     * @param key Key of the command.
+     */
     public hasCommand(key: string): boolean {
         return this.mapAliased.has(key);
     }

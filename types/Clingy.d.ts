@@ -23,8 +23,24 @@ declare class Clingy {
      * @param options       Option object.
      */
     constructor(commands?: mapWithCommands | IObjWithCommands, options?: IClingyOptions);
+    /**
+     * Sets a command on this instance.
+     *
+     * @param key Key of the command.
+     * @param command The command.
+     */
     setCommand(key: string, command: ICommand): void;
+    /**
+     * Gets a command from this instance.
+     *
+     * @param key Key of the command.
+     */
     getCommand(key: string): ICommand | undefined;
+    /**
+     * Checks if a command on this instance exists for this key.
+     *
+     * @param key Key of the command.
+     */
     hasCommand(key: string): boolean;
     /**
      * Checks if a pathUsed resolves to a command.

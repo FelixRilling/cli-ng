@@ -25,7 +25,7 @@
 
 <nav>
     
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Clingy.html">Clingy</a><ul class='methods'><li data-type='method'><a href="Clingy.html#getPath">getPath</a></li><li data-type='method'><a href="Clingy.html#hasPath">hasPath</a></li><li data-type='method'><a href="Clingy.html#parse">parse</a></li></ul></li><li><a href="CommandMap.html">CommandMap</a><ul class='methods'><li data-type='method'><a href="CommandMap.html#.createWithOptions">createWithOptions</a></li><li data-type='method'><a href="CommandMap.html#getIgnoreCase">getIgnoreCase</a></li><li data-type='method'><a href="CommandMap.html#hasIgnoreCase">hasIgnoreCase</a></li></ul></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Clingy.html">Clingy</a><ul class='methods'><li data-type='method'><a href="Clingy.html#getCommand">getCommand</a></li><li data-type='method'><a href="Clingy.html#getPath">getPath</a></li><li data-type='method'><a href="Clingy.html#hasCommand">hasCommand</a></li><li data-type='method'><a href="Clingy.html#hasPath">hasPath</a></li><li data-type='method'><a href="Clingy.html#parse">parse</a></li><li data-type='method'><a href="Clingy.html#setCommand">setCommand</a></li></ul></li></ul>
 </nav>
 
 <div id="main">
@@ -72,7 +72,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line269">line 269</a>
+        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line271">line 271</a>
     </li></ul></dd>
     
 
@@ -224,6 +224,134 @@
 
     
 
+    <h4 class="name" id="getCommand"><span class="type-signature"></span>getCommand<span class="signature">(key)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line300">line 300</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Gets a command from this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Key of the command.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="getPath"><span class="type-signature"></span>getPath<span class="signature">(path)</span><span class="type-signature"></span></h4>
 
     
@@ -236,7 +364,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line308">line 308</a>
+        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line326">line 326</a>
     </li></ul></dd>
     
 
@@ -362,6 +490,134 @@
 
     
 
+    <h4 class="name" id="hasCommand"><span class="type-signature"></span>hasCommand<span class="signature">(key)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line308">line 308</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Checks if a command on this instance exists for this key.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Key of the command.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="hasPath"><span class="type-signature"></span>hasPath<span class="signature">(path)</span><span class="type-signature"></span></h4>
 
     
@@ -374,7 +630,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line299">line 299</a>
+        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line317">line 317</a>
     </li></ul></dd>
     
 
@@ -512,7 +768,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line319">line 319</a>
+        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line337">line 337</a>
     </li></ul></dd>
     
 
@@ -635,6 +891,152 @@ or ILookupErrorMissingArgs.</p>
 
 
         
+            
+
+    
+
+    <h4 class="name" id="setCommand"><span class="type-signature"></span>setCommand<span class="signature">(key, command)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="clingy.esm.js.html">clingy.esm.js</a>, <a href="clingy.esm.js.html#line291">line 291</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Sets a command on this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Key of the command.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>command</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The command.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     
@@ -654,7 +1056,7 @@ or ILookupErrorMissingArgs.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 07 2018 09:34:02 GMT+0200 (Central European Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 07 2018 09:40:32 GMT+0200 (Central European Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -5,20 +5,25 @@ import { ILookupErrorMissingArgs } from "../src/lookup/result/ILookupErrorMissin
 import { ILookupErrorNotFound } from "../src/lookup/result/ILookupErrorNotFound";
 import { ResultType } from "../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../src/lookup/result/ILookupSuccess";
+import { mapWithCommands } from "../src/command/mapWithCommands";
 
 /**
  * Integration tests for example {@link Clingy} usage.
  */
 describe("ClingyIT", () => {
+    const ARG_1_NAME = "val";
+    const COMMAND_2_NAME = "bar";
+    const COMMAND_1_NAME = "foo";
+
     let clingy: Clingy;
     let argument1: IArgument;
     let command1: ICommand;
     let command2: ICommand;
 
     beforeEach(() => {
-        const commandMap = new Map<string, ICommand>();
+        const map: mapWithCommands = new Map();
         argument1 = {
-            name: "val",
+            name: ARG_1_NAME,
             required: true
         };
         command1 = {
@@ -27,15 +32,15 @@ describe("ClingyIT", () => {
             args: [argument1]
         };
 
-        commandMap.set("foo", command1);
+        map.set(COMMAND_1_NAME, command1);
         command2 = {
             fn: console.log,
             alias: ["baa"],
             args: []
         };
 
-        commandMap.set("bar", command2);
-        clingy = new Clingy(commandMap);
+        map.set(COMMAND_2_NAME, command2);
+        clingy = new Clingy(map);
     });
 
     it("Asserts that lookup of commands with args works.", () => {

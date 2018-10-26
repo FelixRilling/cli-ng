@@ -15,32 +15,6 @@ class CommandMap extends Map {
         super(CommandMap.getConstructorMap(input));
     }
     /**
-     * Checks if the map contains a key, ignoring case.
-     *
-     * @param key Key to check for.
-     * @return If the map contains a key, ignoring case.
-     */
-    hasIgnoreCase(key) {
-        return Array.from(this.keys())
-            .map(k => k.toLowerCase())
-            .includes(key.toLowerCase());
-    }
-    /**
-     * Returns the value for the key, ignoring case.
-     *
-     * @param key Key to check for.
-     * @return The value for the key, ignoring case.
-     */
-    getIgnoreCase(key) {
-        let result = null;
-        this.forEach((value, k) => {
-            if (key.toLowerCase() === k.toLowerCase()) {
-                result = value;
-            }
-        });
-        return result;
-    }
-    /**
      * Creates a new instance with {@link Clingy} options to inherit.
      *
      * @param commands Command input to use.
@@ -68,6 +42,32 @@ class CommandMap extends Map {
             return Array.from(Object.entries(input));
         }
         return null;
+    }
+    /**
+     * Checks if the map contains a key, ignoring case.
+     *
+     * @param key Key to check for.
+     * @return If the map contains a key, ignoring case.
+     */
+    hasIgnoreCase(key) {
+        return Array.from(this.keys())
+            .map(k => k.toLowerCase())
+            .includes(key.toLowerCase());
+    }
+    /**
+     * Returns the value for the key, ignoring case.
+     *
+     * @param key Key to check for.
+     * @return The value for the key, ignoring case.
+     */
+    getIgnoreCase(key) {
+        let result = null;
+        this.forEach((value, k) => {
+            if (key.toLowerCase() === k.toLowerCase()) {
+                result = value;
+            }
+        });
+        return result;
     }
 }
 

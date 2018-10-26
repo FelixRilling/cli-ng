@@ -1,33 +1,16 @@
 var clingy = (function (exports) {
     'use strict';
 
-    /**
-     * Checks if a value is an array.
-     *
-     * Alias of the native `Array.isArray`.
-     *
-     * @function isArray
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
-     * @example
-     * isArray([1, 2, 3]);
-     * // => true
-     *
-     * isArray({});
-     * // => false
-     */
+    // File is named "_index.ts" to avoid it being treated as a module index file.
 
     /**
      * Checks if the value is an instance of a target constructor.
      *
-     * @function isInstanceOf
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @param {Class} target
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @param {Class} target Class to check if the value is an instance of it.
+     * @returns {boolean} If the value is an instance of the class.
      * @example
      * isInstanceOf([], Array)
      * // => true
@@ -40,12 +23,11 @@ var clingy = (function (exports) {
     /**
      * Checks if the value has a certain type-string.
      *
-     * @function isTypeOf
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @param {string} type
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @param {string} type Type string to compare the value to.
+     * @returns {boolean} If the value has the type provided.
      * @example
      * isTypeOf("foo", "string")
      * // => true
@@ -58,11 +40,10 @@ var clingy = (function (exports) {
     /**
      * Checks if a value is undefined or null.
      *
-     * @function isNil
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is nil.
      * @example
      * isNil(null)
      * // => true
@@ -81,10 +62,9 @@ var clingy = (function (exports) {
     /**
      * Iterates over each entry of an object.
      *
-     * @function forEachEntry
      * @memberof For
-     * @param {object} obj
-     * @param {function} fn fn(key: *, val: *, index: number, arr: any[])
+     * @param {object} obj Object to iterate.
+     * @param {function} fn Function to use (`fn(key: *, val: *, index: number, obj: object) => void`).
      * @example
      * const a = {a: 1, b: 2};
      *
@@ -102,11 +82,10 @@ var clingy = (function (exports) {
     /**
      * Checks if a value is a map.
      *
-     * @function isMap
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is a map.
      * @example
      * isMap(new Map())
      * // => true
@@ -119,11 +98,10 @@ var clingy = (function (exports) {
     /**
      * Checks if a value is an object.
      *
-     * @function isObject
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is an object.
      * @example
      * isObject({})
      * // => true
@@ -144,11 +122,10 @@ var clingy = (function (exports) {
      *
      * An object is considered plain of its direct constructor is the built-in object constructor.
      *
-     * @function isObjectPlain
      * @memberof Is
      * @since 2.9.0
-     * @param {any} val
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is a plain object.
      * @example
      * isObjectPlain({})
      * // => true
@@ -166,14 +143,13 @@ var clingy = (function (exports) {
 
     // noinspection SpellCheckingInspection
     /**
-     * Returns Levenshtein string distance of two strings.
+     * Returns the levenshtein string distance of two strings.
      *
-     * @function strDistance
      * @memberof String
      * @since 6.3.0
-     * @param {string} str1
-     * @param {string} str2
-     * @returns {number}
+     * @param {string} str1 First string to compare.
+     * @param {string} str2 Second string to compare.
+     * @returns {number} Distance between the two strings.
      * @example
      * strDistance("Kitten", "Sitting")
      * // => 3
@@ -217,13 +193,12 @@ var clingy = (function (exports) {
     };
 
     /**
-     * Returns an array with every falsey value removed out.
+     * Returns an array with every falsey value removed.
      *
-     * @function arrCompact
      * @memberof Array
      * @since 1.0.0
-     * @param {any[]} arr
-     * @returns {any[]}
+     * @param {any[]} arr Array to compact.
+     * @returns {any[]} Compacted array.
      * @example
      * arrCompact([1, "", "", 2, 3, null, 4, undefined, 5, ""])
      * // => [1, 2, 3, 4, 5]
@@ -235,12 +210,11 @@ var clingy = (function (exports) {
      * If the function returns a nil value, the element will be skipped,
      * otherwise the return value will be used as key.
      *
-     * @function arrCollect
      * @memberof Array
      * @since 6.1.0
-     * @param {any[]} arr
-     * @param {function} fn fn(val: *, index: number, arr: any[])
-     * @returns {Map<any, any[]>} Map<val: *, arr: any[]>
+     * @param {any[]} arr Array to collect.
+     * @param {function} fn Function to use for collection (`fn(val: *, index: number, arr: any[]) => any`).
+     * @returns {Map<any, any[]>} Map<val: *, arr: any[]> Collected map.
      * @example
      * arrCollect([1, 2, 3, 4, 5], val => val % 2)
      * // => Map<any, any[]>{0: [2, 4], 1: [1, 3, 5]}
@@ -258,15 +232,14 @@ var clingy = (function (exports) {
 
     // noinspection SpellCheckingInspection
     /**
-     * Returns strings similar to the input based on the list given.
+     * Returns strings similar to the input based its distance to the values in the list given.
      *
-     * @function strSimilar
      * @memberof String
      * @since 6.3.0
-     * @param {string} str
-     * @param {Array<string>} list
-     * @param {boolean} [returnFull=false]
-     * @returns {Array<string>|Map<number,string[]>}
+     * @param {string} str String to check.
+     * @param {Array<string>} list Array of values to compare the string to.
+     * @param {boolean} [returnFull=false] If the full map should be returned, rather than just the closest matches.
+     * @returns {Array<string>|Map<number,string[]>} Array of the closest matches, or the map if `returnFull` is true.
      * @example
      * strSimilar("Fob", ["Foo", "Bar"])
      * // => ["Foo"]
@@ -293,32 +266,6 @@ var clingy = (function (exports) {
     class CommandMap extends Map {
         constructor(input) {
             super(CommandMap.getConstructorMap(input));
-        }
-        /**
-         * Checks if the map contains a key, ignoring case.
-         *
-         * @param key Key to check for.
-         * @return If the map contains a key, ignoring case.
-         */
-        hasIgnoreCase(key) {
-            return Array.from(this.keys())
-                .map(k => k.toLowerCase())
-                .includes(key.toLowerCase());
-        }
-        /**
-         * Returns the value for the key, ignoring case.
-         *
-         * @param key Key to check for.
-         * @return The value for the key, ignoring case.
-         */
-        getIgnoreCase(key) {
-            let result = null;
-            this.forEach((value, k) => {
-                if (key.toLowerCase() === k.toLowerCase()) {
-                    result = value;
-                }
-            });
-            return result;
         }
         /**
          * Creates a new instance with {@link Clingy} options to inherit.
@@ -348,6 +295,32 @@ var clingy = (function (exports) {
                 return Array.from(Object.entries(input));
             }
             return null;
+        }
+        /**
+         * Checks if the map contains a key, ignoring case.
+         *
+         * @param key Key to check for.
+         * @return If the map contains a key, ignoring case.
+         */
+        hasIgnoreCase(key) {
+            return Array.from(this.keys())
+                .map(k => k.toLowerCase())
+                .includes(key.toLowerCase());
+        }
+        /**
+         * Returns the value for the key, ignoring case.
+         *
+         * @param key Key to check for.
+         * @return The value for the key, ignoring case.
+         */
+        getIgnoreCase(key) {
+            let result = null;
+            this.forEach((value, k) => {
+                if (key.toLowerCase() === k.toLowerCase()) {
+                    result = value;
+                }
+            });
+            return result;
         }
     }
 

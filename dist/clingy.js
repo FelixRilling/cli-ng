@@ -355,9 +355,12 @@ var clingy = (function (exports) {
         }
     };
 
+    /**
+     * Name of the default appenderFn, can be used to detach it.
+     */
     const DEFAULT_APPENDER_NAME = "defaultAppender";
     /**
-     * The default appender-fn, doing the actual logging.
+     * Default appender-fn, doing the actual logging.
      *
      * @private
      * @param level Level of the entry to log.
@@ -381,33 +384,16 @@ var clingy = (function (exports) {
         loggerFn(`${new Date().toISOString()} ${level.name} ${name}`, ...args);
     };
 
-    /**
-     * Checks if a value is an array.
-     *
-     * Alias of the native `Array.isArray`.
-     *
-     * @function isArray
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
-     * @example
-     * isArray([1, 2, 3]);
-     * // => true
-     *
-     * isArray({});
-     * // => false
-     */
+    // File is named "_index.ts" to avoid it being treated as a module index file.
 
     /**
      * Checks if the value has a certain type-string.
      *
-     * @function isTypeOf
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @param {string} type
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @param {string} type Type string to compare the value to.
+     * @returns {boolean} If the value has the type provided.
      * @example
      * isTypeOf("foo", "string")
      * // => true
@@ -420,11 +406,10 @@ var clingy = (function (exports) {
     /**
      * Checks if a value is undefined or null.
      *
-     * @function isNil
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is nil.
      * @example
      * isNil(null)
      * // => true
@@ -443,11 +428,10 @@ var clingy = (function (exports) {
     /**
      * Checks if a value is a string.
      *
-     * @function isString
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @returns {boolean} if the value is a string.
      * @example
      * isString("foo")
      * // => true
@@ -460,11 +444,10 @@ var clingy = (function (exports) {
     /**
      * Checks if a value is an object.
      *
-     * @function isObject
      * @memberof Is
      * @since 1.0.0
-     * @param {any} val
-     * @returns {boolean}
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is an object.
      * @example
      * isObject({})
      * // => true
@@ -488,7 +471,7 @@ var clingy = (function (exports) {
     class DefaultLogger {
         /**
          * Creates a new {@link DefaultLogger}.
-         * Should not be constructed directly, rather use {@link Logby.getLogger}
+         * Should not be constructed directly, rather use {@link Logby.getLogger}.
          *
          * @param root Root logger of this logger.
          * @param name Name of the logger.
@@ -501,7 +484,7 @@ var clingy = (function (exports) {
          * Logs a message.
          *
          * @param level Levels of the log.
-         * @param args arguments to be logged.
+         * @param args Arguments to be logged.
          */
         log(level, ...args) {
             if (this.root.getLevel().val >= level.val) {
@@ -511,7 +494,7 @@ var clingy = (function (exports) {
         /**
          * Logs an error.
          *
-         * @param args arguments to be logged.
+         * @param args Arguments to be logged.
          */
         error(...args) {
             this.log(Levels.ERROR, ...args);
@@ -519,7 +502,7 @@ var clingy = (function (exports) {
         /**
          * Logs a warning.
          *
-         * @param args arguments to be logged.
+         * @param args Arguments to be logged.
          */
         warn(...args) {
             this.log(Levels.WARN, ...args);
@@ -527,7 +510,7 @@ var clingy = (function (exports) {
         /**
          * Logs an info.
          *
-         * @param args arguments to be logged.
+         * @param args Arguments to be logged.
          */
         info(...args) {
             this.log(Levels.INFO, ...args);
@@ -535,7 +518,7 @@ var clingy = (function (exports) {
         /**
          * Logs a debug message.
          *
-         * @param args arguments to be logged.
+         * @param args Arguments to be logged.
          */
         debug(...args) {
             this.log(Levels.DEBUG, ...args);
@@ -543,7 +526,7 @@ var clingy = (function (exports) {
         /**
          * Logs a trace message.
          *
-         * @param args arguments to be logged.
+         * @param args Arguments to be logged.
          */
         trace(...args) {
             this.log(Levels.TRACE, ...args);
@@ -551,9 +534,7 @@ var clingy = (function (exports) {
     }
 
     /**
-     * Logby class.
-     *
-     * @public
+     * Main logby class.
      */
     class Logby {
         /**
@@ -561,13 +542,15 @@ var clingy = (function (exports) {
          */
         constructor() {
             this.loggers = new Map();
-            this.appenders = new Map([[DEFAULT_APPENDER_NAME, defaultAppenderFn]]);
+            this.appenders = new Map([
+                [DEFAULT_APPENDER_NAME, defaultAppenderFn]
+            ]);
             this.level = Levels.INFO;
         }
         /**
-         * Get and/or creates a logger instance.
+         * Gets and/or creates a logger instance.
          *
-         * @param nameable A string or an INameable (ex: class, function).
+         * @param nameable String or INameable (ex: named class or named function).
          * @returns The logger instance.
          */
         getLogger(nameable) {
@@ -589,7 +572,7 @@ var clingy = (function (exports) {
             return logger;
         }
         /**
-         * Get the active log level.
+         * Gets the active log level.
          *
          * @return The active log level.
          */
@@ -597,7 +580,7 @@ var clingy = (function (exports) {
             return this.level;
         }
         /**
-         * Set the active log level.
+         * Sets the active log level.
          *
          * @param level Level to set.
          */
@@ -622,7 +605,7 @@ var clingy = (function (exports) {
             this.appenders.delete(name);
         }
         /**
-         * Get all active appenders.
+         * Gets all active appenders.
          *
          * @return All active appenders.
          */

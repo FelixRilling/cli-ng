@@ -4,38 +4,46 @@ var clingy = (function (exports) {
     // File is named "_index.ts" to avoid it being treated as a module index file.
 
     /**
-     * Checks if the value is an instance of a target constructor.
+     * Checks if the value is an instance of any of the given classes.
+     * If at least one class gives back true, true is returned.
      *
      * @memberof Is
      * @since 1.0.0
      * @param {any} val Value to check.
-     * @param {Class} target Class to check if the value is an instance of it.
+     * @param {...Class} targets Classes to check.
      * @returns {boolean} If the value is an instance of the class.
      * @example
      * isInstanceOf([], Array)
      * // => true
      *
-     * isInstanceOf({}, Array)
+     * isInstanceOf([], Map, Set, Array)
+     * // => true
+     *
+     * isInstanceOf({}, Array, Set)
      * // => false
      */
-    const isInstanceOf = (val, target) => val instanceof target;
+    const isInstanceOf = (val, ...targets) => targets.some(target => val instanceof target);
 
     /**
-     * Checks if the value has a certain type-string.
+     * Checks if the value has any of the given types.
+     * If at least one type gives back true, true is returned.
      *
      * @memberof Is
      * @since 1.0.0
      * @param {any} val Value to check.
-     * @param {string} type Type string to compare the value to.
+     * @param {...string} types Type strings to compare the value to.
      * @returns {boolean} If the value has the type provided.
      * @example
      * isTypeOf("foo", "string")
      * // => true
      *
+     * isTypeOf("foo", "number", "string")
+     * // => true
+     *
      * isTypeOf("foo", "number")
      * // => false
      */
-    const isTypeOf = (val, type) => typeof val === type;
+    const isTypeOf = (val, ...types) => types.some(type => typeof val === type);
 
     /**
      * Checks if a value is undefined or null.
@@ -60,6 +68,31 @@ var clingy = (function (exports) {
     const isNil = (val) => val == null;
 
     /**
+     * Checks if a value is not nil and has a type of object.
+     *
+     * The main difference to {@link isObject} is that functions are not considered object-like,
+     * because `typeof function(){}` returns `"function"`.
+     *
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val Value to check,
+     * @returns {boolean} If the value is object-like.
+     * @example
+     * isObjectLike({})
+     * // => true
+     *
+     * isObjectLike([])
+     * // => true
+     *
+     * isObjectLike(() => 1))
+     * // => false
+     *
+     * isObjectLike(1)
+     * // => false
+     */
+    const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
+
+    /**
      * Iterates over each entry of an object.
      *
      * @memberof For
@@ -74,10 +107,29 @@ var clingy = (function (exports) {
      * // a = {a: 0, b: 2}
      */
     const forEachEntry = (obj, fn) => {
-        Object.entries(obj).forEach((entry, index) => {
-            fn(entry[0], entry[1], index, obj);
-        });
+        for (const [key, val] of Object.entries(obj)) {
+            fn(val, key, obj);
+        }
     };
+
+    /**
+     * Checks if a value is a function.
+     *
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is a function.
+     * @example
+     * isFunction(function a(){})
+     * // => true
+     *
+     * isFunction(Array.from)
+     * // => true
+     *
+     * isFunction(null)
+     * // => false
+     */
+    const isFunction = (val) => isTypeOf(val, "function");
 
     /**
      * Checks if a value is a map.
@@ -115,7 +167,7 @@ var clingy = (function (exports) {
      * isObject(1)
      * // => false
      */
-    const isObject = (val) => !isNil(val) && (isTypeOf(val, "object") || isTypeOf(val, "function"));
+    const isObject = (val) => isObjectLike(val) || isFunction(val);
 
     /**
      * Checks if a value is a plain object.
@@ -164,7 +216,7 @@ var clingy = (function (exports) {
         if (str1.length === 0) {
             return str2.length;
         }
-        else if (str2.length === 0) {
+        if (str2.length === 0) {
             return str1.length;
         }
         const matrix = [];
@@ -255,7 +307,10 @@ var clingy = (function (exports) {
      */
     const strSimilar = (str, list, returnFull = false) => {
         const result = arrCollect(list, (val) => strDistance(str, val));
-        return returnFull ? result : result.get(Math.min(...result.keys()));
+        if (!returnFull) {
+            return result.get(Math.min(...result.keys()));
+        }
+        return result;
     };
 
     /**
@@ -278,7 +333,7 @@ var clingy = (function (exports) {
                 commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
             }
             else if (isObjectPlain(commands)) {
-                forEachEntry(commands, (key, val) => CommandMap.createWithOptionsHelper(val, options));
+                forEachEntry(commands, (val) => CommandMap.createWithOptionsHelper(val, options));
             }
             return new CommandMap(commands);
         }
@@ -387,21 +442,25 @@ var clingy = (function (exports) {
     // File is named "_index.ts" to avoid it being treated as a module index file.
 
     /**
-     * Checks if the value has a certain type-string.
+     * Checks if the value has any of the given types.
+     * If at least one type gives back true, true is returned.
      *
      * @memberof Is
      * @since 1.0.0
      * @param {any} val Value to check.
-     * @param {string} type Type string to compare the value to.
+     * @param {...string} types Type strings to compare the value to.
      * @returns {boolean} If the value has the type provided.
      * @example
      * isTypeOf("foo", "string")
      * // => true
      *
+     * isTypeOf("foo", "number", "string")
+     * // => true
+     *
      * isTypeOf("foo", "number")
      * // => false
      */
-    const isTypeOf$1 = (val, type) => typeof val === type;
+    const isTypeOf$1 = (val, ...types) => types.some(type => typeof val === type);
 
     /**
      * Checks if a value is undefined or null.
@@ -426,6 +485,31 @@ var clingy = (function (exports) {
     const isNil$1 = (val) => val == null;
 
     /**
+     * Checks if a value is not nil and has a type of object.
+     *
+     * The main difference to {@link isObject} is that functions are not considered object-like,
+     * because `typeof function(){}` returns `"function"`.
+     *
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val Value to check,
+     * @returns {boolean} If the value is object-like.
+     * @example
+     * isObjectLike({})
+     * // => true
+     *
+     * isObjectLike([])
+     * // => true
+     *
+     * isObjectLike(() => 1))
+     * // => false
+     *
+     * isObjectLike(1)
+     * // => false
+     */
+    const isObjectLike$1 = (val) => !isNil$1(val) && isTypeOf$1(val, "object");
+
+    /**
      * Checks if a value is a string.
      *
      * @memberof Is
@@ -440,6 +524,25 @@ var clingy = (function (exports) {
      * // => false
      */
     const isString$1 = (val) => isTypeOf$1(val, "string");
+
+    /**
+     * Checks if a value is a function.
+     *
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is a function.
+     * @example
+     * isFunction(function a(){})
+     * // => true
+     *
+     * isFunction(Array.from)
+     * // => true
+     *
+     * isFunction(null)
+     * // => false
+     */
+    const isFunction$1 = (val) => isTypeOf$1(val, "function");
 
     /**
      * Checks if a value is an object.
@@ -461,7 +564,7 @@ var clingy = (function (exports) {
      * isObject(1)
      * // => false
      */
-    const isObject$1 = (val) => !isNil$1(val) && (isTypeOf$1(val, "object") || isTypeOf$1(val, "function"));
+    const isObject$1 = (val) => isObjectLike$1(val) || isFunction$1(val);
 
     /**
      * Default {@link ILogger} class.

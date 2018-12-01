@@ -2,8 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var lightdash = require('lightdash');
 var logby = require('logby');
+var lightdash = require('lightdash');
 
 /**
  * Map containing {@link ICommand}s.
@@ -25,7 +25,7 @@ class CommandMap extends Map {
             commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
         }
         else if (lightdash.isObjectPlain(commands)) {
-            lightdash.forEachEntry(commands, (key, val) => CommandMap.createWithOptionsHelper(val, options));
+            lightdash.forEachEntry(commands, (val) => CommandMap.createWithOptionsHelper(val, options));
         }
         return new CommandMap(commands);
     }

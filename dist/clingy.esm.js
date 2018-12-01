@@ -1,5 +1,5 @@
-import { forEachEntry, isMap, isObject, isObjectPlain, isNil, strSimilar, isInstanceOf, arrCompact } from 'lightdash';
 import { Logby } from 'logby';
+import { forEachEntry, isMap, isObject, isObjectPlain, isNil, strSimilar, isInstanceOf, arrCompact } from 'lightdash';
 
 /**
  * Map containing {@link ICommand}s.
@@ -21,7 +21,7 @@ class CommandMap extends Map {
             commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
         }
         else if (isObjectPlain(commands)) {
-            forEachEntry(commands, (key, val) => CommandMap.createWithOptionsHelper(val, options));
+            forEachEntry(commands, (val) => CommandMap.createWithOptionsHelper(val, options));
         }
         return new CommandMap(commands);
     }

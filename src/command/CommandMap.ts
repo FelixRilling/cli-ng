@@ -30,7 +30,7 @@ class CommandMap extends Map<string, ICommand> {
                 CommandMap.createWithOptionsHelper(val, options)
             );
         } else if (isObjectPlain(commands)) {
-            forEachEntry(commands, (key, val) =>
+            forEachEntry(commands, (val) =>
                 CommandMap.createWithOptionsHelper(val, options)
             );
         }

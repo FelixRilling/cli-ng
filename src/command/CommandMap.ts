@@ -58,7 +58,8 @@ class CommandMap extends Map<string, ICommand> {
     ): ReadonlyArray<[string, ICommand]> | null {
         if (isMap(input)) {
             return Array.from((<mapWithCommands>input).entries());
-        } else if (isObject(input)) {
+        }
+        if (isObject(input)) {
             return Array.from(Object.entries(<object>input));
         }
 

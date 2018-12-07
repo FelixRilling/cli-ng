@@ -272,10 +272,11 @@ describe("LookupResolver", () => {
         const commandMap1 = new CommandMap();
         commandMap1.set(commandName1, command1);
 
-        const lookupResult = new LookupResolver().resolve(commandMap1, [
-            commandName1,
-            argumentName
-        ], true);
+        const lookupResult = new LookupResolver().resolve(
+            commandMap1,
+            [commandName1, argumentName],
+            true
+        );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect((<ILookupSuccess>lookupResult).command).toBe(command1);
         expect((<ILookupSuccess>lookupResult).args).toEqual(

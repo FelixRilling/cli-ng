@@ -18,7 +18,7 @@ class InputParser {
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes: string[] = ['"']) {
+    constructor(legalQuotes = ["\""]) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
@@ -31,9 +31,9 @@ class InputParser {
      */
     public parse(input: string): string[] {
         InputParser.logger.debug(`Parsing input '${input}'`);
-        const result = [];
+        const result: string[] = [];
         const pattern = new RegExp(this.pattern);
-        let match;
+        let match: RegExpExecArray | null;
 
         // noinspection AssignmentResultUsedJS
         while ((match = pattern.exec(input))) {
@@ -53,13 +53,12 @@ class InputParser {
         InputParser.logger.debug("Creating matcher.");
         const matchBase = "(\\S+)";
         const matchItems = this.legalQuotes
-            .map((str: string): string => `\\${str}`)
+            .map((str): string => `\\${str}`)
             .map(quote => `${quote}(.+?)${quote}`);
 
         matchItems.push(matchBase);
 
         let result: RegExp;
-
         try {
             result = new RegExp(matchItems.join("|"), "g");
         } catch (e) {

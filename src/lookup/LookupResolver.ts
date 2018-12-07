@@ -88,30 +88,30 @@ class LookupResolver {
             `Successfully looked up command: ${currentPathFragment}`
         );
 
-        if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
-            LookupResolver.logger.debug(
-                "Resolving sub-commands:",
-                command.sub,
-                pathNew
-            );
-            return this.resolveInternal(
-                (<Clingy>command.sub).mapAliased,
-                pathNew,
-                pathUsed,
-                parseArguments
-            );
-        }
-
         let argumentsResolved: resolvedArgumentMap;
         if (
             !parseArguments ||
             isNil(command.args) ||
             command.args.length === 0
         ) {
-            LookupResolver.logger.debug(
-                "No arguments defined, using empty array."
-            );
-            argumentsResolved = new Map();
+            if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
+                LookupResolver.logger.debug(
+                    "Resolving sub-commands:",
+                    command.sub,
+                    pathNew
+                );
+                return this.resolveInternal(
+                    (<Clingy>command.sub).mapAliased,
+                    pathNew,
+                    pathUsed,
+                    parseArguments
+                );
+            } else {
+                LookupResolver.logger.debug(
+                    "No arguments defined, using empty map."
+                );
+                argumentsResolved = new Map();
+            }
         } else {
             LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);

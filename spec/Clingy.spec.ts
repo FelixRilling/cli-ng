@@ -15,7 +15,6 @@ const createCommand = (): ICommand => {
  * Tests for {@link Clingy}.
  */
 describe("Clingy", () => {
-
     it("Asserts that Clingy constructs with a Map.", () => {
         const commandName = "foo";
         const command = createCommand();
@@ -37,7 +36,6 @@ describe("Clingy", () => {
 
         expect(clingy.getCommand(commandName)).toBe(command);
     });
-
 
     it("Asserts that Clingy constructs with sub-commands as Clingy instances.", () => {
         const commandName2 = "foo";

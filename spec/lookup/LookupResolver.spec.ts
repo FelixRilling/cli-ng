@@ -9,7 +9,8 @@ import { ResultType } from "../../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
 
 // noinspection TsLint
-const noopFn = () => {};
+const noopFn = () => {
+};
 
 /**
  * Tests for {@link LookupResolver}.
@@ -209,6 +210,76 @@ describe("LookupResolver", () => {
         expect((<ILookupSuccess>lookupResult).command).toBe(command2);
         expect((<ILookupSuccess>lookupResult).args).toEqual(
             new Map([[argumentName, argumentVal]])
+        );
+    });
+
+    it("Asserts that LookupResolver#resolve resolves sub-commands over arguments when matching", () => {
+        const commandName2 = "bar";
+        const command2: ICommand = {
+            fn: noopFn,
+            alias: [],
+            args: []
+        };
+        const commandMap2 = new CommandMap();
+        commandMap2.set(commandName2, command2);
+        const clingy = new Clingy(commandMap2);
+
+        const arg1 = {
+            name: "arg1",
+            required: true
+        };
+        const commandName1 = "foo";
+        const command1: ICommand = {
+            fn: noopFn,
+            alias: [],
+            args: [arg1],
+            sub: clingy
+        };
+        const commandMap1 = new CommandMap();
+        commandMap1.set(commandName1, command1);
+
+        const lookupResult = new LookupResolver().resolve(commandMap1, [
+            commandName1,
+            commandName2
+        ]);
+        expect(lookupResult.type).toBe(ResultType.SUCCESS);
+        expect((<ILookupSuccess>lookupResult).command).toBe(command2);
+    });
+
+    it("Asserts that LookupResolver#resolve resolves arguments over sub-commands when not matching", () => {
+        const commandName2 = "bar";
+        const command2: ICommand = {
+            fn: noopFn,
+            alias: [],
+            args: []
+        };
+        const commandMap2 = new CommandMap();
+        commandMap2.set(commandName2, command2);
+        const clingy = new Clingy(commandMap2);
+
+        const argumentName = "arg1";
+        const arg1 = {
+            name: argumentName,
+            required: true
+        };
+        const commandName1 = "foo";
+        const command1: ICommand = {
+            fn: noopFn,
+            alias: [],
+            args: [arg1],
+            sub: clingy
+        };
+        const commandMap1 = new CommandMap();
+        commandMap1.set(commandName1, command1);
+
+        const lookupResult = new LookupResolver().resolve(commandMap1, [
+            commandName1,
+            argumentName
+        ], true);
+        expect(lookupResult.type).toBe(ResultType.SUCCESS);
+        expect((<ILookupSuccess>lookupResult).command).toBe(command1);
+        expect((<ILookupSuccess>lookupResult).args).toEqual(
+            new Map([[argumentName, argumentName]])
         );
     });
 });

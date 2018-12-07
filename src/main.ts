@@ -4,4 +4,10 @@ import { ILookupSuccess } from "./lookup/result/ILookupSuccess";
 import { ILookupErrorNotFound } from "./lookup/result/ILookupErrorNotFound";
 import { ILookupErrorMissingArgs } from "./lookup/result/ILookupErrorMissingArgs";
 
-export { Clingy, clingyLogby, ILookupSuccess, ILookupErrorNotFound, ILookupErrorMissingArgs };
+export {
+    Clingy,
+    clingyLogby,
+    ILookupSuccess,
+    ILookupErrorNotFound,
+    ILookupErrorMissingArgs
+};

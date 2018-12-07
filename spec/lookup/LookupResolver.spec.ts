@@ -241,7 +241,7 @@ describe("LookupResolver", () => {
         const lookupResult = new LookupResolver().resolve(commandMap1, [
             commandName1,
             commandName2
-        ]);
+        ], true);
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect((<ILookupSuccess>lookupResult).command).toBe(command2);
     });

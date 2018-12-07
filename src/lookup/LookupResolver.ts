@@ -144,21 +144,26 @@ class LookupResolver {
             `Successfully looked up command: ${currentPathFragment}`
         );
 
+
+        if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
+            const subResult = this.resolveInternalSub(
+                pathNew,
+                pathUsed,
+                command,
+                parseArguments
+            );
+
+            if (subResult.successful) {
+                return subResult;
+            }
+        }
+
         let argumentsResolved: resolvedArgumentMap;
         if (
             !parseArguments ||
             isNil(command.args) ||
             command.args.length === 0
         ) {
-            if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
-                return this.resolveInternalSub(
-                    pathNew,
-                    pathUsed,
-                    command,
-                    parseArguments
-                );
-            }
-
             LookupResolver.logger.debug(
                 "No arguments defined, using empty map."
             );

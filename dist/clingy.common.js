@@ -149,44 +149,6 @@ class LookupResolver {
         }
         return this.resolveInternal(mapAliased, path, [], parseArguments);
     }
-    resolveInternal(mapAliased, path, pathUsed, parseArguments) {
-        const currentPathFragment = path[0];
-        const pathNew = path.slice(1);
-        pathUsed.push(currentPathFragment);
-        if (this.caseSensitive
-            ? !mapAliased.has(currentPathFragment)
-            : !mapAliased.hasIgnoreCase(currentPathFragment)) {
-            return LookupResolver.createNotFoundResult(pathNew, pathUsed, currentPathFragment, mapAliased);
-        }
-        const command = ((this.caseSensitive
-            ? mapAliased.get(currentPathFragment)
-            : mapAliased.getIgnoreCase(currentPathFragment)));
-        LookupResolver.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
-        let argumentsResolved;
-        if (!parseArguments ||
-            lightdash.isNil(command.args) ||
-            command.args.length === 0) {
-            if (pathNew.length > 0 && lightdash.isInstanceOf(command.sub, Clingy)) {
-                return this.resolveInternalSub(pathNew, pathUsed, command, parseArguments);
-            }
-            LookupResolver.logger.debug("No arguments defined, using empty map.");
-            argumentsResolved = new Map();
-        }
-        else {
-            LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
-            const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
-            if (argumentMatcher.missing.length > 0) {
-                return LookupResolver.createMissingArgsResult(pathNew, pathUsed, argumentMatcher.missing);
-            }
-            argumentsResolved = argumentMatcher.result;
-            LookupResolver.logger.debug("Successfully looked up arguments:", argumentsResolved);
-        }
-        return LookupResolver.createSuccessResult(pathNew, pathUsed, command, argumentsResolved);
-    }
-    resolveInternalSub(pathNew, pathUsed, command, parseArguments) {
-        LookupResolver.logger.debug("Resolving sub-commands:", command.sub, pathNew);
-        return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
-    }
     static createSuccessResult(pathNew, pathUsed, command, args) {
         const lookupSuccess = {
             successful: true,
@@ -219,6 +181,47 @@ class LookupResolver {
             type: 2 /* ERROR_MISSING_ARGUMENT */,
             missing
         };
+    }
+    resolveInternal(mapAliased, path, pathUsed, parseArguments) {
+        const currentPathFragment = path[0];
+        const pathNew = path.slice(1);
+        pathUsed.push(currentPathFragment);
+        if (this.caseSensitive
+            ? !mapAliased.has(currentPathFragment)
+            : !mapAliased.hasIgnoreCase(currentPathFragment)) {
+            return LookupResolver.createNotFoundResult(pathNew, pathUsed, currentPathFragment, mapAliased);
+        }
+        const command = ((this.caseSensitive
+            ? mapAliased.get(currentPathFragment)
+            : mapAliased.getIgnoreCase(currentPathFragment)));
+        LookupResolver.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
+        if (pathNew.length > 0 && lightdash.isInstanceOf(command.sub, Clingy)) {
+            const subResult = this.resolveInternalSub(pathNew, pathUsed, command, parseArguments);
+            if (subResult.successful) {
+                return subResult;
+            }
+        }
+        let argumentsResolved;
+        if (!parseArguments ||
+            lightdash.isNil(command.args) ||
+            command.args.length === 0) {
+            LookupResolver.logger.debug("No arguments defined, using empty map.");
+            argumentsResolved = new Map();
+        }
+        else {
+            LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
+            const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
+            if (argumentMatcher.missing.length > 0) {
+                return LookupResolver.createMissingArgsResult(pathNew, pathUsed, argumentMatcher.missing);
+            }
+            argumentsResolved = argumentMatcher.result;
+            LookupResolver.logger.debug("Successfully looked up arguments:", argumentsResolved);
+        }
+        return LookupResolver.createSuccessResult(pathNew, pathUsed, command, argumentsResolved);
+    }
+    resolveInternalSub(pathNew, pathUsed, command, parseArguments) {
+        LookupResolver.logger.debug("Resolving sub-commands:", command.sub, pathNew);
+        return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
     }
 }
 LookupResolver.logger = clingyLogby.getLogger(LookupResolver);

@@ -333,7 +333,7 @@ var clingy = (function (exports) {
                 commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
             }
             else if (isObjectPlain(commands)) {
-                forEachEntry(commands, (val) => CommandMap.createWithOptionsHelper(val, options));
+                forEachEntry(commands, val => CommandMap.createWithOptionsHelper(val, options));
             }
             return new CommandMap(commands);
         }
@@ -346,7 +346,7 @@ var clingy = (function (exports) {
             if (isMap(input)) {
                 return Array.from(input.entries());
             }
-            else if (isObject(input)) {
+            if (isObject(input)) {
                 return Array.from(Object.entries(input));
             }
             return null;
@@ -802,57 +802,69 @@ var clingy = (function (exports) {
             if (this.caseSensitive
                 ? !mapAliased.has(currentPathFragment)
                 : !mapAliased.hasIgnoreCase(currentPathFragment)) {
-                LookupResolver.logger.warn(`Command '${currentPathFragment}' could not be found.`);
-                return {
-                    successful: false,
-                    pathUsed,
-                    pathDangling: pathNew,
-                    type: 1 /* ERROR_NOT_FOUND */,
-                    missing: currentPathFragment,
-                    similar: getSimilar(mapAliased, currentPathFragment)
-                };
+                return LookupResolver.createNotFoundResult(pathNew, pathUsed, currentPathFragment, mapAliased);
             }
             const command = ((this.caseSensitive
                 ? mapAliased.get(currentPathFragment)
                 : mapAliased.getIgnoreCase(currentPathFragment)));
             LookupResolver.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
-            if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
-                LookupResolver.logger.debug("Resolving sub-commands:", command.sub, pathNew);
-                return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
-            }
             let argumentsResolved;
             if (!parseArguments ||
                 isNil(command.args) ||
                 command.args.length === 0) {
-                LookupResolver.logger.debug("No arguments defined, using empty array.");
+                if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
+                    return this.resolveInternalSub(pathNew, pathUsed, command, parseArguments);
+                }
+                LookupResolver.logger.debug("No arguments defined, using empty map.");
                 argumentsResolved = new Map();
             }
             else {
                 LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
                 const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
                 if (argumentMatcher.missing.length > 0) {
-                    LookupResolver.logger.warn("Some arguments could not be found:", argumentMatcher.missing);
-                    return {
-                        successful: false,
-                        pathUsed,
-                        pathDangling: pathNew,
-                        type: 2 /* ERROR_MISSING_ARGUMENT */,
-                        missing: argumentMatcher.missing
-                    };
+                    return LookupResolver.createMissingArgsResult(pathNew, pathUsed, argumentMatcher.missing);
                 }
                 argumentsResolved = argumentMatcher.result;
                 LookupResolver.logger.debug("Successfully looked up arguments:", argumentsResolved);
             }
+            return LookupResolver.createSuccessResult(pathNew, pathUsed, command, argumentsResolved);
+        }
+        resolveInternalSub(pathNew, pathUsed, command, parseArguments) {
+            LookupResolver.logger.debug("Resolving sub-commands:", command.sub, pathNew);
+            return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
+        }
+        static createSuccessResult(pathNew, pathUsed, command, args) {
             const lookupSuccess = {
                 successful: true,
                 pathUsed,
                 pathDangling: pathNew,
                 type: 0 /* SUCCESS */,
                 command,
-                args: argumentsResolved
+                args
             };
             LookupResolver.logger.debug("Returning successful lookup result:", lookupSuccess);
             return lookupSuccess;
+        }
+        static createNotFoundResult(pathNew, pathUsed, currentPathFragment, commandMap) {
+            LookupResolver.logger.warn(`Command '${currentPathFragment}' could not be found.`);
+            return {
+                successful: false,
+                pathUsed,
+                pathDangling: pathNew,
+                type: 1 /* ERROR_NOT_FOUND */,
+                missing: currentPathFragment,
+                similar: getSimilar(commandMap, currentPathFragment)
+            };
+        }
+        static createMissingArgsResult(pathNew, pathUsed, missing) {
+            LookupResolver.logger.warn("Some arguments could not be found:", missing);
+            return {
+                successful: false,
+                pathUsed,
+                pathDangling: pathNew,
+                type: 2 /* ERROR_MISSING_ARGUMENT */,
+                missing
+            };
         }
     }
     LookupResolver.logger = clingyLogby.getLogger(LookupResolver);
@@ -869,7 +881,7 @@ var clingy = (function (exports) {
          *
          * @param legalQuotes List of quotes to use when parsing strings.
          */
-        constructor(legalQuotes = ['"']) {
+        constructor(legalQuotes = ["\""]) {
             this.legalQuotes = legalQuotes;
             this.pattern = this.generateMatcher();
         }

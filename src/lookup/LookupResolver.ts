@@ -11,6 +11,7 @@ import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
 import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
 import { ILookupResult, ResultType } from "./result/ILookupResult";
 import { ILookupSuccess } from "./result/ILookupSuccess";
+import { IArgument } from "../argument/IArgument";
 
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
@@ -52,6 +53,65 @@ class LookupResolver {
         return this.resolveInternal(mapAliased, path, [], parseArguments);
     }
 
+    private static createSuccessResult(
+        pathNew: commandPath,
+        pathUsed: commandPath,
+        command: ICommand,
+        args: resolvedArgumentMap
+    ): ILookupSuccess {
+        const lookupSuccess: ILookupSuccess = {
+            successful: true,
+            pathUsed,
+            pathDangling: pathNew,
+            type: ResultType.SUCCESS,
+            command,
+            args
+        };
+        LookupResolver.logger.debug(
+            "Returning successful lookup result:",
+            lookupSuccess
+        );
+        return lookupSuccess;
+    }
+
+    private static createNotFoundResult(
+        pathNew: commandPath,
+        pathUsed: commandPath,
+        currentPathFragment: string,
+        commandMap: CommandMap
+    ): ILookupErrorNotFound {
+        LookupResolver.logger.warn(
+            `Command '${currentPathFragment}' could not be found.`
+        );
+        return <ILookupErrorNotFound>{
+            successful: false,
+            pathUsed,
+            pathDangling: pathNew,
+            type: ResultType.ERROR_NOT_FOUND,
+            missing: currentPathFragment,
+            similar: getSimilar(commandMap, currentPathFragment)
+        };
+    }
+
+    private static createMissingArgsResult(
+        pathNew: commandPath,
+        pathUsed: commandPath,
+        missing: IArgument[]
+    ): ILookupErrorMissingArgs {
+        LookupResolver.logger.warn(
+            "Some arguments could not be found:",
+            missing
+        );
+
+        return <ILookupErrorMissingArgs>{
+            successful: false,
+            pathUsed,
+            pathDangling: pathNew,
+            type: ResultType.ERROR_MISSING_ARGUMENT,
+            missing
+        };
+    }
+
     private resolveInternal(
         mapAliased: CommandMap,
         path: commandPath,
@@ -67,18 +127,14 @@ class LookupResolver {
                 ? !mapAliased.has(currentPathFragment)
                 : !mapAliased.hasIgnoreCase(currentPathFragment)
         ) {
-            LookupResolver.logger.warn(
-                `Command '${currentPathFragment}' could not be found.`
-            );
-            return <ILookupErrorNotFound>{
-                successful: false,
+            return LookupResolver.createNotFoundResult(
+                pathNew,
                 pathUsed,
-                pathDangling: pathNew,
-                type: ResultType.ERROR_NOT_FOUND,
-                missing: currentPathFragment,
-                similar: getSimilar(mapAliased, currentPathFragment)
-            };
+                currentPathFragment,
+                mapAliased
+            );
         }
+
         const command = <ICommand>(
             (this.caseSensitive
                 ? mapAliased.get(currentPathFragment)
@@ -95,40 +151,24 @@ class LookupResolver {
             command.args.length === 0
         ) {
             if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
-                LookupResolver.logger.debug(
-                    "Resolving sub-commands:",
-                    command.sub,
-                    pathNew
-                );
-                return this.resolveInternal(
-                    (<Clingy>command.sub).mapAliased,
+                return this.resolveInternalSub(
                     pathNew,
                     pathUsed,
+                    command,
                     parseArguments
                 );
-            } else {
-                LookupResolver.logger.debug(
-                    "No arguments defined, using empty map."
-                );
-                argumentsResolved = new Map();
             }
+
+            LookupResolver.logger.debug(
+                "No arguments defined, using empty map."
+            );
+            argumentsResolved = new Map();
         } else {
             LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
 
             if (argumentMatcher.missing.length > 0) {
-                LookupResolver.logger.warn(
-                    "Some arguments could not be found:",
-                    argumentMatcher.missing
-                );
-
-                return <ILookupErrorMissingArgs>{
-                    successful: false,
-                    pathUsed,
-                    pathDangling: pathNew,
-                    type: ResultType.ERROR_MISSING_ARGUMENT,
-                    missing: argumentMatcher.missing
-                };
+                return LookupResolver.createMissingArgsResult(pathNew, pathUsed, argumentMatcher.missing);
             }
 
             argumentsResolved = argumentMatcher.result;
@@ -138,20 +178,31 @@ class LookupResolver {
             );
         }
 
-        const lookupSuccess = <ILookupSuccess>{
-            successful: true,
+        return LookupResolver.createSuccessResult(
+            pathNew,
             pathUsed,
-            pathDangling: pathNew,
-            type: ResultType.SUCCESS,
             command,
-            args: argumentsResolved
-        };
-        LookupResolver.logger.debug(
-            "Returning successful lookup result:",
-            lookupSuccess
+            argumentsResolved
         );
+    }
 
-        return lookupSuccess;
+    private resolveInternalSub(
+        pathNew: commandPath,
+        pathUsed: commandPath,
+        command: ICommand,
+        parseArguments: boolean
+    ) {
+        LookupResolver.logger.debug(
+            "Resolving sub-commands:",
+            command.sub,
+            pathNew
+        );
+        return this.resolveInternal(
+            (<Clingy>command.sub).mapAliased,
+            pathNew,
+            pathUsed,
+            parseArguments
+        );
     }
 }
 

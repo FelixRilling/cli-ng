@@ -26,5 +26,9 @@ declare class LookupResolver {
      */
     resolve(mapAliased: CommandMap, path: commandPath, parseArguments?: boolean): ILookupResult;
     private resolveInternal;
+    private resolveInternalSub;
+    private static createSuccessResult;
+    private static createNotFoundResult;
+    private static createMissingArgsResult;
 }
 export { LookupResolver };

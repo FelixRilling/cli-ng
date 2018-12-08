@@ -8,6 +8,7 @@ import { clingyLogby } from "./logger";
 import { LookupResolver } from "./lookup/LookupResolver";
 import { ILookupResult } from "./lookup/result/ILookupResult";
 import { InputParser } from "./parser/InputParser";
+import { ArgumentResolving } from "./lookup/ArgumentResolving";
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -48,6 +49,7 @@ class Clingy {
         this.updateAliases();
     }
 
+    // TODO replace .get() with .getCommand() (breaking)
     /**
      * Gets a command from this instance.
      *
@@ -57,6 +59,8 @@ class Clingy {
         return this.mapAliased.get(key);
     }
 
+    // noinspection JSUnusedGlobalSymbols
+    // TODO replace .has() with .hasCommand() (breaking)
     /**
      * Checks if a command on this instance exists for this key.
      *
@@ -66,6 +70,7 @@ class Clingy {
         return this.mapAliased.has(key);
     }
 
+    // noinspection JSUnusedGlobalSymbols
     /**
      * Checks if a pathUsed resolves to a command.
      *
@@ -84,7 +89,11 @@ class Clingy {
      */
     public getPath(path: commandPath): ILookupResult {
         Clingy.logger.debug(`Resolving pathUsed: ${path}`);
-        return this.lookupResolver.resolve(this.mapAliased, path);
+        return this.lookupResolver.resolve(
+            this.mapAliased,
+            path,
+            ArgumentResolving.IGNORE
+        );
     }
 
     /**
@@ -99,7 +108,7 @@ class Clingy {
         return this.lookupResolver.resolve(
             this.mapAliased,
             this.inputParser.parse(input),
-            true
+            ArgumentResolving.RESOLVE
         );
     }
 

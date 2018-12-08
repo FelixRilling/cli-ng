@@ -43,27 +43,36 @@ class CommandMap extends Map {
      * Checks if the map contains a key, ignoring case.
      *
      * @param key Key to check for.
+     * @param caseSensitivity Case sensitivity to use.
      * @return If the map contains a key, ignoring case.
      */
-    hasIgnoreCase(key) {
-        return Array.from(this.keys())
-            .map(k => k.toLowerCase())
-            .includes(key.toLowerCase());
+    hasCommand(key, caseSensitivity) {
+        if (caseSensitivity === 1 /* INSENSITIVE */) {
+            return Array.from(this.keys())
+                .map(k => k.toLowerCase())
+                .includes(key.toLowerCase());
+        }
+        return this.has(key);
     }
     /**
      * Returns the value for the key, ignoring case.
      *
      * @param key Key to check for.
+     * @param caseSensitivity Case sensitivity to use.
      * @return The value for the key, ignoring case.
      */
-    getIgnoreCase(key) {
-        let result = null;
-        this.forEach((value, k) => {
-            if (key.toLowerCase() === k.toLowerCase()) {
-                result = value;
-            }
-        });
-        return result;
+    getCommand(key, caseSensitivity) {
+        if (caseSensitivity === 1 /* INSENSITIVE */) {
+            let result = null;
+            this.forEach((value, k) => {
+                if (key.toLowerCase() === k.toLowerCase()) {
+                    result = value;
+                }
+            });
+            return result;
+        }
+        // Return null instead of undefined to be backwards compatible.
+        return this.has(key) ? this.get(key) : null;
     }
 }
 
@@ -128,22 +137,9 @@ class LookupResolver {
      * @param caseSensitive If the lookup should honor case.
      */
     constructor(caseSensitive = true) {
-        this.caseSensitive = caseSensitive;
-    }
-    /**
-     * Resolves a pathUsed through a {@link CommandMap}.
-     *
-     * @param mapAliased     Map to use.
-     * @param path           Path to getPath.
-     * @param parseArguments If dangling pathUsed items should be treated as arguments.
-     * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
-     * or {@link ILookupErrorMissingArgs}.
-     */
-    resolve(mapAliased, path, parseArguments = false) {
-        if (path.length === 0) {
-            throw new Error("Path cannot be empty.");
-        }
-        return this.resolveInternal(mapAliased, path, [], parseArguments);
+        this.caseSensitivity = caseSensitive
+            ? 0 /* SENSITIVE */
+            : 1 /* INSENSITIVE */;
     }
     static createSuccessResult(pathNew, pathUsed, command, args) {
         const lookupSuccess = {
@@ -178,27 +174,39 @@ class LookupResolver {
             missing
         };
     }
-    resolveInternal(mapAliased, path, pathUsed, parseArguments) {
+    /**
+     * Resolves a pathUsed through a {@link CommandMap}.
+     *
+     * @param commandMap        Map to use.
+     * @param path              Path to getPath.
+     * @param argumentResolving Strategy for resolving arguments.
+     * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
+     * or {@link ILookupErrorMissingArgs}.
+     */
+    resolve(commandMap, path, argumentResolving) {
+        if (path.length === 0) {
+            throw new Error("Path cannot be empty.");
+        }
+        return this.resolveInternal(commandMap, path, [], argumentResolving);
+    }
+    resolveInternal(commandMap, path, pathUsed, argumentResolving) {
         const currentPathFragment = path[0];
         const pathNew = path.slice(1);
         pathUsed.push(currentPathFragment);
-        if (this.caseSensitive
-            ? !mapAliased.has(currentPathFragment)
-            : !mapAliased.hasIgnoreCase(currentPathFragment)) {
-            return LookupResolver.createNotFoundResult(pathNew, pathUsed, currentPathFragment, mapAliased);
+        if (!commandMap.hasCommand(currentPathFragment, this.caseSensitivity)) {
+            return LookupResolver.createNotFoundResult(pathNew, pathUsed, currentPathFragment, commandMap);
         }
-        const command = ((this.caseSensitive
-            ? mapAliased.get(currentPathFragment)
-            : mapAliased.getIgnoreCase(currentPathFragment)));
+        // We already checked if the key exists, assert its existence it.
+        const command = (commandMap.getCommand(currentPathFragment, this.caseSensitivity));
         LookupResolver.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
         if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
-            const subResult = this.resolveInternalSub(pathNew, pathUsed, command, parseArguments);
+            const subResult = this.resolveInternalSub(pathNew, pathUsed, command, argumentResolving);
             if (subResult.successful) {
                 return subResult;
             }
         }
         let argumentsResolved;
-        if (!parseArguments ||
+        if (argumentResolving === 1 /* IGNORE */ ||
             isNil(command.args) ||
             command.args.length === 0) {
             LookupResolver.logger.debug("No arguments defined, using empty map.");
@@ -215,9 +223,9 @@ class LookupResolver {
         }
         return LookupResolver.createSuccessResult(pathNew, pathUsed, command, argumentsResolved);
     }
-    resolveInternalSub(pathNew, pathUsed, command, parseArguments) {
+    resolveInternalSub(pathNew, pathUsed, command, argumentResolving) {
         LookupResolver.logger.debug("Resolving sub-commands:", command.sub, pathNew);
-        return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, parseArguments);
+        return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, argumentResolving);
     }
 }
 LookupResolver.logger = clingyLogby.getLogger(LookupResolver);
@@ -307,6 +315,7 @@ class Clingy {
         this.map.set(key, command);
         this.updateAliases();
     }
+    // TODO replace .get() with .getCommand() (breaking)
     /**
      * Gets a command from this instance.
      *
@@ -315,6 +324,8 @@ class Clingy {
     getCommand(key) {
         return this.mapAliased.get(key);
     }
+    // noinspection JSUnusedGlobalSymbols
+    // TODO replace .has() with .hasCommand() (breaking)
     /**
      * Checks if a command on this instance exists for this key.
      *
@@ -323,6 +334,7 @@ class Clingy {
     hasCommand(key) {
         return this.mapAliased.has(key);
     }
+    // noinspection JSUnusedGlobalSymbols
     /**
      * Checks if a pathUsed resolves to a command.
      *
@@ -340,7 +352,7 @@ class Clingy {
      */
     getPath(path) {
         Clingy.logger.debug(`Resolving pathUsed: ${path}`);
-        return this.lookupResolver.resolve(this.mapAliased, path);
+        return this.lookupResolver.resolve(this.mapAliased, path, 1 /* IGNORE */);
     }
     /**
      * Parses a string into a command and arguments.
@@ -351,7 +363,7 @@ class Clingy {
      */
     parse(input) {
         Clingy.logger.debug(`Parsing input: '${input}'`);
-        return this.lookupResolver.resolve(this.mapAliased, this.inputParser.parse(input), true);
+        return this.lookupResolver.resolve(this.mapAliased, this.inputParser.parse(input), 0 /* RESOLVE */);
     }
     /**
      * @private

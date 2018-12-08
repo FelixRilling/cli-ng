@@ -7,6 +7,7 @@ import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMis
 import { ILookupErrorNotFound } from "../../src/lookup/result/ILookupErrorNotFound";
 import { ResultType } from "../../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
+import { ArgumentResolving } from "../../src/lookup/ArgumentResolving";
 
 // noinspection TsLint
 const noopFn = () => {
@@ -18,15 +19,21 @@ const noopFn = () => {
 describe("LookupResolver", () => {
     it("Asserts that LookupResolver#resolve throws an Error for an empty path.", () => {
         expect(() => {
-            new LookupResolver().resolve(new CommandMap(), []);
+            new LookupResolver().resolve(
+                new CommandMap(),
+                [],
+                ArgumentResolving.IGNORE
+            );
         }).toThrow();
     });
 
     it("Asserts that LookupResolver#resolve returns an ILookupErrorNotFound for non-existent commands.", () => {
         const commandName = "foo";
-        const lookupResult = new LookupResolver().resolve(new CommandMap(), [
-            commandName
-        ]);
+        const lookupResult = new LookupResolver().resolve(
+            new CommandMap(),
+            [commandName],
+            ArgumentResolving.IGNORE
+        );
 
         expect(lookupResult.type).toBe(ResultType.ERROR_NOT_FOUND);
         expect((<ILookupErrorNotFound>lookupResult).missing).toBe(commandName);
@@ -47,7 +54,7 @@ describe("LookupResolver", () => {
         const lookupResult = new LookupResolver().resolve(
             commandMap,
             [commandName],
-            true
+            ArgumentResolving.RESOLVE
         );
 
         expect(lookupResult.type).toBe(ResultType.ERROR_MISSING_ARGUMENT);
@@ -67,9 +74,11 @@ describe("LookupResolver", () => {
         };
         const commandMap = new CommandMap();
         commandMap.set(commandName, command);
-        const lookupResult = new LookupResolver().resolve(commandMap, [
-            commandName
-        ]);
+        const lookupResult = new LookupResolver().resolve(
+            commandMap,
+            [commandName],
+            ArgumentResolving.IGNORE
+        );
 
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect((<ILookupSuccess>lookupResult).command).toBe(command);
@@ -92,7 +101,7 @@ describe("LookupResolver", () => {
         const lookupResult = new LookupResolver().resolve(
             commandMap,
             [commandName, argumentVal, "fizz"],
-            true
+            ArgumentResolving.RESOLVE
         );
 
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
@@ -114,7 +123,8 @@ describe("LookupResolver", () => {
         commandMap.set(commandName, command);
         const lookupResult = new LookupResolver().resolve(
             commandMap,
-            commandNames
+            commandNames,
+            ArgumentResolving.IGNORE
         );
 
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
@@ -135,13 +145,15 @@ describe("LookupResolver", () => {
 
         const lookupResultCaseSensitive = new LookupResolver(true).resolve(
             commandMap,
-            ["foO"]
+            ["foO"],
+            ArgumentResolving.IGNORE
         );
         expect(lookupResultCaseSensitive.type).toBe(ResultType.ERROR_NOT_FOUND);
 
         const lookupResultCaseInsensitive = new LookupResolver(false).resolve(
             commandMap,
-            ["foO"]
+            ["foO"],
+            ArgumentResolving.IGNORE
         );
         expect(lookupResultCaseInsensitive.type).toBe(ResultType.SUCCESS);
         expect((<ILookupSuccess>lookupResultCaseInsensitive).command).toBe(
@@ -169,10 +181,11 @@ describe("LookupResolver", () => {
         const commandMap1 = new CommandMap();
         commandMap1.set(commandName1, command1);
 
-        const lookupResult = new LookupResolver().resolve(commandMap1, [
-            commandName1,
-            commandName2
-        ]);
+        const lookupResult = new LookupResolver().resolve(
+            commandMap1,
+            [commandName1, commandName2],
+            ArgumentResolving.IGNORE
+        );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect((<ILookupSuccess>lookupResult).command).toBe(command2);
     });
@@ -204,7 +217,7 @@ describe("LookupResolver", () => {
         const lookupResult = new LookupResolver().resolve(
             commandMap1,
             [commandName1, commandName2, argumentVal],
-            true
+            ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect((<ILookupSuccess>lookupResult).command).toBe(command2);
@@ -238,10 +251,11 @@ describe("LookupResolver", () => {
         const commandMap1 = new CommandMap();
         commandMap1.set(commandName1, command1);
 
-        const lookupResult = new LookupResolver().resolve(commandMap1, [
-            commandName1,
-            commandName2
-        ], true);
+        const lookupResult = new LookupResolver().resolve(
+            commandMap1,
+            [commandName1, commandName2],
+            ArgumentResolving.RESOLVE
+        );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect((<ILookupSuccess>lookupResult).command).toBe(command2);
     });
@@ -275,7 +289,7 @@ describe("LookupResolver", () => {
         const lookupResult = new LookupResolver().resolve(
             commandMap1,
             [commandName1, argumentName],
-            true
+            ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect((<ILookupSuccess>lookupResult).command).toBe(command1);

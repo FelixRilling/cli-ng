@@ -4,6 +4,7 @@ import { IClingyOptions } from "../IClingyOptions";
 import { ICommand } from "./ICommand";
 import { IObjWithCommands } from "./IObjWithCommands";
 import { mapWithCommands } from "./mapWithCommands";
+import { CaseSensitivity } from "../lookup/CaseSensitivity";
 
 /**
  * Map containing {@link ICommand}s.
@@ -70,30 +71,44 @@ class CommandMap extends Map<string, ICommand> {
      * Checks if the map contains a key, ignoring case.
      *
      * @param key Key to check for.
+     * @param caseSensitivity Case sensitivity to use.
      * @return If the map contains a key, ignoring case.
      */
-    public hasIgnoreCase(key: string): boolean {
-        return Array.from(this.keys())
-            .map(k => k.toLowerCase())
-            .includes(key.toLowerCase());
+    public hasCommand(key: string, caseSensitivity: CaseSensitivity): boolean {
+        if (caseSensitivity === CaseSensitivity.INSENSITIVE) {
+            return Array.from(this.keys())
+                .map(k => k.toLowerCase())
+                .includes(key.toLowerCase());
+        }
+
+        return this.has(key);
     }
 
     /**
      * Returns the value for the key, ignoring case.
      *
      * @param key Key to check for.
+     * @param caseSensitivity Case sensitivity to use.
      * @return The value for the key, ignoring case.
      */
-    public getIgnoreCase(key: string): ICommand | null {
-        let result: ICommand | null = null;
+    public getCommand(
+        key: string,
+        caseSensitivity: CaseSensitivity
+    ): ICommand | null {
+        if (caseSensitivity === CaseSensitivity.INSENSITIVE) {
+            let result: ICommand | null = null;
 
-        this.forEach((value, k) => {
-            if (key.toLowerCase() === k.toLowerCase()) {
-                result = value;
-            }
-        });
+            this.forEach((value, k) => {
+                if (key.toLowerCase() === k.toLowerCase()) {
+                    result = value;
+                }
+            });
 
-        return result;
+            return result;
+        }
+
+        // Return null instead of undefined to be backwards compatible.
+        return this.has(key) ? <ICommand>this.get(key) : null;
     }
 }
 

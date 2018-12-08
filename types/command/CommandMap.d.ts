@@ -2,6 +2,7 @@ import { IClingyOptions } from "../IClingyOptions";
 import { ICommand } from "./ICommand";
 import { IObjWithCommands } from "./IObjWithCommands";
 import { mapWithCommands } from "./mapWithCommands";
+import { CaseSensitivity } from "../lookup/CaseSensitivity";
 /**
  * Map containing {@link ICommand}s.
  *
@@ -22,15 +23,17 @@ declare class CommandMap extends Map<string, ICommand> {
      * Checks if the map contains a key, ignoring case.
      *
      * @param key Key to check for.
+     * @param caseSensitivity Case sensitivity to use.
      * @return If the map contains a key, ignoring case.
      */
-    hasIgnoreCase(key: string): boolean;
+    hasCommand(key: string, caseSensitivity: CaseSensitivity): boolean;
     /**
      * Returns the value for the key, ignoring case.
      *
      * @param key Key to check for.
+     * @param caseSensitivity Case sensitivity to use.
      * @return The value for the key, ignoring case.
      */
-    getIgnoreCase(key: string): ICommand | null;
+    getCommand(key: string, caseSensitivity: CaseSensitivity): ICommand | null;
 }
 export { CommandMap };

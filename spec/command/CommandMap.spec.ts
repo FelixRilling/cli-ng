@@ -1,11 +1,12 @@
 import { CommandMap } from "../../src/command/CommandMap";
 import { ICommand } from "../../src/command/ICommand";
+import { CaseSensitivity } from "../../src/lookup/CaseSensitivity";
 
 /**
  * Tests for {@link CommandMap}.
  */
 describe("CommandMap", () => {
-    it("Asserts that CommandMap#hasIgnoreCase checks keys.", () => {
+    it("Asserts that CommandMap#hasCommand checks keys.", () => {
         const commandMap = new CommandMap();
         const command: ICommand = {
             fn: () => null,
@@ -14,12 +15,18 @@ describe("CommandMap", () => {
         };
         commandMap.set("foo", command);
 
-        expect(commandMap.hasIgnoreCase("foo")).toBeTruthy();
-        expect(commandMap.hasIgnoreCase("foO")).toBeTruthy();
-        expect(commandMap.hasIgnoreCase("bar")).toBeFalsy();
+        expect(
+            commandMap.hasCommand("foo", CaseSensitivity.INSENSITIVE)
+        ).toBeTruthy();
+        expect(
+            commandMap.hasCommand("foO", CaseSensitivity.INSENSITIVE)
+        ).toBeTruthy();
+        expect(
+            commandMap.hasCommand("bar", CaseSensitivity.INSENSITIVE)
+        ).toBeFalsy();
     });
 
-    it("Asserts that CommandMap#getIgnoreCase checks keys.", () => {
+    it("Asserts that CommandMap#getCommand checks keys.", () => {
         const commandMap = new CommandMap();
         const command: ICommand = {
             fn: () => null,
@@ -28,8 +35,14 @@ describe("CommandMap", () => {
         };
         commandMap.set("foo", command);
 
-        expect(commandMap.getIgnoreCase("foo")).toBe(command);
-        expect(commandMap.getIgnoreCase("foO")).toBe(command);
-        expect(commandMap.getIgnoreCase("bar")).toBeNull();
+        expect(commandMap.getCommand("foo", CaseSensitivity.INSENSITIVE)).toBe(
+            command
+        );
+        expect(commandMap.getCommand("foO", CaseSensitivity.INSENSITIVE)).toBe(
+            command
+        );
+        expect(
+            commandMap.getCommand("bar", CaseSensitivity.INSENSITIVE)
+        ).toBeNull();
     });
 });

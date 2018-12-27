@@ -79,21 +79,27 @@ import { Clingy, ILookupSuccess } from "cli-ngy";
 
 const cli = new Clingy({
     fizz: {
-        fn: (args) => console.log(args.get("buzz")),
+        fn: (args) => console.log(args.get("fizz") + " : " + args.get("buzz")),
         alias: [],
         args: [{
-            name: "buzz",
+            name: "fizz",
             required: false,
             defaultValue: "123"
+        }, {
+          name: "buzz",
+          required: false
         }]
     }
 });
 
-const result1 = cli.parse("fizz lorem");
-(<ILookupSuccess>result1).command.fn(); // logs "lorem"
+const result1 = cli.parse("lorem ipsum");
+(<ILookupSuccess>result1).command.fn(); // logs "lorem : ipsum"
 
-const result2 = cli.parse("fizz");
-(<ILookupSuccess>result2).command.fn(); // logs "123"
+const result2 = cli.parse("lorem");
+(<ILookupSuccess>result1).command.fn(); // logs "lorem : null"
+
+const result3 = cli.parse("");
+(<ILookupSuccess>result3).command.fn(); // logs "123 : null"
 ```
 
 ### Nested commands

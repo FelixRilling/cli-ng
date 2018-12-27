@@ -104,14 +104,17 @@ class ArgumentMatcher {
                 ArgumentMatcher.logger.trace(`Found matching argument for ${expectedArg.name}, adding to result: ${providedArg}`);
                 this.result.set(expectedArg.name, providedArg);
             }
-            else if (!expectedArg.required &&
-                !lightdash.isNil(expectedArg.defaultValue)) {
+            else if (expectedArg.required) {
+                ArgumentMatcher.logger.trace(`No matching argument found for ${expectedArg.name}, adding to missing.`);
+                this.missing.push(expectedArg);
+            }
+            else if (!lightdash.isNil(expectedArg.defaultValue)) {
                 ArgumentMatcher.logger.trace(`No matching argument found for ${expectedArg.name}, using default: ${expectedArg.defaultValue}`);
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             }
             else {
-                ArgumentMatcher.logger.trace(`No matching argument found for ${expectedArg.name}, adding to missing.`);
-                this.missing.push(expectedArg);
+                ArgumentMatcher.logger.trace(`No matching argument found for ${expectedArg.name}, using null.`);
+                this.result.set(expectedArg.name, null);
             }
         });
         ArgumentMatcher.logger.debug(`Finished matching arguments: ${expected.length} expected, ${this.result.size} found and ${this.missing.length} missing.`);

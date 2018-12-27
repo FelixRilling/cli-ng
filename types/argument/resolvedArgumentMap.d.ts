@@ -1,2 +1,2 @@
-declare type resolvedArgumentMap = Map<string, string>;
+declare type resolvedArgumentMap = Map<string, string | null>;
 export { resolvedArgumentMap };

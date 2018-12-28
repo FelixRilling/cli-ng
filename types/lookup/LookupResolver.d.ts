@@ -31,5 +31,6 @@ declare class LookupResolver {
     resolve(commandMap: CommandMap, path: commandPath, argumentResolving: ArgumentResolving): ILookupResult;
     private resolveInternal;
     private resolveInternalSub;
+    private hasCommand;
 }
 export { LookupResolver };

@@ -1,5 +1,5 @@
+import { isMap, isObjectPlain, forEachEntry, isObject, isNil, strSimilar, isInstanceOf, arrCompact } from 'lightdash';
 import { Logby } from 'logby';
-import { forEachEntry, isMap, isObject, isObjectPlain, isNil, strSimilar, isInstanceOf, arrCompact } from 'lightdash';
 
 /**
  * Map containing {@link ICommand}s.
@@ -196,18 +196,29 @@ class LookupResolver {
         const currentPathFragment = path[0];
         const pathNew = path.slice(1);
         pathUsed.push(currentPathFragment);
-        if (!commandMap.hasCommand(currentPathFragment, this.caseSensitivity)) {
+        if (!this.hasCommand(commandMap, currentPathFragment)) {
             return LookupResolver.createNotFoundResult(pathNew, pathUsed, currentPathFragment, commandMap);
         }
-        // We already checked if the key exists, assert its existence it.
+        // We already checked if the key exists, assert its existence.
         const command = (commandMap.getCommand(currentPathFragment, this.caseSensitivity));
-        LookupResolver.logger.debug(`Successfully looked up command: ${currentPathFragment}`);
-        if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
-            const subResult = this.resolveInternalSub(pathNew, pathUsed, command, argumentResolving);
-            if (subResult.successful) {
-                return subResult;
-            }
+        LookupResolver.logger.debug(`Found command: '${currentPathFragment}'.`);
+        /*
+         * Recurse into sub-commands if:
+         * Additional items are in the path AND
+         * the current command has sub-commands AND
+         * the sub-commands contain the next path item.
+         */
+        if (pathNew.length > 0 &&
+            isInstanceOf(command.sub, Clingy) &&
+            this.hasCommand(command.sub.mapAliased, pathNew[0])) {
+            return this.resolveInternalSub(pathNew, pathUsed, command, argumentResolving);
         }
+        /*
+         * Skip checking for arguments if:
+         * The parameter argumentResolving is set to ignore arguments OR
+         * the command has no arguments defined OR
+         * the command has an empty array defined as arguments.
+         */
         let argumentsResolved;
         if (argumentResolving === 1 /* IGNORE */ ||
             isNil(command.args) ||
@@ -216,19 +227,22 @@ class LookupResolver {
             argumentsResolved = new Map();
         }
         else {
-            LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
+            LookupResolver.logger.debug(`Looking up arguments: '${pathNew}'.`);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
             if (argumentMatcher.missing.length > 0) {
                 return LookupResolver.createMissingArgsResult(pathNew, pathUsed, argumentMatcher.missing);
             }
             argumentsResolved = argumentMatcher.result;
-            LookupResolver.logger.debug("Successfully looked up arguments:", argumentsResolved);
+            LookupResolver.logger.debug("Successfully looked up arguments: ", argumentsResolved);
         }
         return LookupResolver.createSuccessResult(pathNew, pathUsed, command, argumentsResolved);
     }
     resolveInternalSub(pathNew, pathUsed, command, argumentResolving) {
         LookupResolver.logger.debug("Resolving sub-commands:", command.sub, pathNew);
         return this.resolveInternal(command.sub.mapAliased, pathNew, pathUsed, argumentResolving);
+    }
+    hasCommand(commandMap, pathPart) {
+        return commandMap.hasCommand(pathPart, this.caseSensitivity);
     }
 }
 LookupResolver.logger = clingyLogby.getLogger(LookupResolver);

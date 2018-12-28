@@ -246,7 +246,7 @@ describe("LookupResolver", () => {
         expect(lookupResult.pathDangling).toEqual([argumentVal]);
     });
 
-    xit("Asserts that LookupResolver#resolve correctly errors for missing sub-command arguments", () => {
+    it("Asserts that LookupResolver#resolve correctly errors for missing sub-command arguments", () => {
         const commandName2 = "bar";
         const argumentName = "baa";
         const argument = createMockArg(argumentName, true);
@@ -274,7 +274,7 @@ describe("LookupResolver", () => {
         expect(lookupResult.pathDangling).toEqual([]);
     });
 
-    it("Asserts that LookupResolver#resolve resolves sub-commands optional arguments which are not present", () => {
+    it("Asserts that LookupResolver#resolve resolves sub-commands with optional arguments which are not present", () => {
         const commandName2 = "bar";
         const argumentName = "baa";
         const argument = createMockArg(argumentName, false);
@@ -373,7 +373,7 @@ describe("LookupResolver", () => {
         expect((<ILookupSuccess>lookupResult).args).toEqual(
             new Map([[argumentName, argumentName]])
         );
-        expect(lookupResult.pathUsed).toEqual([commandName1, argumentName]);
+        expect(lookupResult.pathUsed).toEqual([commandName1]);
         expect(lookupResult.pathDangling).toEqual([argumentName]);
     });
 
@@ -401,7 +401,7 @@ describe("LookupResolver", () => {
         expect((<ILookupSuccess>lookupResult).args).toEqual(
             new Map([[argumentName, argumentName]])
         );
-        expect(lookupResult.pathUsed).toEqual([commandName1, argumentName]);
+        expect(lookupResult.pathUsed).toEqual([commandName1]);
         expect(lookupResult.pathDangling).toEqual([argumentName]);
     });
 });

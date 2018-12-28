@@ -126,7 +126,7 @@ class LookupResolver {
         const pathNew = path.slice(1);
         pathUsed.push(currentPathFragment);
 
-        if (!commandMap.hasCommand(currentPathFragment, this.caseSensitivity)) {
+        if (!this.hasCommand(commandMap, currentPathFragment)) {
             return LookupResolver.createNotFoundResult(
                 pathNew,
                 pathUsed,
@@ -134,27 +134,37 @@ class LookupResolver {
                 commandMap
             );
         }
-        // We already checked if the key exists, assert its existence it.
+        // We already checked if the key exists, assert its existence.
         const command = <ICommand>(
             commandMap.getCommand(currentPathFragment, this.caseSensitivity)
         );
-        LookupResolver.logger.debug(
-            `Successfully looked up command: ${currentPathFragment}`
-        );
+        LookupResolver.logger.debug(`Found command: '${currentPathFragment}'.`);
 
-        if (pathNew.length > 0 && isInstanceOf(command.sub, Clingy)) {
-            const subResult = this.resolveInternalSub(
+        /*
+         * Recurse into sub-commands if:
+         * Additional items are in the path AND
+         * the current command has sub-commands AND
+         * the sub-commands contain the next path item.
+         */
+        if (
+            pathNew.length > 0 &&
+            isInstanceOf(command.sub, Clingy) &&
+            this.hasCommand((<Clingy>command.sub).mapAliased, pathNew[0])
+        ) {
+            return this.resolveInternalSub(
                 pathNew,
                 pathUsed,
                 command,
                 argumentResolving
             );
-
-            if (subResult.successful) {
-                return subResult;
-            }
         }
 
+        /*
+         * Skip checking for arguments if:
+         * The parameter argumentResolving is set to ignore arguments OR
+         * the command has no arguments defined OR
+         * the command has an empty array defined as arguments.
+         */
         let argumentsResolved: resolvedArgumentMap;
         if (
             argumentResolving === ArgumentResolving.IGNORE ||
@@ -166,7 +176,7 @@ class LookupResolver {
             );
             argumentsResolved = new Map();
         } else {
-            LookupResolver.logger.debug(`Looking up arguments: ${pathNew}`);
+            LookupResolver.logger.debug(`Looking up arguments: '${pathNew}'.`);
             const argumentMatcher = new ArgumentMatcher(command.args, pathNew);
 
             if (argumentMatcher.missing.length > 0) {
@@ -179,7 +189,7 @@ class LookupResolver {
 
             argumentsResolved = argumentMatcher.result;
             LookupResolver.logger.debug(
-                "Successfully looked up arguments:",
+                "Successfully looked up arguments: ",
                 argumentsResolved
             );
         }
@@ -209,6 +219,10 @@ class LookupResolver {
             pathUsed,
             argumentResolving
         );
+    }
+
+    private hasCommand(commandMap: CommandMap, pathPart: string): boolean {
+        return commandMap.hasCommand(pathPart, this.caseSensitivity);
     }
 }
 

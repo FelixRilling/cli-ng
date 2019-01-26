@@ -1,10 +1,10 @@
 import { forEachEntry, isMap, isObject, isObjectPlain } from "lightdash";
 import { Clingy } from "../Clingy";
 import { IClingyOptions } from "../IClingyOptions";
+import { CaseSensitivity } from "../lookup/CaseSensitivity";
 import { ICommand } from "./ICommand";
 import { IObjWithCommands } from "./IObjWithCommands";
 import { mapWithCommands } from "./mapWithCommands";
-import { CaseSensitivity } from "../lookup/CaseSensitivity";
 
 /**
  * Map containing {@link ICommand}s.

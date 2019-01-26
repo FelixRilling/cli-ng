@@ -2,12 +2,12 @@ import { IArgument } from "../../src/argument/IArgument";
 import { Clingy } from "../../src/Clingy";
 import { CommandMap } from "../../src/command/CommandMap";
 import { ICommand } from "../../src/command/ICommand";
+import { ArgumentResolving } from "../../src/lookup/ArgumentResolving";
 import { LookupResolver } from "../../src/lookup/LookupResolver";
 import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMissingArgs";
 import { ILookupErrorNotFound } from "../../src/lookup/result/ILookupErrorNotFound";
 import { ResultType } from "../../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
-import { ArgumentResolving } from "../../src/lookup/ArgumentResolving";
 
 // noinspection TsLint
 const noopFn = () => {};

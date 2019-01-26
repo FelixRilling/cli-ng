@@ -1,5 +1,6 @@
 import { isInstanceOf, isNil } from "lightdash";
 import { ArgumentMatcher } from "../argument/ArgumentMatcher";
+import { IArgument } from "../argument/IArgument";
 import { resolvedArgumentMap } from "../argument/resolvedArgumentMap";
 import { Clingy } from "../Clingy";
 import { CommandMap } from "../command/CommandMap";
@@ -7,13 +8,12 @@ import { commandPath } from "../command/commandPath";
 import { ICommand } from "../command/ICommand";
 import { getSimilar } from "../command/util/commandUtil";
 import { clingyLogby } from "../logger";
+import { ArgumentResolving } from "./ArgumentResolving";
+import { CaseSensitivity } from "./CaseSensitivity";
 import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
 import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
 import { ILookupResult, ResultType } from "./result/ILookupResult";
 import { ILookupSuccess } from "./result/ILookupSuccess";
-import { IArgument } from "../argument/IArgument";
-import { ArgumentResolving } from "./ArgumentResolving";
-import { CaseSensitivity } from "./CaseSensitivity";
 
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.

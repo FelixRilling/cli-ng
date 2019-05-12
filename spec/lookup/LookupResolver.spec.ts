@@ -10,7 +10,8 @@ import { ResultType } from "../../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
 
 // noinspection TsLint
-const noopFn = () => {};
+const noopFn = () => {
+};
 
 const createMockCommand = (
     args: IArgument[] = [],

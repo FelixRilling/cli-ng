@@ -5,10 +5,10 @@ import { IObjWithCommands } from "./command/IObjWithCommands";
 import { mapWithCommands } from "./command/mapWithCommands";
 import { IClingyOptions } from "./IClingyOptions";
 import { clingyLogby } from "./logger";
+import { ArgumentResolving } from "./lookup/ArgumentResolving";
 import { LookupResolver } from "./lookup/LookupResolver";
 import { ILookupResult } from "./lookup/result/ILookupResult";
 import { InputParser } from "./parser/InputParser";
-import { ArgumentResolving } from "./lookup/ArgumentResolving";
 
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.

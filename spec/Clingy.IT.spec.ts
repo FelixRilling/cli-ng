@@ -1,11 +1,11 @@
 import { IArgument } from "../src/argument/IArgument";
 import { Clingy } from "../src/Clingy";
 import { ICommand } from "../src/command/ICommand";
+import { mapWithCommands } from "../src/command/mapWithCommands";
 import { ILookupErrorMissingArgs } from "../src/lookup/result/ILookupErrorMissingArgs";
 import { ILookupErrorNotFound } from "../src/lookup/result/ILookupErrorNotFound";
 import { ResultType } from "../src/lookup/result/ILookupResult";
 import { ILookupSuccess } from "../src/lookup/result/ILookupSuccess";
-import { mapWithCommands } from "../src/command/mapWithCommands";
 
 /**
  * Integration tests for example {@link Clingy} usage.

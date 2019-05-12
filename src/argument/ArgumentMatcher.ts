@@ -36,28 +36,28 @@ class ArgumentMatcher {
                 ArgumentMatcher.logger.trace(
                     `Found matching argument for ${
                         expectedArg.name
-                    }, adding to result: ${providedArg}`
+                        }, adding to result: ${providedArg}`
                 );
                 this.result.set(expectedArg.name, providedArg);
             } else if (expectedArg.required) {
                 ArgumentMatcher.logger.trace(
                     `No matching argument found for ${
                         expectedArg.name
-                    }, adding to missing.`
+                        }, adding to missing.`
                 );
                 this.missing.push(expectedArg);
             } else if (!isNil(expectedArg.defaultValue)) {
                 ArgumentMatcher.logger.trace(
                     `No matching argument found for ${
                         expectedArg.name
-                    }, using default: ${expectedArg.defaultValue}`
+                        }, using default: ${expectedArg.defaultValue}`
                 );
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             } else {
                 ArgumentMatcher.logger.trace(
                     `No matching argument found for ${
                         expectedArg.name
-                    }, using null.`
+                        }, using null.`
                 );
                 this.result.set(expectedArg.name, null);
             }
@@ -66,7 +66,7 @@ class ArgumentMatcher {
         ArgumentMatcher.logger.debug(
             `Finished matching arguments: ${expected.length} expected, ${
                 this.result.size
-            } found and ${this.missing.length} missing.`
+                } found and ${this.missing.length} missing.`
         );
     }
 }

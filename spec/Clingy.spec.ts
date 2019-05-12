@@ -1,7 +1,7 @@
 import { Clingy } from "../src/Clingy";
 import { ICommand } from "../src/command/ICommand";
-import { mapWithCommands } from "../src/command/mapWithCommands";
 import { IObjWithCommands } from "../src/command/IObjWithCommands";
+import { mapWithCommands } from "../src/command/mapWithCommands";
 
 const createCommand = (): ICommand => {
     return {

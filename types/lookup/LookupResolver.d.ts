@@ -1,7 +1,7 @@
 import { CommandMap } from "../command/CommandMap";
 import { commandPath } from "../command/commandPath";
-import { ILookupResult } from "./result/ILookupResult";
 import { ArgumentResolving } from "./ArgumentResolving";
+import { ILookupResult } from "./result/ILookupResult";
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
  *

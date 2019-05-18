@@ -93,6 +93,22 @@ var clingy = (function (exports) {
     const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
 
     /**
+     * Checks if a value is a string.
+     *
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val Value to check.
+     * @returns {boolean} if the value is a string.
+     * @example
+     * isString("foo")
+     * // => true
+     *
+     * isString(1)
+     * // => false
+     */
+    const isString = (val) => isTypeOf(val, "string");
+
+    /**
      * Iterates over each entry of an object.
      *
      * @memberof For
@@ -193,6 +209,65 @@ var clingy = (function (exports) {
      */
     const isObjectPlain = (val) => isObject(val) && val.constructor === Object;
 
+    /**
+     * Checks if a value is a symbol.
+     *
+     * @memberof Is
+     * @since 1.0.0
+     * @param {any} val Value to check.
+     * @returns {boolean} If the value is a symbol.
+     * @example
+     * isSymbol(Symbol())
+     * // => true
+     *
+     * isSymbol(Symbol.split)
+     * // => true
+     *
+     * isSymbol("foo")
+     * // => false
+     */
+    const isSymbol = (val) => isTypeOf(val, "symbol");
+
+    /**
+     * Gets name of a value.
+     *
+     * If the value has a name or description property, the value of that is returned.
+     * If the value is a string, it is returned as is.
+     * Otherwise null is returned.
+     *
+     * @memberof Get
+     * @since 10.2.0
+     * @param {any} val Value to check.
+     * @returns {string} The name of the value.
+     * @example
+     * getName(class Foo{})
+     * // => "Foo"
+     *
+     * getName(function bar(){})
+     * // => "bar"
+     *
+     * getName(Symbol("abc"))
+     * // => "abc"
+     *
+     * getName("foo")
+     * // => "foo"
+     *
+     * getName(1)
+     * // => null
+     */
+    const getName = (val) => {
+        if (isString(val)) {
+            return val;
+        }
+        if (isObject(val) && !isNil(val.name)) {
+            return val.name;
+        }
+        if (isSymbol(val) && !isNil(val.description)) {
+            return val.description;
+        }
+        return null;
+    };
+
     // noinspection SpellCheckingInspection
     /**
      * Returns the levenshtein string distance of two strings.
@@ -272,14 +347,14 @@ var clingy = (function (exports) {
      * // => Map<any, any[]>{0: [2, 4], 1: [1, 3, 5]}
      */
     const arrCollect = (arr, fn) => {
-        const result = new Map();
+        const collected = new Map();
         arr.forEach((val, index) => {
             const key = fn(val, index, arr);
             if (!isNil(key)) {
-                result.set(key, result.has(key) ? [...result.get(key), val] : [val]);
+                collected.set(key, collected.has(key) ? [...collected.get(key), val] : [val]);
             }
         });
-        return result;
+        return collected;
     };
 
     // noinspection SpellCheckingInspection
@@ -389,7 +464,7 @@ var clingy = (function (exports) {
     }
 
     /**
-     * Default level-list.
+     * Default level-list. Can be used to set the level of a {@link Logby} instance.
      *
      * @public
      */
@@ -420,18 +495,23 @@ var clingy = (function (exports) {
     };
 
     /**
-     * Name of the default appenderFn, can be used to detach it.
-     */
-    const DEFAULT_APPENDER_NAME = "defaultAppender";
-    /**
-     * Default appender-fn, doing the actual logging.
+     * Helper method for creating log entry prefix.
      *
      * @private
-     * @param level Level of the entry to log.
      * @param name Name of the logger instance.
+     * @param level Level of the entry to log.
+     * @returns Log entry prefix.
+     */
+    const createDefaultLogPrefix = (name, level) => `${new Date().toISOString()} ${level.name} ${name}`;
+    /**
+     * Default appender, doing the actual logging.
+     *
+     * @public
+     * @param name Name of the logger instance.
+     * @param level Level of the entry to log.
      * @param args Arguments to log.
      */
-    const defaultAppenderFn = (level, name, args) => {
+    const defaultLoggingAppender = (name, level, args) => {
         let loggerFn = console.log;
         if (level === Levels.ERROR) {
             // tslint:disable-next-line
@@ -445,135 +525,18 @@ var clingy = (function (exports) {
             // tslint:disable-next-line
             loggerFn = console.info;
         }
-        loggerFn(`${new Date().toISOString()} ${level.name} ${name}`, ...args);
+        loggerFn(createDefaultLogPrefix(name, level), ...args);
     };
 
-    // File is named "_index.ts" to avoid it being treated as a module index file.
-
     /**
-     * Checks if the value has any of the given types.
-     * If at least one type gives back true, true is returned.
+     * Checks if the given level is considered part of the active level.
      *
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val Value to check.
-     * @param {...string} types Type strings to compare the value to.
-     * @returns {boolean} If the value has the type provided.
-     * @example
-     * isTypeOf("foo", "string")
-     * // => true
-     *
-     * isTypeOf("foo", "number", "string")
-     * // => true
-     *
-     * isTypeOf("foo", "number")
-     * // => false
+     * @private
+     * @param incoming Level to check.
+     * @param active level to check against.
+     * @returns if the given level matches the active level.
      */
-    const isTypeOf$1 = (val, ...types) => types.some(type => typeof val === type);
-
-    /**
-     * Checks if a value is undefined or null.
-     *
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val Value to check.
-     * @returns {boolean} If the value is nil.
-     * @example
-     * isNil(null)
-     * // => true
-     *
-     * isNil(undefined)
-     * // => true
-     *
-     * isNil(0)
-     * // => false
-     *
-     * isNil("")
-     * // => false
-     */
-    const isNil$1 = (val) => val == null;
-
-    /**
-     * Checks if a value is not nil and has a type of object.
-     *
-     * The main difference to {@link isObject} is that functions are not considered object-like,
-     * because `typeof function(){}` returns `"function"`.
-     *
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val Value to check,
-     * @returns {boolean} If the value is object-like.
-     * @example
-     * isObjectLike({})
-     * // => true
-     *
-     * isObjectLike([])
-     * // => true
-     *
-     * isObjectLike(() => 1))
-     * // => false
-     *
-     * isObjectLike(1)
-     * // => false
-     */
-    const isObjectLike$1 = (val) => !isNil$1(val) && isTypeOf$1(val, "object");
-
-    /**
-     * Checks if a value is a string.
-     *
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val Value to check.
-     * @returns {boolean} if the value is a string.
-     * @example
-     * isString("foo")
-     * // => true
-     *
-     * isString(1)
-     * // => false
-     */
-    const isString$1 = (val) => isTypeOf$1(val, "string");
-
-    /**
-     * Checks if a value is a function.
-     *
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val Value to check.
-     * @returns {boolean} If the value is a function.
-     * @example
-     * isFunction(function a(){})
-     * // => true
-     *
-     * isFunction(Array.from)
-     * // => true
-     *
-     * isFunction(null)
-     * // => false
-     */
-    const isFunction$1 = (val) => isTypeOf$1(val, "function");
-
-    /**
-     * Checks if a value is an object.
-     *
-     * @memberof Is
-     * @since 1.0.0
-     * @param {any} val Value to check.
-     * @returns {boolean} If the value is an object.
-     * @example
-     * isObject({})
-     * // => true
-     *
-     * isObject([])
-     * // => true
-     *
-     * isObject(() => 1))
-     * // => true
-     *
-     * isObject(1)
-     * // => false
-     */
-    const isObject$1 = (val) => isObjectLike$1(val) || isFunction$1(val);
+    const matchesLevel = (incoming, active) => incoming.val <= active.val;
 
     /**
      * Default {@link ILogger} class.
@@ -585,6 +548,7 @@ var clingy = (function (exports) {
          * Creates a new {@link DefaultLogger}.
          * Should not be constructed directly, rather use {@link Logby.getLogger}.
          *
+         * @public
          * @param root Root logger of this logger.
          * @param name Name of the logger.
          */
@@ -595,17 +559,19 @@ var clingy = (function (exports) {
         /**
          * Logs a message.
          *
+         * @public
          * @param level Levels of the log.
          * @param args Arguments to be logged.
          */
         log(level, ...args) {
-            if (this.root.getLevel().val >= level.val) {
-                this.root.getAppenders().forEach(fn => fn(level, this.name, args));
+            if (this.root.level.val >= level.val) {
+                this.root.appenders.forEach(fn => fn(this.name, level, args));
             }
         }
         /**
          * Logs an error.
          *
+         * @public
          * @param args Arguments to be logged.
          */
         error(...args) {
@@ -614,6 +580,7 @@ var clingy = (function (exports) {
         /**
          * Logs a warning.
          *
+         * @public
          * @param args Arguments to be logged.
          */
         warn(...args) {
@@ -622,6 +589,7 @@ var clingy = (function (exports) {
         /**
          * Logs an info.
          *
+         * @public
          * @param args Arguments to be logged.
          */
         info(...args) {
@@ -630,6 +598,7 @@ var clingy = (function (exports) {
         /**
          * Logs a debug message.
          *
+         * @public
          * @param args Arguments to be logged.
          */
         debug(...args) {
@@ -638,10 +607,56 @@ var clingy = (function (exports) {
         /**
          * Logs a trace message.
          *
+         * @public
          * @param args Arguments to be logged.
          */
         trace(...args) {
             this.log(Levels.TRACE, ...args);
+        }
+        /**
+         * Checks if the currently set log level includes error logging.
+         *
+         * @public
+         * @returns if the currently set log level includes error logging.
+         */
+        isError() {
+            return matchesLevel(Levels.ERROR, this.root.level);
+        }
+        /**
+         * Checks if the currently set log level includes warning logging.
+         *
+         * @public
+         * @returns if the currently set log level includes warning logging.
+         */
+        isWarn() {
+            return matchesLevel(Levels.WARN, this.root.level);
+        }
+        /**
+         * Checks if the currently set log level includes info logging.
+         *
+         * @public
+         * @returns if the currently set log level includes info logging.
+         */
+        isInfo() {
+            return matchesLevel(Levels.INFO, this.root.level);
+        }
+        /**
+         * Checks if the currently set log level includes debug logging.
+         *
+         * @public
+         * @returns if the currently set log level includes debug logging.
+         */
+        isDebug() {
+            return matchesLevel(Levels.DEBUG, this.root.level);
+        }
+        /**
+         * Checks if the currently set log level includes trace logging.
+         *
+         * @public
+         * @returns if the currently set log level includes trace logging.
+         */
+        isTrace() {
+            return matchesLevel(Levels.TRACE, this.root.level);
         }
     }
 
@@ -654,9 +669,7 @@ var clingy = (function (exports) {
          */
         constructor() {
             this.loggers = new Map();
-            this.appenders = new Map([
-                [DEFAULT_APPENDER_NAME, defaultAppenderFn]
-            ]);
+            this.appenders = new Set([defaultLoggingAppender]);
             this.level = Levels.INFO;
         }
         /**
@@ -666,63 +679,15 @@ var clingy = (function (exports) {
          * @returns The logger instance.
          */
         getLogger(nameable) {
-            let name;
-            if (isObject$1(nameable) && "name" in nameable) {
-                name = nameable.name;
-            }
-            else if (isString$1(nameable)) {
-                name = nameable;
-            }
-            else {
+            const name = getName(nameable);
+            if (name == null) {
                 throw new TypeError(`'${nameable}' is neither an INameable nor a string.`);
             }
-            if (this.loggers.has(name)) {
-                return this.loggers.get(name);
+            if (!this.loggers.has(name)) {
+                const logger = new DefaultLogger(this, name);
+                this.loggers.set(name, logger);
             }
-            const logger = new DefaultLogger(this, name);
-            this.loggers.set(name, logger);
-            return logger;
-        }
-        /**
-         * Gets the active log level.
-         *
-         * @return The active log level.
-         */
-        getLevel() {
-            return this.level;
-        }
-        /**
-         * Sets the active log level.
-         *
-         * @param level Level to set.
-         */
-        setLevel(level) {
-            this.level = level;
-        }
-        /**
-         * Attaches an appender to the instance.
-         *
-         * @param name Name of the appender.
-         * @param fn Appender function.
-         */
-        attachAppender(name, fn) {
-            this.appenders.set(name, fn);
-        }
-        /**
-         * Detaches an appender.
-         *
-         * @param name Name of the appender.
-         */
-        detachAppender(name) {
-            this.appenders.delete(name);
-        }
-        /**
-         * Gets all active appenders.
-         *
-         * @return All active appenders.
-         */
-        getAppenders() {
-            return this.appenders;
+            return this.loggers.get(name);
         }
     }
 
@@ -909,7 +874,7 @@ var clingy = (function (exports) {
          *
          * @param legalQuotes List of quotes to use when parsing strings.
          */
-        constructor(legalQuotes = ["\""]) {
+        constructor(legalQuotes = ['"']) {
             this.legalQuotes = legalQuotes;
             this.pattern = this.generateMatcher();
         }

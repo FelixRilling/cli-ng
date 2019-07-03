@@ -61,9 +61,9 @@
         "prettier": "^1.17.1",
         "rollup": "^1.12.2",
         "rollup-plugin-node-resolve": "^5.0.0",
-        "rollup-plugin-terser": "^4.0.4",
-        "rollup-plugin-typescript2": "^0.21.1",
-        "terser": "^3.17.0",
+        "rollup-plugin-terser": "^5.0.0",
+        "rollup-plugin-typescript2": "^0.21.2",
+        "terser": "^4.0.0",
         "tslint": "^5.16.0",
         "typescript": "^3.4.5"
     }

@@ -1,5 +1,6 @@
-import { isMap, isObjectPlain, forEachEntry, isObject, isNil, strSimilar, isInstanceOf, arrCompact } from 'lightdash';
+import { isMap, isPlainObject, forEach, isObject, isNil, compact } from 'lodash';
 import { Logby } from 'logby';
+import { similar } from 'lightdash';
 
 /**
  * Map containing {@link ICommand}s.
@@ -20,13 +21,13 @@ class CommandMap extends Map {
         if (isMap(commands)) {
             commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
         }
-        else if (isObjectPlain(commands)) {
-            forEachEntry(commands, val => CommandMap.createWithOptionsHelper(val, options));
+        else if (isPlainObject(commands)) {
+            forEach(commands, val => CommandMap.createWithOptionsHelper(val, options));
         }
         return new CommandMap(commands);
     }
     static createWithOptionsHelper(command, options) {
-        if (isObjectPlain(command.sub) || isMap(command.sub)) {
+        if (isPlainObject(command.sub) || isMap(command.sub)) {
             command.sub = new Clingy(CommandMap.createWithOptions(command.sub, options), options);
         }
     }
@@ -126,7 +127,7 @@ ArgumentMatcher.logger = clingyLogby.getLogger(ArgumentMatcher);
  * @param name       Key to use.
  * @return List of similar keys.
  */
-const getSimilar = (mapAliased, name) => strSimilar(name, Array.from(mapAliased.keys()), false);
+const getSimilar = (mapAliased, name) => similar(name, Array.from(mapAliased.keys()), false);
 
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
@@ -209,7 +210,7 @@ class LookupResolver {
          * the sub-commands contain the next path item.
          */
         if (pathNew.length > 0 &&
-            isInstanceOf(command.sub, Clingy) &&
+            command.sub instanceof Clingy &&
             this.hasCommand(command.sub.mapAliased, pathNew[0])) {
             return this.resolveInternalSub(pathNew, pathUsed, command, argumentResolving);
         }
@@ -277,7 +278,7 @@ class InputParser {
         // noinspection AssignmentResultUsedJS
         while ((match = pattern.exec(input))) {
             InputParser.logger.trace(`Found match '${match}'`);
-            const groups = arrCompact(match.slice(1));
+            const groups = compact(match.slice(1));
             if (groups.length > 0) {
                 InputParser.logger.trace(`Found group '${groups[0]}'`);
                 result.push(groups[0]);

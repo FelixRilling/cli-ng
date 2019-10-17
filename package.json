@@ -11,6 +11,7 @@
             "file": "clingy"
         },
         "external": [
+            "lodash",
             "lightdash",
             "logby"
         ]
@@ -18,12 +19,10 @@
     "scripts": {
         "start": "npm-run-all lint build test docs",
         "build": "rollup -c ./tasks/rollup.config.js",
-        "build:iife": "rollup -c ./tasks/rollup.config.iife.js",
-        "build:iife-min": "rollup -c ./tasks/rollup.config.iife-min.js",
         "build:test": "rollup -c ./tasks/rollup.config.test.js",
         "build:declarations": "tsc --build ./tasks/tsconfig.declarations.json",
         "watch": "rollup -c ./tasks/rollup.config.js --watch",
-        "dist": "npm-run-all --parallel build build:iife build:iife-min build:declarations",
+        "dist": "npm-run-all --parallel build build:declarations",
         "lint": "npm-run-all --parallel lint:ts",
         "lint:ts": "tslint ./src/**/*.ts ./spec/**/*.ts",
         "fix": "npm-run-all fix:ts fix:prettier",
@@ -49,7 +48,9 @@
     },
     "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
     "dependencies": {
-        "lightdash": "^10.2.2",
+        "@types/lodash": "^4.14.136",
+        "lodash": "^4.17.15",
+        "lightdash": "^11.0.0",
         "logby": "^3.0.0"
     },
     "devDependencies": {

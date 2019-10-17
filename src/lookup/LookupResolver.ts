@@ -1,4 +1,4 @@
-import { isInstanceOf, isNil } from "lightdash";
+import { isNil } from "lodash";
 import { ArgumentMatcher } from "../argument/ArgumentMatcher";
 import { IArgument } from "../argument/IArgument";
 import { resolvedArgumentMap } from "../argument/resolvedArgumentMap";
@@ -148,7 +148,7 @@ class LookupResolver {
          */
         if (
             pathNew.length > 0 &&
-            isInstanceOf(command.sub, Clingy) &&
+            command.sub instanceof Clingy &&
             this.hasCommand((<Clingy>command.sub).mapAliased, pathNew[0])
         ) {
             return this.resolveInternalSub(

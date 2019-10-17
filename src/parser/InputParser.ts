@@ -1,4 +1,4 @@
-import { arrCompact } from "lightdash";
+import { compact } from "lodash";
 import { clingyLogby } from "../logger";
 
 /**
@@ -38,7 +38,7 @@ class InputParser {
         // noinspection AssignmentResultUsedJS
         while ((match = pattern.exec(input))) {
             InputParser.logger.trace(`Found match '${match}'`);
-            const groups = arrCompact(match.slice(1));
+            const groups = compact(match.slice(1));
 
             if (groups.length > 0) {
                 InputParser.logger.trace(`Found group '${groups[0]}'`);

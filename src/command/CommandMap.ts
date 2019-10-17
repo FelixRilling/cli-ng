@@ -1,4 +1,4 @@
-import { forEachEntry, isMap, isObject, isObjectPlain } from "lightdash";
+import { forEach, isMap, isObject, isPlainObject } from "lodash";
 import { Clingy } from "../Clingy";
 import { IClingyOptions } from "../IClingyOptions";
 import { CaseSensitivity } from "../lookup/CaseSensitivity";
@@ -30,8 +30,8 @@ class CommandMap extends Map<string, ICommand> {
             commands.forEach(val =>
                 CommandMap.createWithOptionsHelper(val, options)
             );
-        } else if (isObjectPlain(commands)) {
-            forEachEntry(commands, val =>
+        } else if (isPlainObject(commands)) {
+            forEach(commands, val =>
                 CommandMap.createWithOptionsHelper(val, options)
             );
         }
@@ -43,7 +43,7 @@ class CommandMap extends Map<string, ICommand> {
         command: ICommand,
         options: IClingyOptions
     ) {
-        if (isObjectPlain(command.sub) || isMap(command.sub)) {
+        if (isPlainObject(command.sub) || isMap(command.sub)) {
             command.sub = new Clingy(
                 CommandMap.createWithOptions(
                     <mapWithCommands>command.sub,

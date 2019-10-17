@@ -1,4 +1,4 @@
-import { isNil } from "lightdash";
+import { isNil } from "lodash";
 import { ILogger } from "logby";
 import { clingyLogby } from "../logger";
 import { IArgument } from "./IArgument";

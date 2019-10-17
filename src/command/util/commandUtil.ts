@@ -1,4 +1,4 @@
-import { strSimilar } from "lightdash";
+import { similar } from "lightdash";
 import { CommandMap } from "../CommandMap";
 
 /**
@@ -10,6 +10,6 @@ import { CommandMap } from "../CommandMap";
  * @return List of similar keys.
  */
 const getSimilar = (mapAliased: CommandMap, name: string): string[] =>
-    <string[]>strSimilar(name, Array.from(mapAliased.keys()), false);
+    <string[]>similar(name, Array.from(mapAliased.keys()), false);
 
 export { getSimilar };

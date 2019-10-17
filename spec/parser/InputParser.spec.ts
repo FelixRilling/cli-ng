@@ -1,4 +1,4 @@
-import { isRegExp } from "lightdash";
+import { isRegExp } from "lodash";
 import { InputParser } from "../../src/parser/InputParser";
 
 /**

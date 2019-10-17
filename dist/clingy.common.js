@@ -2,8 +2,9 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var lightdash = require('lightdash');
+var lodash = require('lodash');
 var logby = require('logby');
+var lightdash = require('lightdash');
 
 /**
  * Map containing {@link ICommand}s.
@@ -21,24 +22,24 @@ class CommandMap extends Map {
      * @param options Options for the Clingy instance.
      */
     static createWithOptions(commands, options) {
-        if (lightdash.isMap(commands)) {
+        if (lodash.isMap(commands)) {
             commands.forEach(val => CommandMap.createWithOptionsHelper(val, options));
         }
-        else if (lightdash.isObjectPlain(commands)) {
-            lightdash.forEachEntry(commands, val => CommandMap.createWithOptionsHelper(val, options));
+        else if (lodash.isPlainObject(commands)) {
+            lodash.forEach(commands, val => CommandMap.createWithOptionsHelper(val, options));
         }
         return new CommandMap(commands);
     }
     static createWithOptionsHelper(command, options) {
-        if (lightdash.isObjectPlain(command.sub) || lightdash.isMap(command.sub)) {
+        if (lodash.isPlainObject(command.sub) || lodash.isMap(command.sub)) {
             command.sub = new Clingy(CommandMap.createWithOptions(command.sub, options), options);
         }
     }
     static getConstructorMap(input) {
-        if (lightdash.isMap(input)) {
+        if (lodash.isMap(input)) {
             return Array.from(input.entries());
         }
-        if (lightdash.isObject(input)) {
+        if (lodash.isObject(input)) {
             return Array.from(Object.entries(input));
         }
         return null;
@@ -108,7 +109,7 @@ class ArgumentMatcher {
                 ArgumentMatcher.logger.trace(`No matching argument found for ${expectedArg.name}, adding to missing.`);
                 this.missing.push(expectedArg);
             }
-            else if (!lightdash.isNil(expectedArg.defaultValue)) {
+            else if (!lodash.isNil(expectedArg.defaultValue)) {
                 ArgumentMatcher.logger.trace(`No matching argument found for ${expectedArg.name}, using default: ${expectedArg.defaultValue}`);
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             }
@@ -130,7 +131,7 @@ ArgumentMatcher.logger = clingyLogby.getLogger(ArgumentMatcher);
  * @param name       Key to use.
  * @return List of similar keys.
  */
-const getSimilar = (mapAliased, name) => lightdash.strSimilar(name, Array.from(mapAliased.keys()), false);
+const getSimilar = (mapAliased, name) => lightdash.similar(name, Array.from(mapAliased.keys()), false);
 
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
@@ -213,7 +214,7 @@ class LookupResolver {
          * the sub-commands contain the next path item.
          */
         if (pathNew.length > 0 &&
-            lightdash.isInstanceOf(command.sub, Clingy) &&
+            command.sub instanceof Clingy &&
             this.hasCommand(command.sub.mapAliased, pathNew[0])) {
             return this.resolveInternalSub(pathNew, pathUsed, command, argumentResolving);
         }
@@ -225,7 +226,7 @@ class LookupResolver {
          */
         let argumentsResolved;
         if (argumentResolving === 1 /* IGNORE */ ||
-            lightdash.isNil(command.args) ||
+            lodash.isNil(command.args) ||
             command.args.length === 0) {
             LookupResolver.logger.debug("No arguments defined, using empty map.");
             argumentsResolved = new Map();
@@ -281,7 +282,7 @@ class InputParser {
         // noinspection AssignmentResultUsedJS
         while ((match = pattern.exec(input))) {
             InputParser.logger.trace(`Found match '${match}'`);
-            const groups = lightdash.arrCompact(match.slice(1));
+            const groups = lodash.compact(match.slice(1));
             if (groups.length > 0) {
                 InputParser.logger.trace(`Found group '${groups[0]}'`);
                 result.push(groups[0]);

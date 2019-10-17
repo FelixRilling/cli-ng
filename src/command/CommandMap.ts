@@ -1,18 +1,18 @@
 import { forEach, isMap, isObject, isPlainObject } from "lodash";
 import { Clingy } from "../Clingy";
-import { IClingyOptions } from "../IClingyOptions";
+import { ClingyOptions } from "../ClingyOptions";
 import { CaseSensitivity } from "../lookup/CaseSensitivity";
-import { ICommand } from "./ICommand";
-import { IObjWithCommands } from "./IObjWithCommands";
-import { mapWithCommands } from "./mapWithCommands";
+import { Command } from "./Command";
+import { MapWithCommands } from "./MapWithCommands";
+import { ObjWithCommands } from "./ObjWithCommands";
 
 /**
- * Map containing {@link ICommand}s.
+ * Map containing {@link Command}s.
  *
  * @private
  */
-class CommandMap extends Map<string, ICommand> {
-    constructor(input?: mapWithCommands | IObjWithCommands) {
+class CommandMap extends Map<string, Command> {
+    public constructor(input?: MapWithCommands | ObjWithCommands) {
         super(CommandMap.getConstructorMap(input));
     }
 
@@ -23,8 +23,8 @@ class CommandMap extends Map<string, ICommand> {
      * @param options Options for the Clingy instance.
      */
     public static createWithOptions(
-        commands: mapWithCommands | IObjWithCommands,
-        options: IClingyOptions
+        commands: MapWithCommands | ObjWithCommands,
+        options: ClingyOptions
     ): CommandMap {
         if (isMap(commands)) {
             commands.forEach(val =>
@@ -40,13 +40,13 @@ class CommandMap extends Map<string, ICommand> {
     }
 
     private static createWithOptionsHelper(
-        command: ICommand,
-        options: IClingyOptions
-    ) {
+        command: Command,
+        options: ClingyOptions
+    ): void {
         if (isPlainObject(command.sub) || isMap(command.sub)) {
             command.sub = new Clingy(
                 CommandMap.createWithOptions(
-                    <mapWithCommands>command.sub,
+                    <MapWithCommands>command.sub,
                     options
                 ),
                 options
@@ -55,10 +55,10 @@ class CommandMap extends Map<string, ICommand> {
     }
 
     private static getConstructorMap(
-        input?: mapWithCommands | IObjWithCommands
-    ): ReadonlyArray<[string, ICommand]> | null {
+        input?: MapWithCommands | ObjWithCommands
+    ): ReadonlyArray<[string, Command]> | null {
         if (isMap(input)) {
-            return Array.from((<mapWithCommands>input).entries());
+            return Array.from(input.entries());
         }
         if (isObject(input)) {
             return Array.from(Object.entries(<object>input));
@@ -94,9 +94,9 @@ class CommandMap extends Map<string, ICommand> {
     public getCommand(
         key: string,
         caseSensitivity: CaseSensitivity
-    ): ICommand | null {
+    ): Command | null {
         if (caseSensitivity === CaseSensitivity.INSENSITIVE) {
-            let result: ICommand | null = null;
+            let result: Command | null = null;
 
             this.forEach((value, k) => {
                 if (key.toLowerCase() === k.toLowerCase()) {
@@ -108,7 +108,7 @@ class CommandMap extends Map<string, ICommand> {
         }
 
         // Return null instead of undefined to be backwards compatible.
-        return this.has(key) ? <ICommand>this.get(key) : null;
+        return this.has(key) ? <Command>this.get(key) : null;
     }
 }
 

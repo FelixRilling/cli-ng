@@ -1,11 +1,11 @@
 import { isNil } from "lodash";
 import { ILogger } from "logby";
 import { clingyLogby } from "../logger";
-import { IArgument } from "./IArgument";
-import { resolvedArgumentMap } from "./resolvedArgumentMap";
+import { Argument } from "./Argument";
+import { ResolvedArgumentMap } from "./ResolvedArgumentMap";
 
 /**
- * Orchestrates mapping of {@link IArgument}s to user-provided input.
+ * Orchestrates mapping of {@link Argument}s to user-provided input.
  *
  * @private
  */
@@ -14,16 +14,16 @@ class ArgumentMatcher {
         ArgumentMatcher
     );
 
-    public readonly missing: IArgument[];
-    public readonly result: resolvedArgumentMap;
+    public readonly missing: Argument[];
+    public readonly result: ResolvedArgumentMap;
 
     /**
-     * Matches a list of {@link IArgument}s to a list of string input arguments.
+     * Matches a list of {@link Argument}s to a list of string input arguments.
      *
      * @param expected {@link Argument} list of a {@link ICommand}
      * @param provided List of user-provided arguments.
      */
-    constructor(expected: IArgument[], provided: string[]) {
+    public constructor(expected: Argument[], provided: string[]) {
         this.missing = [];
         this.result = new Map<string, string>();
 
@@ -34,39 +34,29 @@ class ArgumentMatcher {
                 const providedArg = provided[i];
 
                 ArgumentMatcher.logger.trace(
-                    `Found matching argument for ${
-                        expectedArg.name
-                    }, adding to result: ${providedArg}`
+                    `Found matching argument for ${expectedArg.name}, adding to result: ${providedArg}`
                 );
                 this.result.set(expectedArg.name, providedArg);
             } else if (expectedArg.required) {
                 ArgumentMatcher.logger.trace(
-                    `No matching argument found for ${
-                        expectedArg.name
-                    }, adding to missing.`
+                    `No matching argument found for ${expectedArg.name}, adding to missing.`
                 );
                 this.missing.push(expectedArg);
             } else if (!isNil(expectedArg.defaultValue)) {
                 ArgumentMatcher.logger.trace(
-                    `No matching argument found for ${
-                        expectedArg.name
-                    }, using default: ${expectedArg.defaultValue}`
+                    `No matching argument found for ${expectedArg.name}, using default: ${expectedArg.defaultValue}`
                 );
                 this.result.set(expectedArg.name, expectedArg.defaultValue);
             } else {
                 ArgumentMatcher.logger.trace(
-                    `No matching argument found for ${
-                        expectedArg.name
-                    }, using null.`
+                    `No matching argument found for ${expectedArg.name}, using null.`
                 );
                 this.result.set(expectedArg.name, null);
             }
         });
 
         ArgumentMatcher.logger.debug(
-            `Finished matching arguments: ${expected.length} expected, ${
-                this.result.size
-            } found and ${this.missing.length} missing.`
+            `Finished matching arguments: ${expected.length} expected, ${this.result.size} found and ${this.missing.length} missing.`
         );
     }
 }

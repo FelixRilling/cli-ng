@@ -1,1 +1,0 @@
-{"version":3,"file":"IArgument.d.ts","sourceRoot":"","sources":["../../../../src/argument/IArgument.ts"],"names":[],"mappings":"AAAA,UAAU,SAAS;IACf,IAAI,EAAE,MAAM,CAAC;IACb,QAAQ,EAAE,OAAO,CAAC;IAClB,YAAY,CAAC,EAAE,MAAM,CAAC;CACzB;AAED,OAAO,EAAE,SAAS,EAAE,CAAC"}

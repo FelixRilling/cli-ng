@@ -1,21 +1,21 @@
-import { IArgument } from "./IArgument";
-import { resolvedArgumentMap } from "./resolvedArgumentMap";
+import { Argument } from "./Argument";
+import { ResolvedArgumentMap } from "./ResolvedArgumentMap";
 /**
- * Orchestrates mapping of {@link IArgument}s to user-provided input.
+ * Orchestrates mapping of {@link Argument}s to user-provided input.
  *
  * @private
  */
 declare class ArgumentMatcher {
     private static readonly logger;
-    readonly missing: IArgument[];
-    readonly result: resolvedArgumentMap;
+    readonly missing: Argument[];
+    readonly result: ResolvedArgumentMap;
     /**
-     * Matches a list of {@link IArgument}s to a list of string input arguments.
+     * Matches a list of {@link Argument}s to a list of string input arguments.
      *
      * @param expected {@link Argument} list of a {@link ICommand}
      * @param provided List of user-provided arguments.
      */
-    constructor(expected: IArgument[], provided: string[]);
+    constructor(expected: Argument[], provided: string[]);
 }
 export { ArgumentMatcher };
 //# sourceMappingURL=ArgumentMatcher.d.ts.map

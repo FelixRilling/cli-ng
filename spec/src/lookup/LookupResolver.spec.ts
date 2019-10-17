@@ -1,21 +1,20 @@
-import { IArgument } from "../../../src/argument/IArgument";
+import { Argument } from "../../../src/argument/Argument";
 import { Clingy } from "../../../src/Clingy";
+import { Command } from "../../../src/command/Command";
 import { CommandMap } from "../../../src/command/CommandMap";
-import { ICommand } from "../../../src/command/ICommand";
 import { ArgumentResolving } from "../../../src/lookup/ArgumentResolving";
 import { LookupResolver } from "../../../src/lookup/LookupResolver";
-import { ILookupErrorMissingArgs } from "../../../src/lookup/result/ILookupErrorMissingArgs";
-import { ILookupErrorNotFound } from "../../../src/lookup/result/ILookupErrorNotFound";
-import { ResultType } from "../../../src/lookup/result/ILookupResult";
-import { ILookupSuccess } from "../../../src/lookup/result/ILookupSuccess";
+import { LookupErrorMissingArgs } from "../../../src/lookup/result/LookupErrorMissingArgs";
+import { LookupErrorNotFound } from "../../../src/lookup/result/LookupErrorNotFound";
+import { ResultType } from "../../../src/lookup/result/LookupResult";
+import { LookupSuccess } from "../../../src/lookup/result/LookupSuccess";
 
-// noinspection TsLint
-const noopFn = () => {};
+const noopFn = (): void => {};
 
 const createMockCommand = (
-    args: IArgument[] = [],
+    args: Argument[] = [],
     sub: Clingy | null = null
-): ICommand => {
+): Command => {
     return {
         fn: noopFn,
         args,
@@ -28,7 +27,7 @@ const createMockArg = (
     name: string,
     required: boolean,
     defaultValue = "defaultValue"
-): IArgument => {
+): Argument => {
     return {
         name,
         required,
@@ -59,14 +58,14 @@ describe("LookupResolver", () => {
             ArgumentResolving.IGNORE
         );
         expect(lookupResult.type).toBe(ResultType.ERROR_NOT_FOUND);
-        expect((<ILookupErrorNotFound>lookupResult).missing).toBe(commandName);
+        expect((<LookupErrorNotFound>lookupResult).missing).toBe(commandName);
         expect(lookupResult.pathUsed).toEqual([commandName]);
         expect(lookupResult.pathDangling).toEqual([]);
     });
 
     it("Asserts that LookupResolver#resolve returns an ILookupErrorMissingArgs when arguments are missing.", () => {
         const commandName = "foo";
-        const argument: IArgument = { name: "bar", required: true };
+        const argument: Argument = { name: "bar", required: true };
         const command = createMockCommand([argument]);
         const commandMap = new CommandMap();
         commandMap.set(commandName, command);
@@ -77,7 +76,7 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.ERROR_MISSING_ARGUMENT);
-        expect((<ILookupErrorMissingArgs>lookupResult).missing).toEqual([
+        expect((<LookupErrorMissingArgs>lookupResult).missing).toEqual([
             argument
         ]);
         expect(lookupResult.pathUsed).toEqual([commandName]);
@@ -96,7 +95,7 @@ describe("LookupResolver", () => {
             ArgumentResolving.IGNORE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command);
+        expect((<LookupSuccess>lookupResult).command).toBe(command);
         expect(lookupResult.pathUsed).toEqual([commandName]);
         expect(lookupResult.pathDangling).toEqual([]);
     });
@@ -116,8 +115,8 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command);
-        expect((<ILookupSuccess>lookupResult).args).toEqual(
+        expect((<LookupSuccess>lookupResult).command).toBe(command);
+        expect((<LookupSuccess>lookupResult).args).toEqual(
             new Map([[argumentName, argumentVal]])
         );
         expect(lookupResult.pathUsed).toEqual([commandName]);
@@ -137,7 +136,7 @@ describe("LookupResolver", () => {
             ArgumentResolving.IGNORE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command);
+        expect((<LookupSuccess>lookupResult).command).toBe(command);
         expect(lookupResult.pathUsed).toEqual([commandName]);
         expect(lookupResult.pathDangling).toEqual(commandNames.slice(1));
     });
@@ -161,7 +160,7 @@ describe("LookupResolver", () => {
             ArgumentResolving.IGNORE
         );
         expect(lookupResultCaseInsensitive.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResultCaseInsensitive).command).toBe(
+        expect((<LookupSuccess>lookupResultCaseInsensitive).command).toBe(
             command
         );
     });
@@ -183,7 +182,7 @@ describe("LookupResolver", () => {
             ArgumentResolving.IGNORE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command2);
+        expect((<LookupSuccess>lookupResult).command).toBe(command2);
         expect(lookupResult.pathUsed).toEqual([commandName1, commandName2]);
         expect(lookupResult.pathDangling).toEqual([]);
     });
@@ -209,8 +208,8 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command2);
-        expect((<ILookupSuccess>lookupResult).args).toEqual(
+        expect((<LookupSuccess>lookupResult).command).toBe(command2);
+        expect((<LookupSuccess>lookupResult).args).toEqual(
             new Map([[argumentName, argumentVal]])
         );
         expect(lookupResult.pathUsed).toEqual([commandName1, commandName2]);
@@ -238,8 +237,8 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command2);
-        expect((<ILookupSuccess>lookupResult).args).toEqual(
+        expect((<LookupSuccess>lookupResult).command).toBe(command2);
+        expect((<LookupSuccess>lookupResult).args).toEqual(
             new Map([[argumentName, argumentVal]])
         );
         expect(lookupResult.pathUsed).toEqual([commandName1, commandName2]);
@@ -267,7 +266,7 @@ describe("LookupResolver", () => {
         );
 
         expect(lookupResult.type).toBe(ResultType.ERROR_MISSING_ARGUMENT);
-        expect((<ILookupErrorMissingArgs>lookupResult).missing).toEqual([
+        expect((<LookupErrorMissingArgs>lookupResult).missing).toEqual([
             argument
         ]);
         expect(lookupResult.pathUsed).toEqual([commandName1, commandName2]);
@@ -294,7 +293,7 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command2);
+        expect((<LookupSuccess>lookupResult).command).toBe(command2);
         expect(lookupResult.pathUsed).toEqual([commandName1, commandName2]);
         expect(lookupResult.pathDangling).toEqual([]);
     });
@@ -319,7 +318,7 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command2);
+        expect((<LookupSuccess>lookupResult).command).toBe(command2);
         expect(lookupResult.pathUsed).toEqual([commandName1, commandName2]);
         expect(lookupResult.pathDangling).toEqual([]);
     });
@@ -344,7 +343,7 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command2);
+        expect((<LookupSuccess>lookupResult).command).toBe(command2);
         expect(lookupResult.pathUsed).toEqual([commandName1, commandName2]);
         expect(lookupResult.pathDangling).toEqual([]);
     });
@@ -369,8 +368,8 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command1);
-        expect((<ILookupSuccess>lookupResult).args).toEqual(
+        expect((<LookupSuccess>lookupResult).command).toBe(command1);
+        expect((<LookupSuccess>lookupResult).args).toEqual(
             new Map([[argumentName, argumentName]])
         );
         expect(lookupResult.pathUsed).toEqual([commandName1]);
@@ -397,8 +396,8 @@ describe("LookupResolver", () => {
             ArgumentResolving.RESOLVE
         );
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
-        expect((<ILookupSuccess>lookupResult).command).toBe(command1);
-        expect((<ILookupSuccess>lookupResult).args).toEqual(
+        expect((<LookupSuccess>lookupResult).command).toBe(command1);
+        expect((<LookupSuccess>lookupResult).args).toEqual(
             new Map([[argumentName, argumentName]])
         );
         expect(lookupResult.pathUsed).toEqual([commandName1]);

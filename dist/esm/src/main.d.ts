@@ -1,7 +1,7 @@
 import { Clingy } from "./Clingy";
 import { clingyLogby } from "./logger";
-import { ILookupErrorMissingArgs } from "./lookup/result/ILookupErrorMissingArgs";
-import { ILookupErrorNotFound } from "./lookup/result/ILookupErrorNotFound";
-import { ILookupSuccess } from "./lookup/result/ILookupSuccess";
-export { Clingy, clingyLogby, ILookupSuccess, ILookupErrorNotFound, ILookupErrorMissingArgs };
+import { LookupErrorMissingArgs } from "./lookup/result/LookupErrorMissingArgs";
+import { LookupErrorNotFound } from "./lookup/result/LookupErrorNotFound";
+import { LookupSuccess } from "./lookup/result/LookupSuccess";
+export { Clingy, clingyLogby, LookupSuccess, LookupErrorNotFound, LookupErrorMissingArgs };
 //# sourceMappingURL=main.d.ts.map

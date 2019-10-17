@@ -1,7 +1,7 @@
 import { CommandMap } from "../command/CommandMap";
-import { commandPath } from "../command/commandPath";
+import { CommandPath } from "../command/CommandPath";
 import { ArgumentResolving } from "./ArgumentResolving";
-import { ILookupResult } from "./result/ILookupResult";
+import { LookupResult } from "./result/LookupResult";
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
  *
@@ -25,10 +25,10 @@ declare class LookupResolver {
      * @param commandMap        Map to use.
      * @param path              Path to getPath.
      * @param argumentResolving Strategy for resolving arguments.
-     * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
-     * or {@link ILookupErrorMissingArgs}.
+     * @return Lookup result, either {@link LookupSuccess}, {@link LookupErrorNotFound}
+     * or {@link LookupErrorMissingArgs}.
      */
-    resolve(commandMap: CommandMap, path: commandPath, argumentResolving: ArgumentResolving): ILookupResult;
+    resolve(commandMap: CommandMap, path: CommandPath, argumentResolving: ArgumentResolving): LookupResult;
     private resolveInternal;
     private resolveInternalSub;
     private hasCommand;

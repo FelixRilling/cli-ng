@@ -5,7 +5,7 @@ import { getSimilar } from "../command/util/commandUtil";
 import { clingyLogby } from "../logger";
 import { ArgumentResolving } from "./ArgumentResolving";
 import { CaseSensitivity } from "./CaseSensitivity";
-import { ResultType } from "./result/ILookupResult";
+import { ResultType } from "./result/LookupResult";
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
  *
@@ -61,8 +61,8 @@ class LookupResolver {
      * @param commandMap        Map to use.
      * @param path              Path to getPath.
      * @param argumentResolving Strategy for resolving arguments.
-     * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
-     * or {@link ILookupErrorMissingArgs}.
+     * @return Lookup result, either {@link LookupSuccess}, {@link LookupErrorNotFound}
+     * or {@link LookupErrorMissingArgs}.
      */
     resolve(commandMap, path, argumentResolving) {
         if (path.length === 0) {

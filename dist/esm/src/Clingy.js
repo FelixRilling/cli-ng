@@ -39,7 +39,7 @@ class Clingy {
     getCommand(key) {
         return this.mapAliased.get(key);
     }
-    // noinspection JSUnusedGlobalSymbols
+    // Noinspection JSUnusedGlobalSymbols
     // TODO replace .has() with .hasCommand() (breaking)
     /**
      * Checks if a command on this instance exists for this key.
@@ -49,7 +49,7 @@ class Clingy {
     hasCommand(key) {
         return this.mapAliased.has(key);
     }
-    // noinspection JSUnusedGlobalSymbols
+    // Noinspection JSUnusedGlobalSymbols
     /**
      * Checks if a pathUsed resolves to a command.
      *

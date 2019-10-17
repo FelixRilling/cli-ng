@@ -1,0 +1,7 @@
+import { CommandPath } from "./command/CommandPath";
+interface ClingyOptions {
+    caseSensitive?: boolean;
+    legalQuotes?: CommandPath;
+}
+export { ClingyOptions };
+//# sourceMappingURL=ClingyOptions.d.ts.map

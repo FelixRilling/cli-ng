@@ -1,9 +1,9 @@
 import { Clingy } from "../../src/Clingy";
-import { ICommand } from "../../src/command/ICommand";
-import { IObjWithCommands } from "../../src/command/IObjWithCommands";
-import { mapWithCommands } from "../../src/command/mapWithCommands";
+import { Command } from "../../src/command/Command";
+import { MapWithCommands } from "../../src/command/MapWithCommands";
+import { ObjWithCommands } from "../../src/command/ObjWithCommands";
 
-const createCommand = (): ICommand => {
+const createCommand = (): Command => {
     return {
         fn: () => null,
         alias: [],
@@ -18,7 +18,7 @@ describe("Clingy", () => {
     it("Asserts that Clingy constructs with a Map.", () => {
         const commandName = "foo";
         const command = createCommand();
-        const map: mapWithCommands = new Map();
+        const map: MapWithCommands = new Map();
         map.set(commandName, command);
         const clingy = new Clingy(map);
 
@@ -28,7 +28,7 @@ describe("Clingy", () => {
     it("Asserts that Clingy constructs with an Object.", () => {
         const commandName = "foo";
         const command = createCommand();
-        const obj: IObjWithCommands = {
+        const obj: ObjWithCommands = {
             [commandName]: command
         };
 
@@ -40,19 +40,19 @@ describe("Clingy", () => {
     it("Asserts that Clingy constructs with sub-commands as Clingy instances.", () => {
         const commandName2 = "foo";
         const command2 = createCommand();
-        const map2: mapWithCommands = new Map();
+        const map2: MapWithCommands = new Map();
         map2.set(commandName2, command2);
         const clingy2 = new Clingy(map2);
 
         const commandName1 = "foo";
         const command1 = createCommand();
         command1.sub = clingy2;
-        const map1: mapWithCommands = new Map();
+        const map1: MapWithCommands = new Map();
         map1.set(commandName1, command1);
 
         const clingy1 = new Clingy(map1);
 
-        const result = <ICommand>clingy1.getCommand(commandName1);
+        const result = <Command>clingy1.getCommand(commandName1);
         expect(result).toBe(command1);
         expect((<Clingy>result.sub).getCommand(commandName2)).toBe(command2);
     });
@@ -60,18 +60,18 @@ describe("Clingy", () => {
     it("Asserts that Clingy constructs with sub-commands as Maps.", () => {
         const commandName2 = "fizz";
         const command2 = createCommand();
-        const map2: mapWithCommands = new Map();
+        const map2: MapWithCommands = new Map();
         map2.set(commandName2, command2);
 
         const commandName1 = "foo";
         const command1 = createCommand();
         command1.sub = map2;
-        const map1: mapWithCommands = new Map();
+        const map1: MapWithCommands = new Map();
         map1.set(commandName1, command1);
 
         const clingy1 = new Clingy(map1);
 
-        const result = <ICommand>clingy1.getCommand(commandName1);
+        const result = <Command>clingy1.getCommand(commandName1);
         expect(result).toBe(command1);
         expect((<Clingy>result.sub).getCommand(commandName2)).toBe(command2);
     });
@@ -79,19 +79,19 @@ describe("Clingy", () => {
     it("Asserts that Clingy constructs with sub-commands as Objects.", () => {
         const commandName2 = "fizz";
         const command2 = createCommand();
-        const obj2: IObjWithCommands = {
+        const obj2: ObjWithCommands = {
             [commandName2]: command2
         };
 
         const commandName1 = "foo";
         const command1 = createCommand();
         command1.sub = obj2;
-        const map1: mapWithCommands = new Map();
+        const map1: MapWithCommands = new Map();
         map1.set(commandName1, command1);
 
         const clingy1 = new Clingy(map1);
 
-        const result = <ICommand>clingy1.getCommand(commandName1);
+        const result = <Command>clingy1.getCommand(commandName1);
         expect(result).toBe(command1);
         expect((<Clingy>result.sub).getCommand(commandName2)).toBe(command2);
     });
@@ -99,25 +99,25 @@ describe("Clingy", () => {
     it("Asserts that Clingy constructs with nested sub-commands.", () => {
         const commandName3 = "fazz";
         const command3 = createCommand();
-        const map3: mapWithCommands = new Map();
+        const map3: MapWithCommands = new Map();
         map3.set(commandName3, command3);
 
         const commandName2 = "fizz";
         const command2 = createCommand();
         command2.sub = map3;
-        const obj2: IObjWithCommands = {
+        const obj2: ObjWithCommands = {
             [commandName2]: command2
         };
 
         const commandName1 = "foo";
         const command1 = createCommand();
         command1.sub = obj2;
-        const map1: mapWithCommands = new Map();
+        const map1: MapWithCommands = new Map();
         map1.set(commandName1, command1);
 
         const clingy1 = new Clingy(map1);
 
-        const result1 = <ICommand>clingy1.getCommand(commandName1);
+        const result1 = <Command>clingy1.getCommand(commandName1);
         expect(result1).toBe(command1);
         const result2 = (<Clingy>result1.sub).getCommand(commandName2);
         expect(result2).toBe(command2);
@@ -130,7 +130,7 @@ describe("Clingy", () => {
         const commandAlias2 = "fuu";
         const command = createCommand();
         command.alias = [commandAlias1, commandAlias2];
-        const map: mapWithCommands = new Map();
+        const map: MapWithCommands = new Map();
         map.set(commandName, command);
         const clingy = new Clingy(map);
 
@@ -147,7 +147,7 @@ describe("Clingy", () => {
         command1.alias = [commandAlias1];
         const command2 = createCommand();
         command2.alias = [commandAlias1];
-        const map: mapWithCommands = new Map();
+        const map: MapWithCommands = new Map();
         map.set(commandName1, command1);
         map.set(commandName2, command2);
         const clingy = new Clingy(map);

@@ -1,22 +1,22 @@
-import { IClingyOptions } from "../IClingyOptions";
+import { ClingyOptions } from "../ClingyOptions";
 import { CaseSensitivity } from "../lookup/CaseSensitivity";
-import { ICommand } from "./ICommand";
-import { IObjWithCommands } from "./IObjWithCommands";
-import { mapWithCommands } from "./mapWithCommands";
+import { Command } from "./Command";
+import { MapWithCommands } from "./MapWithCommands";
+import { ObjWithCommands } from "./ObjWithCommands";
 /**
- * Map containing {@link ICommand}s.
+ * Map containing {@link Command}s.
  *
  * @private
  */
-declare class CommandMap extends Map<string, ICommand> {
-    constructor(input?: mapWithCommands | IObjWithCommands);
+declare class CommandMap extends Map<string, Command> {
+    constructor(input?: MapWithCommands | ObjWithCommands);
     /**
      * Creates a new instance with {@link Clingy} options to inherit.
      *
      * @param commands Command input to use.
      * @param options Options for the Clingy instance.
      */
-    static createWithOptions(commands: mapWithCommands | IObjWithCommands, options: IClingyOptions): CommandMap;
+    static createWithOptions(commands: MapWithCommands | ObjWithCommands, options: ClingyOptions): CommandMap;
     private static createWithOptionsHelper;
     private static getConstructorMap;
     /**
@@ -34,7 +34,7 @@ declare class CommandMap extends Map<string, ICommand> {
      * @param caseSensitivity Case sensitivity to use.
      * @return The value for the key, ignoring case.
      */
-    getCommand(key: string, caseSensitivity: CaseSensitivity): ICommand | null;
+    getCommand(key: string, caseSensitivity: CaseSensitivity): Command | null;
 }
 export { CommandMap };
 //# sourceMappingURL=CommandMap.d.ts.map

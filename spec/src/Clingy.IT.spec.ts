@@ -1,11 +1,12 @@
-import { IArgument } from "../../src/argument/IArgument";
+/* eslint-disable @typescript-eslint/unbound-method */
+import { Argument } from "../../src/argument/Argument";
 import { Clingy } from "../../src/Clingy";
-import { ICommand } from "../../src/command/ICommand";
-import { mapWithCommands } from "../../src/command/mapWithCommands";
-import { ILookupErrorMissingArgs } from "../../src/lookup/result/ILookupErrorMissingArgs";
-import { ILookupErrorNotFound } from "../../src/lookup/result/ILookupErrorNotFound";
-import { ResultType } from "../../src/lookup/result/ILookupResult";
-import { ILookupSuccess } from "../../src/lookup/result/ILookupSuccess";
+import { Command } from "../../src/command/Command";
+import { MapWithCommands } from "../../src/command/MapWithCommands";
+import { LookupErrorMissingArgs } from "../../src/lookup/result/LookupErrorMissingArgs";
+import { LookupErrorNotFound } from "../../src/lookup/result/LookupErrorNotFound";
+import { ResultType } from "../../src/lookup/result/LookupResult";
+import { LookupSuccess } from "../../src/lookup/result/LookupSuccess";
 
 /**
  * Integration tests for example {@link Clingy} usage.
@@ -16,12 +17,12 @@ describe("ClingyIT", () => {
     const COMMAND_1_NAME = "foo";
 
     let clingy: Clingy;
-    let argument1: IArgument;
-    let command1: ICommand;
-    let command2: ICommand;
+    let argument1: Argument;
+    let command1: Command;
+    let command2: Command;
 
     beforeEach(() => {
-        const map: mapWithCommands = new Map();
+        const map: MapWithCommands = new Map();
         argument1 = {
             name: ARG_1_NAME,
             required: true
@@ -50,10 +51,10 @@ describe("ClingyIT", () => {
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect(lookupResult.pathDangling).toEqual(["123"]);
         expect(lookupResult.pathUsed).toEqual(["foo"]);
-        expect((<ILookupSuccess>lookupResult).args).toEqual(
+        expect((<LookupSuccess>lookupResult).args).toEqual(
             new Map([["val", "123"]])
         );
-        expect((<ILookupSuccess>lookupResult).command).toEqual(command1);
+        expect((<LookupSuccess>lookupResult).command).toEqual(command1);
     });
 
     it("Asserts that lookup of commands without args works.", () => {
@@ -63,20 +64,20 @@ describe("ClingyIT", () => {
         expect(lookupResult.type).toBe(ResultType.SUCCESS);
         expect(lookupResult.pathDangling).toEqual(["456"]);
         expect(lookupResult.pathUsed).toEqual(["baa"]);
-        expect((<ILookupSuccess>lookupResult).args).toEqual(new Map());
-        expect((<ILookupSuccess>lookupResult).command).toEqual(command2);
+        expect((<LookupSuccess>lookupResult).args).toEqual(new Map());
+        expect((<LookupSuccess>lookupResult).command).toEqual(command2);
     });
 
     it("Asserts that lookup of missing commands works.", () => {
-        // noinspection SpellCheckingInspection
+        // Noinspection SpellCheckingInspection
         const input = "foob";
         const lookupResult = clingy.parse(input);
 
         expect(lookupResult.type).toBe(ResultType.ERROR_NOT_FOUND);
         expect(lookupResult.pathDangling).toEqual([]);
         expect(lookupResult.pathUsed).toEqual([input]);
-        expect((<ILookupErrorNotFound>lookupResult).missing).toEqual(input);
-        expect((<ILookupErrorNotFound>lookupResult).similar).toEqual(["foo"]);
+        expect((<LookupErrorNotFound>lookupResult).missing).toEqual(input);
+        expect((<LookupErrorNotFound>lookupResult).similar).toEqual(["foo"]);
     });
 
     it("Asserts that lookup of commands with missing args works.", () => {
@@ -86,7 +87,7 @@ describe("ClingyIT", () => {
         expect(lookupResult.type).toBe(ResultType.ERROR_MISSING_ARGUMENT);
         expect(lookupResult.pathDangling).toEqual([]);
         expect(lookupResult.pathUsed).toEqual([input]);
-        expect((<ILookupErrorMissingArgs>lookupResult).missing).toEqual([
+        expect((<LookupErrorMissingArgs>lookupResult).missing).toEqual([
             argument1
         ]);
     });

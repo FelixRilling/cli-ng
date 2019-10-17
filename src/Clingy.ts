@@ -1,13 +1,13 @@
+import { ClingyOptions } from "./ClingyOptions";
+import { Command } from "./command/Command";
 import { CommandMap } from "./command/CommandMap";
-import { commandPath } from "./command/commandPath";
-import { ICommand } from "./command/ICommand";
-import { IObjWithCommands } from "./command/IObjWithCommands";
-import { mapWithCommands } from "./command/mapWithCommands";
-import { IClingyOptions } from "./IClingyOptions";
+import { CommandPath } from "./command/CommandPath";
+import { MapWithCommands } from "./command/MapWithCommands";
+import { ObjWithCommands } from "./command/ObjWithCommands";
 import { clingyLogby } from "./logger";
 import { ArgumentResolving } from "./lookup/ArgumentResolving";
 import { LookupResolver } from "./lookup/LookupResolver";
-import { ILookupResult } from "./lookup/result/ILookupResult";
+import { LookupResult } from "./lookup/result/LookupResult";
 import { InputParser } from "./parser/InputParser";
 
 /**
@@ -27,9 +27,9 @@ class Clingy {
      * @param commands      Map of commands to create the instance with.
      * @param options       Option object.
      */
-    constructor(
-        commands: mapWithCommands | IObjWithCommands = {},
-        options: IClingyOptions = {}
+    public constructor(
+        commands: MapWithCommands | ObjWithCommands = {},
+        options: ClingyOptions = {}
     ) {
         this.lookupResolver = new LookupResolver(options.caseSensitive);
         this.inputParser = new InputParser(options.legalQuotes);
@@ -44,7 +44,7 @@ class Clingy {
      * @param key Key of the command.
      * @param command The command.
      */
-    public setCommand(key: string, command: ICommand): void {
+    public setCommand(key: string, command: Command): void {
         this.map.set(key, command);
         this.updateAliases();
     }
@@ -55,11 +55,11 @@ class Clingy {
      *
      * @param key Key of the command.
      */
-    public getCommand(key: string): ICommand | undefined {
+    public getCommand(key: string): Command | undefined {
         return this.mapAliased.get(key);
     }
 
-    // noinspection JSUnusedGlobalSymbols
+    // Noinspection JSUnusedGlobalSymbols
     // TODO replace .has() with .hasCommand() (breaking)
     /**
      * Checks if a command on this instance exists for this key.
@@ -70,14 +70,14 @@ class Clingy {
         return this.mapAliased.has(key);
     }
 
-    // noinspection JSUnusedGlobalSymbols
+    // Noinspection JSUnusedGlobalSymbols
     /**
      * Checks if a pathUsed resolves to a command.
      *
      * @param path Path to look up.
      * @return If the pathUsed resolves to a command.
      */
-    public hasPath(path: commandPath): boolean {
+    public hasPath(path: CommandPath): boolean {
         return this.getPath(path).successful;
     }
 
@@ -87,7 +87,7 @@ class Clingy {
      * @param path Path to look up.
      * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
      */
-    public getPath(path: commandPath): ILookupResult {
+    public getPath(path: CommandPath): LookupResult {
         Clingy.logger.debug(`Resolving pathUsed: ${path}`);
         return this.lookupResolver.resolve(
             this.mapAliased,
@@ -103,7 +103,7 @@ class Clingy {
      * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
      * or {@link ILookupErrorMissingArgs}.
      */
-    public parse(input: string): ILookupResult {
+    public parse(input: string): LookupResult {
         Clingy.logger.debug(`Parsing input: '${input}'`);
         return this.lookupResolver.resolve(
             this.mapAliased,
@@ -115,7 +115,7 @@ class Clingy {
     /**
      * @private
      */
-    public updateAliases() {
+    public updateAliases(): void {
         Clingy.logger.debug("Updating aliased map.");
         this.mapAliased.clear();
 

@@ -2,7 +2,7 @@ import { forEach, isMap, isObject, isPlainObject } from "lodash";
 import { Clingy } from "../Clingy";
 import { CaseSensitivity } from "../lookup/CaseSensitivity";
 /**
- * Map containing {@link ICommand}s.
+ * Map containing {@link Command}s.
  *
  * @private
  */

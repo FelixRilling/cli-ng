@@ -1,19 +1,19 @@
 import { isNil } from "lodash";
+import { Argument } from "../argument/Argument";
 import { ArgumentMatcher } from "../argument/ArgumentMatcher";
-import { IArgument } from "../argument/IArgument";
-import { resolvedArgumentMap } from "../argument/resolvedArgumentMap";
+import { ResolvedArgumentMap } from "../argument/ResolvedArgumentMap";
 import { Clingy } from "../Clingy";
+import { Command } from "../command/Command";
 import { CommandMap } from "../command/CommandMap";
-import { commandPath } from "../command/commandPath";
-import { ICommand } from "../command/ICommand";
+import { CommandPath } from "../command/CommandPath";
 import { getSimilar } from "../command/util/commandUtil";
 import { clingyLogby } from "../logger";
 import { ArgumentResolving } from "./ArgumentResolving";
 import { CaseSensitivity } from "./CaseSensitivity";
-import { ILookupErrorMissingArgs } from "./result/ILookupErrorMissingArgs";
-import { ILookupErrorNotFound } from "./result/ILookupErrorNotFound";
-import { ILookupResult, ResultType } from "./result/ILookupResult";
-import { ILookupSuccess } from "./result/ILookupSuccess";
+import { LookupErrorMissingArgs } from "./result/LookupErrorMissingArgs";
+import { LookupErrorNotFound } from "./result/LookupErrorNotFound";
+import { LookupResult, ResultType } from "./result/LookupResult";
+import { LookupSuccess } from "./result/LookupSuccess";
 
 /**
  * Lookup tools for resolving paths through {@link CommandMap}s.
@@ -30,19 +30,19 @@ class LookupResolver {
      *
      * @param caseSensitive If the lookup should honor case.
      */
-    constructor(caseSensitive: boolean = true) {
+    public constructor(caseSensitive = true) {
         this.caseSensitivity = caseSensitive
             ? CaseSensitivity.SENSITIVE
             : CaseSensitivity.INSENSITIVE;
     }
 
     private static createSuccessResult(
-        pathNew: commandPath,
-        pathUsed: commandPath,
-        command: ICommand,
-        args: resolvedArgumentMap
-    ): ILookupSuccess {
-        const lookupSuccess: ILookupSuccess = {
+        pathNew: CommandPath,
+        pathUsed: CommandPath,
+        command: Command,
+        args: ResolvedArgumentMap
+    ): LookupSuccess {
+        const lookupSuccess: LookupSuccess = {
             successful: true,
             pathUsed,
             pathDangling: pathNew,
@@ -58,15 +58,15 @@ class LookupResolver {
     }
 
     private static createNotFoundResult(
-        pathNew: commandPath,
-        pathUsed: commandPath,
+        pathNew: CommandPath,
+        pathUsed: CommandPath,
         currentPathFragment: string,
         commandMap: CommandMap
-    ): ILookupErrorNotFound {
+    ): LookupErrorNotFound {
         LookupResolver.logger.warn(
             `Command '${currentPathFragment}' could not be found.`
         );
-        return <ILookupErrorNotFound>{
+        return <LookupErrorNotFound>{
             successful: false,
             pathUsed,
             pathDangling: pathNew,
@@ -77,16 +77,16 @@ class LookupResolver {
     }
 
     private static createMissingArgsResult(
-        pathNew: commandPath,
-        pathUsed: commandPath,
-        missing: IArgument[]
-    ): ILookupErrorMissingArgs {
+        pathNew: CommandPath,
+        pathUsed: CommandPath,
+        missing: Argument[]
+    ): LookupErrorMissingArgs {
         LookupResolver.logger.warn(
             "Some arguments could not be found:",
             missing
         );
 
-        return <ILookupErrorMissingArgs>{
+        return <LookupErrorMissingArgs>{
             successful: false,
             pathUsed,
             pathDangling: pathNew,
@@ -101,14 +101,14 @@ class LookupResolver {
      * @param commandMap        Map to use.
      * @param path              Path to getPath.
      * @param argumentResolving Strategy for resolving arguments.
-     * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
-     * or {@link ILookupErrorMissingArgs}.
+     * @return Lookup result, either {@link LookupSuccess}, {@link LookupErrorNotFound}
+     * or {@link LookupErrorMissingArgs}.
      */
     public resolve(
         commandMap: CommandMap,
-        path: commandPath,
+        path: CommandPath,
         argumentResolving: ArgumentResolving
-    ): ILookupResult {
+    ): LookupResult {
         if (path.length === 0) {
             throw new Error("Path cannot be empty.");
         }
@@ -118,10 +118,10 @@ class LookupResolver {
 
     private resolveInternal(
         commandMap: CommandMap,
-        path: commandPath,
-        pathUsed: commandPath,
+        path: CommandPath,
+        pathUsed: CommandPath,
         argumentResolving: ArgumentResolving
-    ): ILookupResult {
+    ): LookupResult {
         const currentPathFragment = path[0];
         const pathNew = path.slice(1);
         pathUsed.push(currentPathFragment);
@@ -135,7 +135,7 @@ class LookupResolver {
             );
         }
         // We already checked if the key exists, assert its existence.
-        const command = <ICommand>(
+        const command = <Command>(
             commandMap.getCommand(currentPathFragment, this.caseSensitivity)
         );
         LookupResolver.logger.debug(`Found command: '${currentPathFragment}'.`);
@@ -149,7 +149,7 @@ class LookupResolver {
         if (
             pathNew.length > 0 &&
             command.sub instanceof Clingy &&
-            this.hasCommand((<Clingy>command.sub).mapAliased, pathNew[0])
+            this.hasCommand(command.sub.mapAliased, pathNew[0])
         ) {
             return this.resolveInternalSub(
                 pathNew,
@@ -165,7 +165,7 @@ class LookupResolver {
          * the command has no arguments defined OR
          * the command has an empty array defined as arguments.
          */
-        let argumentsResolved: resolvedArgumentMap;
+        let argumentsResolved: ResolvedArgumentMap;
         if (
             argumentResolving === ArgumentResolving.IGNORE ||
             isNil(command.args) ||
@@ -203,11 +203,11 @@ class LookupResolver {
     }
 
     private resolveInternalSub(
-        pathNew: commandPath,
-        pathUsed: commandPath,
-        command: ICommand,
+        pathNew: CommandPath,
+        pathUsed: CommandPath,
+        command: Command,
         argumentResolving: ArgumentResolving
-    ) {
+    ): LookupResult {
         LookupResolver.logger.debug(
             "Resolving sub-commands:",
             command.sub,

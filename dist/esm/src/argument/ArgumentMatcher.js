@@ -1,13 +1,13 @@
 import { isNil } from "lodash";
 import { clingyLogby } from "../logger";
 /**
- * Orchestrates mapping of {@link IArgument}s to user-provided input.
+ * Orchestrates mapping of {@link Argument}s to user-provided input.
  *
  * @private
  */
 class ArgumentMatcher {
     /**
-     * Matches a list of {@link IArgument}s to a list of string input arguments.
+     * Matches a list of {@link Argument}s to a list of string input arguments.
      *
      * @param expected {@link Argument} list of a {@link ICommand}
      * @param provided List of user-provided arguments.

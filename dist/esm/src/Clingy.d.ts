@@ -1,11 +1,11 @@
+import { ClingyOptions } from "./ClingyOptions";
+import { Command } from "./command/Command";
 import { CommandMap } from "./command/CommandMap";
-import { commandPath } from "./command/commandPath";
-import { ICommand } from "./command/ICommand";
-import { IObjWithCommands } from "./command/IObjWithCommands";
-import { mapWithCommands } from "./command/mapWithCommands";
-import { IClingyOptions } from "./IClingyOptions";
+import { CommandPath } from "./command/CommandPath";
+import { MapWithCommands } from "./command/MapWithCommands";
+import { ObjWithCommands } from "./command/ObjWithCommands";
 import { LookupResolver } from "./lookup/LookupResolver";
-import { ILookupResult } from "./lookup/result/ILookupResult";
+import { LookupResult } from "./lookup/result/LookupResult";
 import { InputParser } from "./parser/InputParser";
 /**
  * Core {@link Clingy} class, entry point for creation of a new instance.
@@ -22,20 +22,20 @@ declare class Clingy {
      * @param commands      Map of commands to create the instance with.
      * @param options       Option object.
      */
-    constructor(commands?: mapWithCommands | IObjWithCommands, options?: IClingyOptions);
+    constructor(commands?: MapWithCommands | ObjWithCommands, options?: ClingyOptions);
     /**
      * Sets a command on this instance.
      *
      * @param key Key of the command.
      * @param command The command.
      */
-    setCommand(key: string, command: ICommand): void;
+    setCommand(key: string, command: Command): void;
     /**
      * Gets a command from this instance.
      *
      * @param key Key of the command.
      */
-    getCommand(key: string): ICommand | undefined;
+    getCommand(key: string): Command | undefined;
     /**
      * Checks if a command on this instance exists for this key.
      *
@@ -48,14 +48,14 @@ declare class Clingy {
      * @param path Path to look up.
      * @return If the pathUsed resolves to a command.
      */
-    hasPath(path: commandPath): boolean;
+    hasPath(path: CommandPath): boolean;
     /**
      * Resolves a pathUsed to a command.
      *
      * @param path Path to look up.
      * @return Lookup result, either {@link ILookupSuccess} or {@link ILookupErrorNotFound}.
      */
-    getPath(path: commandPath): ILookupResult;
+    getPath(path: CommandPath): LookupResult;
     /**
      * Parses a string into a command and arguments.
      *
@@ -63,7 +63,7 @@ declare class Clingy {
      * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
      * or {@link ILookupErrorMissingArgs}.
      */
-    parse(input: string): ILookupResult;
+    parse(input: string): LookupResult;
     /**
      * @private
      */

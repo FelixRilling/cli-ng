@@ -12,13 +12,12 @@ class InputParser {
     public readonly legalQuotes: string[];
     public readonly pattern: RegExp;
 
-    // noinspection TsLint
     /**
      * Creates an {@link InputParser}.
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ['"']) {
+    public constructor(legalQuotes = ["\""]) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
@@ -35,7 +34,7 @@ class InputParser {
         const pattern = new RegExp(this.pattern);
         let match: RegExpExecArray | null;
 
-        // noinspection AssignmentResultUsedJS
+        // Noinspection AssignmentResultUsedJS
         while ((match = pattern.exec(input))) {
             InputParser.logger.trace(`Found match '${match}'`);
             const groups = compact(match.slice(1));

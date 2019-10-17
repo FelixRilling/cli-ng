@@ -6,13 +6,12 @@ import { clingyLogby } from "../logger";
  * @private
  */
 class InputParser {
-    // noinspection TsLint
     /**
      * Creates an {@link InputParser}.
      *
      * @param legalQuotes List of quotes to use when parsing strings.
      */
-    constructor(legalQuotes = ['"']) {
+    constructor(legalQuotes = ["\""]) {
         this.legalQuotes = legalQuotes;
         this.pattern = this.generateMatcher();
     }
@@ -27,7 +26,7 @@ class InputParser {
         const result = [];
         const pattern = new RegExp(this.pattern);
         let match;
-        // noinspection AssignmentResultUsedJS
+        // Noinspection AssignmentResultUsedJS
         while ((match = pattern.exec(input))) {
             InputParser.logger.trace(`Found match '${match}'`);
             const groups = compact(match.slice(1));

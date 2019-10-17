@@ -8,7 +8,7 @@ var clingy = (function (exports, lodash) {
     })(CaseSensitivity || (CaseSensitivity = {}));
 
     /**
-     * Map containing {@link ICommand}s.
+     * Map containing {@link Command}s.
      *
      * @private
      */
@@ -505,13 +505,13 @@ var clingy = (function (exports, lodash) {
     })(ArgumentResolving || (ArgumentResolving = {}));
 
     /**
-     * Orchestrates mapping of {@link IArgument}s to user-provided input.
+     * Orchestrates mapping of {@link Argument}s to user-provided input.
      *
      * @private
      */
     class ArgumentMatcher {
         /**
-         * Matches a list of {@link IArgument}s to a list of string input arguments.
+         * Matches a list of {@link Argument}s to a list of string input arguments.
          *
          * @param expected {@link Argument} list of a {@link ICommand}
          * @param provided List of user-provided arguments.
@@ -754,8 +754,8 @@ var clingy = (function (exports, lodash) {
          * @param commandMap        Map to use.
          * @param path              Path to getPath.
          * @param argumentResolving Strategy for resolving arguments.
-         * @return Lookup result, either {@link ILookupSuccess}, {@link ILookupErrorNotFound}
-         * or {@link ILookupErrorMissingArgs}.
+         * @return Lookup result, either {@link LookupSuccess}, {@link LookupErrorNotFound}
+         * or {@link LookupErrorMissingArgs}.
          */
         resolve(commandMap, path, argumentResolving) {
             if (path.length === 0) {
@@ -824,13 +824,12 @@ var clingy = (function (exports, lodash) {
      * @private
      */
     class InputParser {
-        // noinspection TsLint
         /**
          * Creates an {@link InputParser}.
          *
          * @param legalQuotes List of quotes to use when parsing strings.
          */
-        constructor(legalQuotes = ['"']) {
+        constructor(legalQuotes = ["\""]) {
             this.legalQuotes = legalQuotes;
             this.pattern = this.generateMatcher();
         }
@@ -845,7 +844,7 @@ var clingy = (function (exports, lodash) {
             const result = [];
             const pattern = new RegExp(this.pattern);
             let match;
-            // noinspection AssignmentResultUsedJS
+            // Noinspection AssignmentResultUsedJS
             while ((match = pattern.exec(input))) {
                 InputParser.logger.trace(`Found match '${match}'`);
                 const groups = lodash.compact(match.slice(1));
@@ -912,7 +911,7 @@ var clingy = (function (exports, lodash) {
         getCommand(key) {
             return this.mapAliased.get(key);
         }
-        // noinspection JSUnusedGlobalSymbols
+        // Noinspection JSUnusedGlobalSymbols
         // TODO replace .has() with .hasCommand() (breaking)
         /**
          * Checks if a command on this instance exists for this key.
@@ -922,7 +921,7 @@ var clingy = (function (exports, lodash) {
         hasCommand(key) {
             return this.mapAliased.has(key);
         }
-        // noinspection JSUnusedGlobalSymbols
+        // Noinspection JSUnusedGlobalSymbols
         /**
          * Checks if a pathUsed resolves to a command.
          *

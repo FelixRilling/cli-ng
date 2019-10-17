@@ -1,5 +1,5 @@
+import { Command } from "../../../src/command/Command";
 import { CommandMap } from "../../../src/command/CommandMap";
-import { ICommand } from "../../../src/command/ICommand";
 import { CaseSensitivity } from "../../../src/lookup/CaseSensitivity";
 
 /**
@@ -8,7 +8,7 @@ import { CaseSensitivity } from "../../../src/lookup/CaseSensitivity";
 describe("CommandMap", () => {
     it("Asserts that CommandMap#hasCommand checks keys.", () => {
         const commandMap = new CommandMap();
-        const command: ICommand = {
+        const command: Command = {
             fn: () => null,
             alias: [],
             args: []
@@ -28,7 +28,7 @@ describe("CommandMap", () => {
 
     it("Asserts that CommandMap#getCommand checks keys.", () => {
         const commandMap = new CommandMap();
-        const command: ICommand = {
+        const command: Command = {
             fn: () => null,
             alias: [],
             args: []

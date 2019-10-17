@@ -1,0 +1,1 @@
+{"version":3,"file":"LookupErrorNotFound.d.ts","sourceRoot":"","sources":["../../../../../src/lookup/result/LookupErrorNotFound.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,UAAU,EAAE,MAAM,gBAAgB,CAAC;AAE1D,UAAU,mBAAoB,SAAQ,YAAY;IAC9C,IAAI,EAAE,UAAU,CAAC,eAAe,CAAC;IACjC,OAAO,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,EAAE,CAAC;CACrB;AAED,OAAO,EAAE,mBAAmB,EAAE,CAAC"}

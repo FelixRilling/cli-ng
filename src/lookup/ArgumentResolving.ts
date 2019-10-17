@@ -1,4 +1,4 @@
-const enum ArgumentResolving {
+enum ArgumentResolving {
     RESOLVE,
     IGNORE
 }

@@ -1,4 +1,4 @@
-const enum CaseSensitivity {
+enum CaseSensitivity {
     SENSITIVE,
     INSENSITIVE
 }

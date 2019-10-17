@@ -1,16 +1,14 @@
 import { commandPath } from "../../command/commandPath";
-
-enum ResultType {
-    SUCCESS,
-    ERROR_NOT_FOUND,
-    ERROR_MISSING_ARGUMENT
+declare enum ResultType {
+    SUCCESS = 0,
+    ERROR_NOT_FOUND = 1,
+    ERROR_MISSING_ARGUMENT = 2
 }
-
 interface ILookupResult {
     successful: boolean;
     pathUsed: commandPath;
     pathDangling: commandPath;
     type: ResultType;
 }
-
 export { ResultType, ILookupResult };
+//# sourceMappingURL=ILookupResult.d.ts.map

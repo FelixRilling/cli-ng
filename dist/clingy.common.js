@@ -85,192 +85,6 @@ class CommandMap extends Map {
     }
 }
 
-// File is named "_index.ts" to avoid it being treated as a module index file.
-
-/**
- * Checks if the value has any of the given types.
- * If at least one type gives back true, true is returned.
- *
- * @memberof Is
- * @since 1.0.0
- * @param {any} val Value to check.
- * @param {...string} types Type strings to compare the value to.
- * @returns {boolean} If the value has the type provided.
- * @example
- * isTypeOf("foo", "string")
- * // => true
- *
- * isTypeOf("foo", "number", "string")
- * // => true
- *
- * isTypeOf("foo", "number")
- * // => false
- */
-const isTypeOf = (val, ...types) => types.some(type => typeof val === type);
-
-/**
- * Checks if a value is undefined or null.
- *
- * @memberof Is
- * @since 1.0.0
- * @param {any} val Value to check.
- * @returns {boolean} If the value is nil.
- * @example
- * isNil(null)
- * // => true
- *
- * isNil(undefined)
- * // => true
- *
- * isNil(0)
- * // => false
- *
- * isNil("")
- * // => false
- */
-const isNil = (val) => val == null;
-
-/**
- * Checks if a value is not nil and has a type of object.
- *
- * The main difference to {@link isObject} is that functions are not considered object-like,
- * because `typeof function(){}` returns `"function"`.
- *
- * @memberof Is
- * @since 1.0.0
- * @param {any} val Value to check,
- * @returns {boolean} If the value is object-like.
- * @example
- * isObjectLike({})
- * // => true
- *
- * isObjectLike([])
- * // => true
- *
- * isObjectLike(() => 1))
- * // => false
- *
- * isObjectLike(1)
- * // => false
- */
-const isObjectLike = (val) => !isNil(val) && isTypeOf(val, "object");
-
-/**
- * Checks if a value is a string.
- *
- * @memberof Is
- * @since 1.0.0
- * @param {any} val Value to check.
- * @returns {boolean} if the value is a string.
- * @example
- * isString("foo")
- * // => true
- *
- * isString(1)
- * // => false
- */
-const isString = (val) => isTypeOf(val, "string");
-
-/**
- * Checks if a value is a function.
- *
- * @memberof Is
- * @since 1.0.0
- * @param {any} val Value to check.
- * @returns {boolean} If the value is a function.
- * @example
- * isFunction(function a(){})
- * // => true
- *
- * isFunction(Array.from)
- * // => true
- *
- * isFunction(null)
- * // => false
- */
-const isFunction = (val) => isTypeOf(val, "function");
-
-/**
- * Checks if a value is an object.
- *
- * @memberof Is
- * @since 1.0.0
- * @param {any} val Value to check.
- * @returns {boolean} If the value is an object.
- * @example
- * isObject({})
- * // => true
- *
- * isObject([])
- * // => true
- *
- * isObject(() => 1))
- * // => true
- *
- * isObject(1)
- * // => false
- */
-const isObject = (val) => isObjectLike(val) || isFunction(val);
-
-/**
- * Checks if a value is a symbol.
- *
- * @memberof Is
- * @since 1.0.0
- * @param {any} val Value to check.
- * @returns {boolean} If the value is a symbol.
- * @example
- * isSymbol(Symbol())
- * // => true
- *
- * isSymbol(Symbol.split)
- * // => true
- *
- * isSymbol("foo")
- * // => false
- */
-const isSymbol = (val) => isTypeOf(val, "symbol");
-
-/**
- * Gets name of a value.
- *
- * If the value has a name or description property, the value of that is returned.
- * If the value is a string, it is returned as is.
- * Otherwise null is returned.
- *
- * @memberof Get
- * @since 10.2.0
- * @param {any} val Value to check.
- * @returns {string} The name of the value.
- * @example
- * getName(class Foo{})
- * // => "Foo"
- *
- * getName(function bar(){})
- * // => "bar"
- *
- * getName(Symbol("abc"))
- * // => "abc"
- *
- * getName("foo")
- * // => "foo"
- *
- * getName(1)
- * // => null
- */
-const getName = (val) => {
-    if (isString(val)) {
-        return val;
-    }
-    if (isObject(val) && !isNil(val.name)) {
-        return val.name;
-    }
-    if (isSymbol(val) && !isNil(val.description)) {
-        return val.description;
-    }
-    return null;
-};
-
 /**
  * Default level-list. Can be used to set the level of a {@link Logby} instance.
  *
@@ -322,18 +136,195 @@ const createDefaultLogPrefix = (name, level) => `${new Date().toISOString()} ${l
 const defaultLoggingAppender = (name, level, args) => {
     let loggerFn = console.log;
     if (level === Levels.ERROR) {
-        // tslint:disable-next-line
         loggerFn = console.error;
     }
     else if (level === Levels.WARN) {
-        // tslint:disable-next-line
         loggerFn = console.warn;
     }
     else if (level === Levels.INFO) {
-        // tslint:disable-next-line
         loggerFn = console.info;
     }
     loggerFn(createDefaultLogPrefix(name, level), ...args);
+};
+
+// Noinspection SpellCheckingInspection
+/**
+ * Returns the levenshtein string distance of two strings.
+ *
+ * @since 6.3.0
+ * @memberOf String
+ * @param str1 First string to compare.
+ * @param str2 Second string to compare.
+ * @returns Distance between the two strings.
+ * @example
+ * distance("Kitten", "Sitting")
+ * // => 3
+ *
+ * distance("String", "Stribng")
+ * // => 1
+ *
+ * distance("foo", "foo")
+ * // => 0
+ */
+const distance = (str1, str2) => {
+    if (str1.length === 0) {
+        return str2.length;
+    }
+    if (str2.length === 0) {
+        return str1.length;
+    }
+    const matrix = [];
+    for (let y = 0; y <= str2.length; y++) {
+        matrix[y] = [y];
+    }
+    for (let x = 0; x <= str1.length; x++) {
+        matrix[0][x] = x;
+    }
+    for (let y = 1; y <= str2.length; y++) {
+        const matrixColumnCurrent = matrix[y];
+        const matrixColumnLast = matrix[y - 1];
+        for (let x = 1; x <= str1.length; x++) {
+            if (str2.charAt(y - 1) === str1.charAt(x - 1)) {
+                matrixColumnCurrent[x] = matrixColumnLast[x - 1];
+            }
+            else {
+                const substitution = matrixColumnLast[x - 1] + 1;
+                const insertion = matrixColumnCurrent[x - 1] + 1;
+                const deletion = matrixColumnLast[x] + 1;
+                matrixColumnCurrent[x] = Math.min(substitution, insertion, deletion);
+            }
+        }
+    }
+    return matrix[str2.length][str1.length];
+};
+
+/**
+ * Collects elements in an array into a an array of merged elements.
+ *
+ * @since 11.0.0
+ * @memberOf Array
+ * @param collection Collection to group.
+ * @param keyProducer Function returning the key for the value.
+ * @param initializer Function initializing a new mergable object.
+ * @param reducer Consumer mutating the existing object with the new data.
+ * @returns Grouped and merged map.
+ * @example
+ * groupMapReducingBy(
+ *     ["foo", "bar", "fizz", "buzz"],
+ *     val => val.charAt(0),
+ *     () => {
+ *        return {
+ *            count: 0,
+ *            matches: []
+ *        };
+ *     },
+ *     (current, val) => {
+ *         current.count++;
+ *         current.matches.push(val);
+ *         return current;
+ *     }
+ * )
+ * // => Map{"f": {count: 2, matches: ["foo", "fizz"]}, "b": {count: 2, matches: ["bar", "buzz"]}}
+ */
+const groupMapReducingBy = (collection, keyProducer, initializer, reducer) => {
+    const result = new Map();
+    lodash.forEach(collection, (value, index) => {
+        const key = keyProducer(value, index, collection);
+        if (!result.has(key)) {
+            result.set(key, initializer(value, index, collection));
+        }
+        result.set(key, reducer(result.get(key), value, index, collection));
+    });
+    return result;
+};
+
+/**
+ * Collects the values of an array in a map as array values,
+ * using the return value of the function as key.
+ *
+ * @since 6.1.0
+ * @memberOf Array
+ * @param collection Collection to group.
+ * @param keyFn Function to use for grouping.
+ * @returns Grouped map.
+ * @example
+ * groupMapBy([1, 2, 3, 4, 5], val => val % 2)
+ * // => Map{0: [2, 4], 1: [1, 3, 5]}
+ */
+const groupMapBy = (collection, keyFn) => groupMapReducingBy(collection, keyFn, () => [], (current, value) => lodash.concat(current, value));
+
+// Noinspection SpellCheckingInspection
+/**
+ * Returns strings similar to the input based its levenshtein distance to the values in the list given.
+ *
+ * @since 6.3.0
+ * @memberOf String
+ * @param str String to check.
+ * @param collection Array of values to compare the string to.
+ * @param returnFull If the full map should be returned, rather than just the closest matches.
+ * @returns Array of the closest matches, or the map if `returnFull` is true.
+ * @example
+ * similar("Fob", ["Foo", "Bar"])
+ * // => ["Foo"]
+ *
+ * similar("cmmit", ["init", "commit", "push"])
+ * // => ["commit"]
+ *
+ * similar("Kitten", ["Sitten", "Sitting", "Bitten"])
+ * // => ["Sitten", "Bitten"]
+ *
+ * similar("cmmit", ["init", "commit", "push"], true)
+ * // => Map<number, string[]>{1: ["commit"], 3: ["init"], 5: ["push"]}
+ */
+const similar = (str, collection, returnFull = false) => {
+    const result = groupMapBy(collection, (value) => distance(str, value));
+    if (returnFull) {
+        return result;
+    }
+    const lowestKey = Math.min(...result.keys());
+    return result.get(lowestKey);
+};
+
+/**
+ * Gets name of a value.
+ *
+ * If the value has a name or description property, the value of that is returned.
+ * If the value is a string, it is returned as is.
+ * Otherwise null is returned.
+ *
+ * @since 10.2.0
+ * @memberOf Object
+ * @param value Value to check.
+ * @returns The name of the value.
+ * @example
+ * name(class Foo{})
+ * // => "Foo"
+ *
+ * name(function bar(){})
+ * // => "bar"
+ *
+ * name(Symbol("abc"))
+ * // => "abc"
+ *
+ * name("foo")
+ * // => "foo"
+ *
+ * name(1)
+ * // => null
+ */
+const name = (value) => {
+    if (lodash.isString(value)) {
+        return value;
+    }
+    // eslint-disable-next-line no-extra-parens
+    if (lodash.isObject(value) && lodash.isString(value.name)) {
+        // eslint-disable-next-line no-extra-parens
+        return value.name;
+    }
+    if (lodash.isSymbol(value) && lodash.isString(value.description)) {
+        return value.description;
+    }
+    return null;
 };
 
 /**
@@ -347,7 +338,7 @@ const defaultLoggingAppender = (name, level, args) => {
 const matchesLevel = (incoming, active) => incoming.val <= active.val;
 
 /**
- * Default {@link ILogger} class.
+ * Default {@link Logger} class.
  *
  * @private
  */
@@ -487,15 +478,15 @@ class Logby {
      * @returns The logger instance.
      */
     getLogger(nameable) {
-        const name = getName(nameable);
-        if (name == null) {
+        const loggerName = name(nameable);
+        if (loggerName == null) {
             throw new TypeError(`'${nameable}' is neither an INameable nor a string.`);
         }
-        if (!this.loggers.has(name)) {
-            const logger = new DefaultLogger(this, name);
-            this.loggers.set(name, logger);
+        if (!this.loggers.has(loggerName)) {
+            const logger = new DefaultLogger(this, loggerName);
+            this.loggers.set(loggerName, logger);
         }
-        return this.loggers.get(name);
+        return this.loggers.get(loggerName);
     }
 }
 
@@ -546,144 +537,6 @@ class ArgumentMatcher {
     }
 }
 ArgumentMatcher.logger = clingyLogby.getLogger(ArgumentMatcher);
-
-// noinspection SpellCheckingInspection
-/**
- * Returns the levenshtein string distance of two strings.
- *
- * @since 6.3.0
- * @memberOf String
- * @param str1 First string to compare.
- * @param str2 Second string to compare.
- * @returns Distance between the two strings.
- * @example
- * distance("Kitten", "Sitting")
- * // => 3
- *
- * distance("String", "Stribng")
- * // => 1
- *
- * distance("foo", "foo")
- * // => 0
- */
-const distance = (str1, str2) => {
-    if (str1.length === 0) {
-        return str2.length;
-    }
-    if (str2.length === 0) {
-        return str1.length;
-    }
-    const matrix = [];
-    for (let y = 0; y <= str2.length; y++) {
-        matrix[y] = [y];
-    }
-    for (let x = 0; x <= str1.length; x++) {
-        matrix[0][x] = x;
-    }
-    for (let y = 1; y <= str2.length; y++) {
-        const matrixColumnCurrent = matrix[y];
-        const matrixColumnLast = matrix[y - 1];
-        for (let x = 1; x <= str1.length; x++) {
-            if (str2.charAt(y - 1) === str1.charAt(x - 1)) {
-                matrixColumnCurrent[x] = matrixColumnLast[x - 1];
-            }
-            else {
-                const substitution = matrixColumnLast[x - 1] + 1;
-                const insertion = matrixColumnCurrent[x - 1] + 1;
-                const deletion = matrixColumnLast[x] + 1;
-                matrixColumnCurrent[x] = Math.min(substitution, insertion, deletion);
-            }
-        }
-    }
-    return matrix[str2.length][str1.length];
-};
-
-/**
- * Collects elements in an array into a an array of merged elements.
- *
- * @since 11.0.0
- * @memberOf Array
- * @param collection Collection to group.
- * @param keyProducer Function returning the key for the value.
- * @param initializer Function initializing a new mergable object.
- * @param reducer Consumer mutating the existing object with the new data.
- * @returns Grouped and merged map.
- * @example
- * groupMapReducingBy(
- *     ["foo", "bar", "fizz", "buzz"],
- *     val => val.charAt(0),
- *     () => {
- *        return {
- *            count: 0,
- *            matches: []
- *        };
- *     },
- *     (current, val) => {
- *         current.count++;
- *         current.matches.push(val);
- *         return current;
- *     }
- * )
- * // => Map{"f": {count: 2, matches: ["foo", "fizz"]}, "b": {count: 2, matches: ["bar", "buzz"]}}
- */
-const groupMapReducingBy = (collection, keyProducer, initializer, reducer) => {
-    const result = new Map();
-    lodash.forEach(collection, (value, index) => {
-        const key = keyProducer(value, index, collection);
-        if (!result.has(key)) {
-            result.set(key, initializer(value, index, collection));
-        }
-        result.set(key, reducer(result.get(key), value, index, collection));
-    });
-    return result;
-};
-
-/**
- * Collects the values of an array in a map as array values,
- * using the return value of the function as key.
- *
- * @since 6.1.0
- * @memberOf Array
- * @param collection Collection to group.
- * @param keyFn Function to use for grouping.
- * @returns Grouped map.
- * @example
- * groupMapBy([1, 2, 3, 4, 5], val => val % 2)
- * // => Map{0: [2, 4], 1: [1, 3, 5]}
- */
-const groupMapBy = (collection, keyFn) => groupMapReducingBy(collection, keyFn, () => [], (current, value) => lodash.concat(current, value));
-
-// noinspection SpellCheckingInspection
-/**
- * Returns strings similar to the input based its levenshtein distance to the values in the list given.
- *
- * @since 6.3.0
- * @memberOf String
- * @param str String to check.
- * @param collection Array of values to compare the string to.
- * @param returnFull If the full map should be returned, rather than just the closest matches.
- * @returns Array of the closest matches, or the map if `returnFull` is true.
- * @example
- * similar("Fob", ["Foo", "Bar"])
- * // => ["Foo"]
- *
- * similar("cmmit", ["init", "commit", "push"])
- * // => ["commit"]
- *
- * similar("Kitten", ["Sitten", "Sitting", "Bitten"])
- * // => ["Sitten", "Bitten"]
- *
- * similar("cmmit", ["init", "commit", "push"], true)
- * // => Map<number, string[]>{1: ["commit"], 3: ["init"], 5: ["push"]}
- */
-const similar = (str, collection, returnFull = false) => {
-    const result = groupMapBy(collection, (value) => distance(str, value));
-    if (returnFull) {
-        return result;
-    }
-    const lowestKey = Math.min(...result.keys());
-    return result.get(lowestKey);
-};
 
 /**
  * Gets similar keys of a key based on their string distance.

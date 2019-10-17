@@ -1,5 +1,5 @@
 import { isNil } from "lodash";
-import { ILogger } from "logby";
+import { Logger } from "logby";
 import { clingyLogby } from "../logger";
 import { Argument } from "./Argument";
 import { ResolvedArgumentMap } from "./ResolvedArgumentMap";
@@ -10,7 +10,7 @@ import { ResolvedArgumentMap } from "./ResolvedArgumentMap";
  * @private
  */
 class ArgumentMatcher {
-    private static readonly logger: ILogger = clingyLogby.getLogger(
+    private static readonly logger: Logger = clingyLogby.getLogger(
         ArgumentMatcher
     );
 

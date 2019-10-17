@@ -45,9 +45,9 @@
     "homepage": "https://github.com/FelixRilling/cli-ngy#readme",
     "dependencies": {
         "@types/lodash": "^4.14.136",
+        "lightdash": "^11.1.0",
         "lodash": "^4.17.15",
-        "lightdash": "^11.0.0",
-        "logby": "^3.0.0"
+        "logby": "^3.1.0"
     },
     "devDependencies": {
         "@types/jasmine": "^3.4.4",

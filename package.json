@@ -1,6 +1,6 @@
 {
     "name": "cli-ngy",
-    "version": "10.2.3",
+    "version": "10.3.0",
     "description": "TypeScript command line parsing library for bots",
     "main": "dist/clingy.common.js",
     "module": "./dist/esm/src/main.js",
